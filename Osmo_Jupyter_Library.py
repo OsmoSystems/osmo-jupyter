@@ -46,27 +46,47 @@ def osmo_lib_imported():
 
 
 # DATA FUNCTIONS
-def load_from_db(db_engine, nodes, events, down_sample):
-	# Database protocol required to connect to our MySQL database. Only needs to run once
-	connection = db_engine.connect()
-	raw_node_data = pd.read_sql(
-		'''
-			SELECT calculation_detail.*, reading.hub_id
-			from (calculation_detail join reading on reading.reading_id = calculation_detail.reading_id)
-			where calculation_detail.node_id in {nodes}
-			and calculation_detail.create_date between "{start_date}" and "{end_date}"
-			and MOD(calculation_detail.reading_id,{down_sample}) = 0
-			order by calculation_detail.create_date
-		'''.format(	
-			nodes = "("+', '.join([str(n) for n in nodes])+")",
-			start_date = local_to_utc(dstring = events['start']),
-			end_date = local_to_utc(dstring = events['end']),
-			down_sample = down_sample,
-		),
-		db_engine
-	)
-	connection.close()
-	return raw_node_data
+def load_from_db(nodes, start_time_local, end_time_local, disk_cache=True, force_reload=False):    
+    csv_filename = 'cached_calculation_details_{nodes}_{start}_to_{end}.csv'.format(
+        nodes="_".join(map(str, nodes)),
+        start=date_to_filename_string(start_time_local),
+        end=date_to_filename_string(end_time_local),
+    )
+    
+    csv_already_exists = os.path.exists(csv_filename)
+    load_from_db = force_reload or not csv_already_exists
+    
+    if disk_cache and csv_already_exists and not force_reload:
+        # load from CSV instead of DB
+        print('Loading cached file ', csv_filename, '.')
+        raw_node_data = pd.read_csv(csv_filename)
+    else:
+        connection = db_engine.connect()
+        raw_node_data = pd.read_sql(
+            '''
+                SELECT calculation_detail.*
+                from calculation_detail
+                where node_id in {nodes}
+                and create_date between "{start_date}" and "{end_date}"
+                order by create_date
+            '''.format(
+                nodes = "("+', '.join([str(n) for n in nodes])+")",
+                start_date = local_to_utc(start_time_local),
+                end_date = local_to_utc(end_time_local),
+            ),
+            db_engine
+        )
+        connection.close()
+        
+        if disk_cache:
+            print('Saving data file to', csv_filename, '.')
+            raw_node_data.to_csv(csv_filename, index=False)
+
+    raw_node_data['create_date'] = utc_to_local(pd.to_datetime(raw_node_data['create_date']))
+    raw_node_data['update_date'] = utc_to_local(pd.to_datetime(raw_node_data['update_date']))
+    
+    return raw_node_data
+
 
 def remove_outliers(df,columns):
 	threshold = 3 # number of std dev away from mean before data is thrown out
@@ -99,14 +119,18 @@ localtz = dateutil.tz.tzlocal()
 timezone_offset = localtz.utcoffset(datetime.datetime.now(localtz))
 
 
-def now():
-	return datetime.datetime.now().strftime(dt_format)
+def date_to_string(dtime):
+    return dtime if isinstance(dtime, str) else dtime.strftime(dt_format)
+
+def date_to_filename_string(dtime):
+    # Version of datetime safe for using in a filename
+    return date_to_string(dtime).replace(':', '-')
 
 def utc_to_local(dtime = None, dstring = None):
 	# Takes datetime or string, returns the same type TODO: This is not great practice.
 	if dstring:
 		dtime = pd.to_datetime(dstring) + timezone_offset
-		return dtime.strftime(dt_format)
+		return date_to_string(dtime)
 	else:
 		return pd.to_datetime(dtime) + timezone_offset
 
@@ -114,7 +138,7 @@ def local_to_utc(dtime = None, dstring = None):
 	# Takes datetime or string, returns the same type TODO: This is not great practice.
 	if dstring:
 		dtime = pd.to_datetime(dstring) - timezone_offset
-		return dtime.strftime(dt_format)
+		return date_to_string(dtime)
 	else:
 		return pd.to_datetime(dtime) - timezone_offset
 
