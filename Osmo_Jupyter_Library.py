@@ -37,6 +37,8 @@ import datetime
 import pandas as pd
 import plotly.graph_objs as go
 from plotly.offline import iplot
+import os
+from sqlalchemy import create_engine
 
 
 # GENERAL FUNCTIONS
@@ -46,17 +48,23 @@ def osmo_lib_imported():
 
 
 # DATA FUNCTIONS
-def load_from_db(nodes, start_time_local, end_time_local, disk_cache=True, force_reload=False):    
-    csv_filename = 'cached_calculation_details_{nodes}_{start}_to_{end}.csv'.format(
-        nodes="_".join(map(str, nodes)),
-        start=date_to_filename_string(start_time_local),
-        end=date_to_filename_string(end_time_local),
+db_engine = create_engine(
+    'mysql+pymysql://{user}:{password}@{host}/{dbname}'.format(
+        user='technician',
+        password='0sm0b0ts',
+        dbname='osmobot',
+        host='osmobot-db2.cxvkrr48hefm.us-west-2.rds.amazonaws.com'
+    )
+)
+
+def load_from_db(exp, down_sample = 1, save_to_csv=False, force_reload=False):    
+    csv_filename = 'cached_data_{nodes}_{start}_to_{end}.csv'.format(
+        nodes="_".join(map(str, exp['nodes'])),
+        start=date_to_filename_string(exp['events']['start']),
+        end=date_to_filename_string(exp['events']['end']),
     )
     
-    csv_already_exists = os.path.exists(csv_filename)
-    load_from_db = force_reload or not csv_already_exists
-    
-    if disk_cache and csv_already_exists and not force_reload:
+    if os.path.exists(csv_filename) and not force_reload:
         # load from CSV instead of DB
         print('Loading cached file ', csv_filename, '.')
         raw_node_data = pd.read_csv(csv_filename)
@@ -68,25 +76,25 @@ def load_from_db(nodes, start_time_local, end_time_local, disk_cache=True, force
                 from calculation_detail
                 where node_id in {nodes}
                 and create_date between "{start_date}" and "{end_date}"
+                and MOD(calculation_detail.reading_id,{down_sample}) = 0
                 order by create_date
             '''.format(
-                nodes = "("+', '.join([str(n) for n in nodes])+")",
-                start_date = local_to_utc(start_time_local),
-                end_date = local_to_utc(end_time_local),
+                nodes = "("+', '.join([str(n) for n in exp['nodes']])+")",
+                start_date = local_to_utc(exp['events']['start']),
+                end_date = local_to_utc(exp['events']['end']),
+                down_sample = down_sample,
             ),
             db_engine
         )
         connection.close()
         
-        if disk_cache:
+        if save_to_csv:
             print('Saving data file to', csv_filename, '.')
             raw_node_data.to_csv(csv_filename, index=False)
 
-    raw_node_data['create_date'] = utc_to_local(pd.to_datetime(raw_node_data['create_date']))
-    raw_node_data['update_date'] = utc_to_local(pd.to_datetime(raw_node_data['update_date']))
-    
+    raw_node_data['create_date'] = utc_to_local(raw_node_data['create_date'])
+    raw_node_data['update_date'] = utc_to_local(raw_node_data['update_date'])
     return raw_node_data
-
 
 def remove_outliers(df,columns):
 	threshold = 3 # number of std dev away from mean before data is thrown out
