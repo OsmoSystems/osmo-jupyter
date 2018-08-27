@@ -172,8 +172,13 @@ def subsample_for_plot(df, plot_settings):
 	n = int(len(df)/plot_settings['dots_to_plot']) or 1
 	return df.iloc[::n, :]
 
+def plot_exp(df, exp, plot_settings, sensors = [0,1,2,3,4,5,6,7]):
+	for n in exp['nodes']:
+		for s in sensors:
+			plot_rgbt(df,n,s,exp['events'], plot_settings)
+
 def plot_rgbt(df, n, s, events, plot_settings):
-	indices = {
+	indices = { # TODO Should move this to plot settings!
 		'r': {'color':'red', 'axis': 2 if plot_settings['plot_on_separate_axes'] else 2},
 		'g': {'color':'green', 'axis': 3 if plot_settings['plot_on_separate_axes'] else 2},
 		'b': {'color':'blue', 'axis': 4 if plot_settings['plot_on_separate_axes'] else 2},
