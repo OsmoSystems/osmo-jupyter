@@ -1,130 +1,61 @@
-# State of our Jupyter Notebook tools
+# Jupyter Notebook Tools
+This is a set of tools that is designed to facilitate science in the context of Osmo Systems.
+The code herein generally expects to be run in the context of a jupyter notebook. TODO (PR feedback plz): eventually it might be used elsewhere. is it OK to put it all here for now and potentially have to refactor/move it later?
 
-# Overview
-There are two working sets of tools that are leveraged by our notebooks currently.  One is an organized set of cells from Jona's standardized workbook (Google Drive/Technical_OsmoSystems/Error Analysis/2018-08-17 Long-Term Static Repeatability Tests) and the other is a set of tools that Jason and others have provided (Google Drive/Technical_OsmoSystems/Tools/Jupyter Snippets)
+## What lives here
 
-Anything with display or "%" or "!" used iPython features (might conflict with being put into a python library)
+Here's the basic heuristic for what should live in this library vs. in a notebook.
 
+**Is this function reusable across many experiments/activities, both now and for the foreseeable future, and is it fairly Osmo-specific?**
+yes = probably it should live here. no = probably not.
 
-Jona's WB
-(Google Drive/Technical_OsmoSystems/Error Analysis/2018-08-17 Long-Term Static Repeatability Tests/2018-08-18 Jona.ipynb)
+Examples of code that should live here:
 
-## Cell 1 -> (partially a candidate for sdk)
-- pip install dependencies (not a candidate for sdk)
-- import statements  (copy don't erase, ongoing experiments may find use of these imports)
-    import pandas as pd
-    import numpy as np
-    import datetime
-    import re
-    from dateutil.parser import parse
-    import plotly.graph_objs as go
-    from plotly.offline import download_plotlyjs, init_notebook_mode, iplot, plot
-    from sqlalchemy import create_engine
-    from getpass import getuser, getpass
-    from ipywidgets import widgets
-- configure global variables and initialize database engine  (candidate for sdk)
-```
-  --###INITIALIZE VARIABLES ONCE
-  init_notebook_mode(connected=True)
-  old_nodes = []
-  old_sensors = []
-  old_start = None
-  old_end = None
-  dt_format = '%Y-%m-%d %H:%M:%S'
-  db_engine = create_engine(
-      'mysql+pymysql://{user}:{password}@{host}/{dbname}'.format(
-          user='technician',
-          password='0sm0b0ts',
-          dbname='osmobot',
-          host='osmobot-db2.cxvkrr48hefm.us-west-2.rds.amazonaws.com'
-      )
-  )
-```
+* Generalized database access functions
+* Basic plots that are useful for a wide variety of experiments
+* Calibration routines
+* Analysis functions
 
+Examples of code that should probably *not* live here:
 
-## Cell 2 -> Define experiments (not a candidate for sdk)
-Jona created a dictionary that has the following structure
-- 'name' : 'name of the experiment
-- 'nodes' : list of nodes to retrieve data for the experiment
--
-```
-'events' : {
-  start_date
-  end_date
-  annotation 1 -> n...
-}
-```
+* "get the standard deviation of a set of node data". Use `my_dataframe['my_column'].std()` as [implemented in pandas](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.std.html) instead.
+* "check temperature and time correlation of each color count for each node during an experiment". This is probably too use-case specific and will end up as unmaintained, "dead code".
 
-Once experiment variables are set, global variables are populated for usage in another Cell
+## Using this library
 
-## Cell 3 -> Helper functions (candidate for sdk))
-- remove_outliers
-- utc_to_local
-- local_to_utc
-- load_from_db
--- queries db and closes connection returning data set for nodes
-- plot_splice_size (?)
-- plot_rgbt
--- parses data and creates scatter plots and layout for figure/iPlot
+To consume this library in your notebook, add this line to the top:
 
-## Cell 4 -> Bring in Node Data (candidate for sdk)
-- Actually calls the db if needed.  Contains additional logic to see if a database call/refresh of the data is needed.
-- populates
+`!pip install https://github.com/osmosystems/python-jupyter-tools.git@[VERSION]`
+Where [VERSION] is a version number.
 
-## Cell 5 -> Plot data (candidate for sdk)
-- create the charts using plot_rgbt function and populated data set
+TODO: instructions for installing editable for testing/development purposes. include autoreload magics
 
-## Below seems to be WIP progress code, Jona to confirm if those additional cells are useful
+## Contributing
 
-# End Jona Notebook
+### High Bar
 
-# Start Jupyter Snippets (tools Jason,Jacob has put together)
-Google Drive/Technical_OsmoSystems/Tools/Jupyter Snippets
+The "bar" for including code in this library is higher than that seen in our jupyter notebooks. This is because:
+* Code in a library is more trusted, less transparent
+* Code in this library will be reused more, and thus it is more important for it to be correct and even more important for it to be maintainable
 
-- data collection log
--- looks to open a file and perform some transformations on the data within
--- TODO: what is the data shape both in and out for this?
-- Filter Node Data
--- Receives a dictionary and filters data for node, sensor, calculation dimension and start/end create_dates
-- Hex String Parser
--- Purpose
---- Provide folks with the ability to parse a hex string into its constituent parts, using the actual software code that does so in our data processing.
--- Warnings
---- The code that you’ll be using may move around and this notebook is not maintained as a first-class citizen. If the instructions here are broken, please contact the software team.
+### Code Style
 
--- Setup
---- Before you run this, you'll have to set up Node and log in. You'll only have to do this once:
-```
-1) Install Node v.8.10 on your machine.
-  - You can check if this is already done by running this in your command prompt:
-  - node --version
-  - If it’s not there, you can get it from https://nodejs.org/download/release/v8.10.0/ . If you have a newer version, it's probably fine.
-- Log in to npm:
-  - npm login
-  - Credentials:
-  - username: osmobot-devops
-  - password: Get this from someone on the software team.
-  - e-mail: devops@osmobot.com
--- parses hex string using JS parsing library
--- has a lot of functionality re: hex string parsing, retrieving specific data from hex string
-```
-- Joining a data collection log with node data
--- Purpose
---- During an experiment, you often have a metadata "log" of times when you were collecting a specific type of data using a node.
---- This joiner allows you to augment your node data frame with this data. For each node data row, it finds the associated metadata and adds it in as additional columns. If there is no corresponding metadata row for a node data row, the node data row will get data_set_id of -1 or NaN and can easily be dropped from the resultant DataFrame.
-- Node Start and Stopper Neptune (candidate for sdk)
--- UI for ssh'ing into a hub and starting stoping the hub.service
+This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/document/d/1W1Ipug8IACL4PfZAq5bQKlmfcJGmHGKNH95_FwJcjaI).
+TODO: move the Python section there from proposal to "done"
 
-- Technician Access to Calculation Details-Aggressive anti-caching
--- Pulling calculation details from the DB
---- The calculation details table has all kinds of handy internal intermediate details for each calculation.
---- Getting the data from the DB as part of your notebook means you can get updated data just by re-running the notebook. However, since the database table is subject to change, it's also smart to save off the data in a file alongside the notebook so that you can run the notebook later without requiring database access.
---- Recommended practice is to use the database code while the experiment is in progress or when doing a single data pull, but always save that data off to a CSV and switch to using the CSV before you archive the notebook.
+#### Documentation
 
-- Technician Access to Calculation Details
--- Pulling calculation details from the DB
---- The calculation details table has all kinds of handy internal intermediate details for each calculation.
---- Getting the data from the DB as part of your notebook means you can get updated data just by re-running the notebook. However, since the database table is subject to change, it's also smart to save off the data in a file alongside the notebook so that you can run the notebook later without requiring database access.
---- Recommended practice is to use the database code while the experiment is in progress or when doing a single data pull, but always save that data off to a CSV and switch to using the CSV before you archive the notebook.
+Function documentation should be in the [Google Style](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings).
 
-# End Jason Notebook
+### Unit Tests
+
+Run tests with `python setup.py test`
+Any function that has a significant logic component that can be tested, should be unit tested.
+
+# TODO  (PR feedback plz)
+before this library is "ready to go" (or possibly after, if we decide). CR folks, these are questions for you: should we do these now or later
+* fill out database-access functions
+* actually test if I can consume it (might need some kind of GitHub auth setup)
+* implement unit test framework
+* implement linting
+* fire up CircleCI so that we can see if unit tests and linting are passing on pull requests
