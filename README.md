@@ -18,15 +18,15 @@ Examples of code that should live here:
 
 Examples of code that should probably *not* live here:
 
-* "get the standard deviation of a set of node data". Use `my_dataframe['my_column'].std()` as [implemented in pandas](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.std.html) instead.
+* "get the standard deviation of a set of node data". Use `my_dataframe['my_column'].std()` as [implemented in pandas](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.std.html) instead. Anything that is not Osmo-specific is probably already implemented in an existing library that we should use instead.
 * "check temperature and time correlation of each color count for each node during an experiment". This is probably too use-case specific and will end up as unmaintained, "dead code".
 
 ## Using this library
 
 To consume this library in your notebook, add this line to the top:
 
-`!pip install https://github.com/osmosystems/python-jupyter-tools.git@[VERSION]`
-Where [VERSION] is a version number.
+`!pip install https://github.com/osmosystems/osmo-jupyter.git@[CHANGESET]`
+Where [CHANGESET] is a changeset ID.
 
 TODO: instructions for installing editable for testing/development purposes. include autoreload magics
 
@@ -41,21 +41,22 @@ The "bar" for including code in this library is higher than that seen in our jup
 ### Code Style
 
 This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/document/d/1W1Ipug8IACL4PfZAq5bQKlmfcJGmHGKNH95_FwJcjaI).
-TODO: move the Python section there from proposal to "done"
-
-#### Documentation
-
-Function documentation should be in the [Google Style](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings).
 
 ### Unit Tests
 
 Run tests with `python setup.py test`
 Any function that has a significant logic component that can be tested, should be unit tested.
 
-# TODO  (PR feedback plz)
+# TODO  (before landing)
 before this library is "ready to go" (or possibly after, if we decide). CR folks, these are questions for you: should we do these now or later
+* change name of repo to osmo-jupyter and name of package to osmo_jupyter
 * fill out database-access functions
 * actually test if I can consume it (might need some kind of GitHub auth setup)
 * implement unit test framework
 * implement linting
+* update Code Stye Manifesto with function documentation
+* File tickets for fast-follow-up work
+* Update / restructure Code style manifesto as necessary to make it obvious what applies to Jupyter notebooks
+* add this repo to the [Jupyter standard practices](https://docs.google.com/document/d/1ri0LNyxWqtZ5g05T7o2pd_VQp3-ndKRVRT1TjiwnnZY/edit#)
+# TODO (only if I can do it this week)
 * fire up CircleCI so that we can see if unit tests and linting are passing on pull requests
