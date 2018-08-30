@@ -1,0 +1,21 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+
+
+jobs:
+  build:
+    docker: &docker_image
+      - image: circleci/python:3.7-stretch-browsers
+
+    steps:
+      - checkout
+      - run: pip install .
+
+      - run: pip install pytest
+      - run: pytest
+
+      - run: pip install flake8
+      - run: flake8
