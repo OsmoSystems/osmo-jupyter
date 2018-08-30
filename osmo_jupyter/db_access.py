@@ -1,8 +1,12 @@
+""" Functions to access node data from the Osmo database
+"""
+import pandas as pd
+import pytz
+import sqlalchemy
+
 import textwrap
 from getpass import getpass
-
-import pandas as pd
-import sqlalchemy
+from osmo_jupyter import timezone
 
 
 def configure_database():
@@ -36,24 +40,32 @@ def configure_database():
     return db_engine
 
 
-def _get_calculation_details_query(node_ids, start_utc, end_utc, include_hub_id=False, downsample_interval=None):
+def _get_calculation_details_query(
+    node_ids,
+    start_time_local,
+    end_time_local,
+    include_hub_id=False,
+    downsample_factor=None
+):
     """ Provide a SQL query to download calculation details. Internal function
 
     Args:
         node_ids: iterable of node IDs to get data for
-        # TODO (PR feedback plz): establish safe patterns for use of local time and use that instead
-        start_utc: string of ISO-formatted start datetime in UTC, inclusive
-        end_utc: string of ISO-formatted end datetime in UTC, inclusive
+        start_time_local: string of ISO-formatted start datetime in local time, inclusive
+        end_time_local: string of ISO-formatted end datetime in local time, inclusive
         include_hub_id: if True, the output will include a 'hub_id' column.
             Default False because the request including hub_id takes extra time.
-        downsample_interval: if this is a number, it will be used to select fewer rows.
-            You should get *roughly* n / downsample_interval samples. If None, no downsampling will occur.
+        downsample_factor: if this is a number, it will be used to select fewer rows.
+            You should get *roughly* n / downsample_factor samples. If None, no downsampling will occur.
     Returns:
         SQL query that can be used to get the desired data
     """
+
+    start_timezone_aware_string = timezone.to_utc_string(start_time_local)
+    end_timezone_aware_string = timezone.to_utc_string(end_time_local)
     downsample_clause = (
-        f'AND MOD(calculation_detail.reading_id, {downsample_interval}) = 0'
-        if downsample_interval is not None
+        f'AND MOD(calculation_detail.reading_id, {downsample_factor}) = 0'
+        if downsample_factor is not None
         else ''
     )
 
@@ -73,24 +85,31 @@ def _get_calculation_details_query(node_ids, start_utc, end_utc, include_hub_id=
         SELECT {select_clause}
         FROM ({source_table})
         WHERE calculation_detail.node_id IN {nodes_selector}
-        AND calculation_detail.create_date BETWEEN "{start_utc}" AND "{end_utc}"
+        AND calculation_detail.create_date BETWEEN "{start_timezone_aware_string}" AND "{end_timezone_aware_string}"
         {downsample_clause}
         ORDER BY calculation_detail.create_date
     '''
 
 
-def load_calculation_details(db_engine, node_ids, start_utc, end_utc, include_hub_id=False, downsample_interval=None):
+def load_calculation_details(
+    db_engine,
+    node_ids,
+    start_time_local,
+    end_time_local,
+    include_hub_id=False,
+    downsample_factor=None
+):
     """ Load node data from the calculation_details table, optionally with hub ID included from the readings table
 
     Args:
         db_engine: database engine created using `connect_to_db`
         node_ids: iterable of node IDs to get data for
-        start_utc: string of ISO-formatted start datetime in UTC, inclusive
-        end_utc: string of ISO-formatted end datetime in UTC, inclusive
+        start_time_local: string of ISO-formatted start datetime in local time, inclusive
+        end_time_local: string of ISO-formatted end datetime in local time, inclusive
         include_hub_id: if True, the output will include a 'hub_id' column.
             Default False because the request including hub_id takes extra time.
-        downsample_interval: if this is a number, it will be used to select fewer rows.
-            You should get *roughly* n / downsample_interval samples.
+        downsample_factor: if this is a number, it will be used to select fewer rows.
+            You should get *roughly* n / downsample_factor samples.
     Returns:
         a pandas.DataFrame of data from the node IDs provided.
     Raises:
@@ -102,7 +121,7 @@ def load_calculation_details(db_engine, node_ids, start_utc, end_utc, include_hu
     connection = db_engine.connect()
 
     calculation_details = pd.read_sql(
-        _get_calculation_details_query(node_ids, start_utc, end_utc, include_hub_id, downsample_interval),
+        _get_calculation_details_query(node_ids, start_time_local, end_time_local, include_hub_id, downsample_factor),
         db_engine
     )
     connection.close()
