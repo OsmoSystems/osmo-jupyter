@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import os
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='osmo_jupyter',
@@ -11,16 +10,15 @@ setup(
     url='https://www.github.com/osmosystems/python-jupyter-tools',
     packages=['osmo_jupyter'],
     install_requires=[
-        'pandas',
-        'numpy',
-        'scipy',
-        'pymysql',
-        'petl',
         'intervaltree',
+        'numpy',
+        'pandas',
+        'petl',
+        'plotly >= 2, < 3',
+        'pymysql',
         'requests',
-        'plotly==2',
+        'scipy',
+        'sqlalchemy',
     ],
-    test_suite='pytest',
-    tests_require=['pytest'],
     include_package_data=True
 )
