@@ -23,10 +23,11 @@ Examples of code that should probably *not* live here:
 
 ## Using this library
 
-To consume this library in your notebook, add this line to the top:
+Before you can consume the library, you'll need to [set up an SSH key with GitHub](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/). This lets your computer access the private Git repository and you may have already done this.
 
+Then, add a line near the top of your notebook:
 `!pip install https://github.com/osmosystems/osmo-jupyter.git@[CHANGESET]`
-Where [CHANGESET] is a changeset ID.
+Where [CHANGESET] is a changeset ID. Grab the latest changeset ID by [visiting GitHub](https://github.com/OsmoSystems/osmo-jupyter) and searching for "latest commit". Copy that value.
 
 ## Contributing
 
@@ -53,16 +54,3 @@ This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/docume
  to watch file changes and auto-run tests during development, call `pytest-watch`
 2. to run unit tests, run `pytest`
 3. to run the linter, use `flake8`
-
-
-# TODO  (before landing)
-before this library is "ready to go" (or possibly after, if we decide). CR folks, these are questions for you: should we do these now or later
-* change name of repo to osmo-jupyter and name of package to osmo_jupyter
-* fill out database-access functions
-* actually test if I can consume it (might need some kind of GitHub auth setup)
-* update Code Stye Manifesto with function documentation
-* File tickets for fast-follow-up work
-* Update / restructure Code style manifesto as necessary to make it obvious what applies to Jupyter notebooks
-* add this repo to the [Jupyter standard practices](https://docs.google.com/document/d/1ri0LNyxWqtZ5g05T7o2pd_VQp3-ndKRVRT1TjiwnnZY/edit#)
-# TODO (only if I can do it this week)
-* fire up CircleCI so that we can see if unit tests and linting are passing on pull requests
