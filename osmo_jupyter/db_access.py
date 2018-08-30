@@ -22,7 +22,7 @@ def configure_database():
     db_engine = sqlalchemy.create_engine(
         'mysql+pymysql://{user}:{password}@{host}/{dbname}'.format(
             user='technician',
-            password=getpass(),
+            password=getpass(),  # Ask user for the password to avoid checking it in.
             dbname='osmobot',
             host='osmobot-db2.cxvkrr48hefm.us-west-2.rds.amazonaws.com'
         )
