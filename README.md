@@ -28,8 +28,6 @@ To consume this library in your notebook, add this line to the top:
 `!pip install https://github.com/osmosystems/osmo-jupyter.git@[CHANGESET]`
 Where [CHANGESET] is a changeset ID.
 
-TODO: instructions for installing editable for testing/development purposes. include autoreload magics
-
 ## Contributing
 
 ### High Bar
@@ -42,18 +40,26 @@ The "bar" for including code in this library is higher than that seen in our jup
 
 This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/document/d/1W1Ipug8IACL4PfZAq5bQKlmfcJGmHGKNH95_FwJcjaI).
 
-### Unit Tests
 
-Run tests with `python setup.py test`
-Any function that has a significant logic component that can be tested, should be unit tested.
+### Installing for development
+
+1. Check out the repository and switch to its directory
+2. `pip install --editable .`
+
+
+### Running tests
+
+1. `pip install pytest pytest-watch flake8`
+ to watch file changes and auto-run tests during development, call `pytest-watch`
+2. to run unit tests, run `pytest`
+3. to run the linter, use `flake8`
+
 
 # TODO  (before landing)
 before this library is "ready to go" (or possibly after, if we decide). CR folks, these are questions for you: should we do these now or later
 * change name of repo to osmo-jupyter and name of package to osmo_jupyter
 * fill out database-access functions
 * actually test if I can consume it (might need some kind of GitHub auth setup)
-* implement unit test framework
-* implement linting
 * update Code Stye Manifesto with function documentation
 * File tickets for fast-follow-up work
 * Update / restructure Code style manifesto as necessary to make it obvious what applies to Jupyter notebooks
