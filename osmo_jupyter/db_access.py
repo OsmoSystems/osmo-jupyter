@@ -46,6 +46,7 @@ SQL_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'  # Time format favored by mysql
 
 def _to_aware(local_time):
     """ get a timezone-aware object from local time string(s).
+    Internal function, used only in DB access.
 
     Args:
         local_time: string of local time in any valid non-timezone-aware ISO format
@@ -60,6 +61,7 @@ def _to_aware(local_time):
 
 def _to_utc_string(local_time):
     ''' Convert a local time string to a string in UTC that can be passed to the database
+    Internal function, used only in DB access.
 
     Args:
         local_time: string of local time in any valid non-timezone-aware ISO format

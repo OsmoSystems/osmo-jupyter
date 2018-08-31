@@ -33,9 +33,9 @@ Where [CHANGESET] is a changeset ID. Grab the latest changeset ID by [visiting G
 
 **note:** This will be the exact library version that your notebook depends on.
 
-## Don't go there!
 
-Do not consume functions that have names beginning with an underscore (eg. `osmo_jupyter.db_access._to_aware()`). These functions are private and not part of the library's stable interface.
+Jupyter should be able to tab-complete all of our public functions once you run `import osmo_jupyter` and then type `osmo_jupyter.` and `<tab>`.
+
 
 ## Contributing
 
