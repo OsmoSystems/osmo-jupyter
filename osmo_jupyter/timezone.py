@@ -18,6 +18,7 @@ def utc_series_to_local(pandas_timeseries):
     Returns:
         Pandas timeseries of timezone-naive datetimes corresponding to Osmo HQ local time
     '''
+    # Input may have been a series of strings or a series of datetimes
     definitely_a_timeseries = pd.to_datetime(pandas_timeseries)
 
     localized_timeseries = definitely_a_timeseries.dt.tz_localize('UTC')
