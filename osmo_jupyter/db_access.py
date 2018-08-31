@@ -1,7 +1,6 @@
 """ Functions to access node data from the Osmo database
 """
 import pandas as pd
-import pytz
 import sqlalchemy
 
 import textwrap
