@@ -17,6 +17,13 @@ def test_to_aware(input_datetime, expected_iso_output):
     assert output_datetime.isoformat() == expected_iso_output
 
 
+def test_to_aware_blows_up_if_non_iso_format_provided():
+    time_string = '01/01/2018 12:00'
+
+    with pytest.raises(ValueError):
+        module.to_aware(time_string)
+
+
 def test_to_aware_blows_up_if_timezone_provided():
     time_string = '2018-01-01 12:00Z'
     with pytest.raises(ValueError):

@@ -1,5 +1,4 @@
-import datetime
-
+import dateutil
 import pytz
 import pandas as pd
 
@@ -18,7 +17,7 @@ def to_aware(local_time):
     Returns:
         timezone-aware datetime object
     """
-    time = datetime.datetime.fromisoformat(local_time)
+    time = dateutil.parser.isoparse(local_time)
     return OSMO_HQ_TIMEZONE.localize(time)
 
 
