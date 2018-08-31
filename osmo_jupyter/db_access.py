@@ -95,8 +95,8 @@ def _get_calculation_details_query(
         SQL query that can be used to get the desired data
     """
 
-    start_timezone_aware_string = _to_utc_string(start_time_local)
-    end_timezone_aware_string = _to_utc_string(end_time_local)
+    start_utc_string = _to_utc_string(start_time_local)
+    end_utc_string = _to_utc_string(end_time_local)
     downsample_clause = (
         f'AND MOD(calculation_detail.reading_id, {downsample_factor}) = 0'
         if downsample_factor is not None
@@ -119,7 +119,7 @@ def _get_calculation_details_query(
         SELECT {select_clause}
         FROM ({source_table})
         WHERE calculation_detail.node_id IN {nodes_selector}
-        AND calculation_detail.create_date BETWEEN "{start_timezone_aware_string}" AND "{end_timezone_aware_string}"
+        AND calculation_detail.create_date BETWEEN "{start_utc_string}" AND "{end_utc_string}"
         {downsample_clause}
         ORDER BY calculation_detail.create_date
     '''
