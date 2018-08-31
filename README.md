@@ -25,23 +25,27 @@ Examples of code that should probably *not* live here:
 
 ## Using this library
 
-Before you can consume the library, you'll need to [set up an SSH key with GitHub](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/). This lets your computer access the private Git repository and you may have already done this.
+1. Before you can consume the library, you'll need to [set up an SSH key with GitHub](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/). This lets your computer access the private Git repository and you may have already done this.
 
-Then, add a line near the top of your notebook:
-`!pip install https://github.com/osmosystems/osmo-jupyter.git@[CHANGESET]`
-Where [CHANGESET] is a changeset ID. Grab the latest changeset ID by [visiting GitHub](https://github.com/OsmoSystems/osmo-jupyter) and searching for "latest commit". Copy that value.
+2. Add these lines near the top of your notebook:
+
+`!pip install --quiet git+ssh://git@github.com/osmosystems/osmo-jupyter.git@[CHANGESET]`
+
+`import osmo_jupyter`
+
+Replace [CHANGESET] with a changeset ID. Grab the latest changeset ID by [visiting GitHub](https://github.com/OsmoSystems/osmo-jupyter/commits/master). Click the uppermost "📋" button to copy the ID of the latest commit.
 
 **note:** This will be the exact library version that your notebook depends on.
 
 
-Jupyter should be able to tab-complete all of our public functions once you run `import osmo_jupyter` and then type `osmo_jupyter.` and `<tab>`.
+3. Once you run the cell you created above, Jupyter will be able to tab-complete all of our public functions: type `osmo_jupyter.` and `<tab>`.
 
 
 ## Contributing
 
 ### Feature requests
 
-The software team takes feature requests and pull requests! Just talk to one of us and/or file a JIRA ticket in the Feature Requests epic.
+The software team takes feature requests and pull requests! Just talk to one of us and/or file a JIRA ticket in the [Feature Requests epic](https://osmobot.atlassian.net/browse/SOFT-306). Extra points for example code and clear explanations of what you're trying to accomplish.
 
 ### High Bar
 
@@ -51,7 +55,7 @@ The "bar" for including code in this library is higher than that seen in our jup
 
 ### Code Style
 
-This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/document/d/1W1Ipug8IACL4PfZAq5bQKlmfcJGmHGKNH95_FwJcjaI).
+This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/document/d/1W1Ipug8IACL4PfZAq5bQKlmfcJGmHGKNH95_FwJcjaI) as applies to Python code.
 
 
 ### Installing for development
