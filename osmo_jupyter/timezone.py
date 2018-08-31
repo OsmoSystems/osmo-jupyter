@@ -9,7 +9,7 @@ def utc_series_to_local(pandas_timeseries):
     ''' Convert a Pandas series of UTC times to local time
     Useful for converting node data timestamps for use in local-time notebooks.
 
-    eg. 
+    eg.
     >>> raw_node_data = osmo_jupyter.db_access.load_calculation_details(...)
     >>> raw_node_data['create_date'] = utc_series_to_local(raw_node_data['create_date'])
 
