@@ -1,6 +1,8 @@
 """ Functions to access node data from the Osmo database
 """
+import dateutil
 import pandas as pd
+import pytz
 import sqlalchemy
 
 import textwrap
@@ -10,7 +12,7 @@ from osmo_jupyter import timezone
 
 def configure_database():
     """ Configure a database object for read-only technician access to Osmo data.
-    Requries user input to collect database password.
+    Requires user input to collect database password.
 
     Returns:
         sqlalchemy Engine object which can be used with other functions in this module.
@@ -39,6 +41,37 @@ def configure_database():
     return db_engine
 
 
+SQL_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'  # Time format favored by mysql
+
+
+def _to_aware(local_time):
+    """ get a timezone-aware object from local time string(s).
+
+    Args:
+        local_time: string of local time in any valid non-timezone-aware ISO format
+            Time should be in Osmo HQ local time.
+            eg. ('2012-01-01 12:00:00', '2012-01-01 12:00', '2012-01-01')
+    Returns:
+        timezone-aware datetime object
+    """
+    time = dateutil.parser.isoparse(local_time)
+    return timezone.OSMO_HQ_TIMEZONE.localize(time)
+
+
+def _to_utc_string(local_time):
+    ''' Convert a local time string to a string in UTC that can be passed to the database
+
+    Args:
+        local_time: string of local time in any valid non-timezone-aware ISO format
+            Time should be in Osmo HQ local time.
+            eg. ('2012-01-01 12:00:00', '2012-01-01 12:00', '2012-01-01')
+    Returns:
+        UTC time string that can be used, for instance, for database queries
+    '''
+    aware_datetime = _to_aware(local_time)
+    return aware_datetime.astimezone(pytz.utc).strftime(SQL_TIME_FORMAT)
+
+
 def _get_calculation_details_query(
     node_ids,
     start_time_local,
@@ -60,8 +93,8 @@ def _get_calculation_details_query(
         SQL query that can be used to get the desired data
     """
 
-    start_timezone_aware_string = timezone.to_utc_string(start_time_local)
-    end_timezone_aware_string = timezone.to_utc_string(end_time_local)
+    start_timezone_aware_string = _to_utc_string(start_time_local)
+    end_timezone_aware_string = _to_utc_string(end_time_local)
     downsample_clause = (
         f'AND MOD(calculation_detail.reading_id, {downsample_factor}) = 0'
         if downsample_factor is not None
@@ -113,7 +146,7 @@ def load_calculation_details(
         a pandas.DataFrame of data from the node IDs provided.
     Raises:
         sqlalchemy.OperationalError: database connection is not working
-            This is often due to wrong password or network disconnect.
+            This is often due to a network disconnect.
             In this case, a good debugging step is to reconnect to the database.
     """
 

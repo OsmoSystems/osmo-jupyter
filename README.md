@@ -9,7 +9,7 @@ Here's the basic heuristic for what should live in this library vs. in a noteboo
 * Is this function reusable across many experiments/activities?
 * Will that still be true for the foreseeable future?
 * Is it fairly Osmo-specific?
-**yes** = probably it should live here. **no** = probably not.
+**yes to all** = probably it should live here. **no to any** = probably not.
 
 Examples of code that should live here:
 
@@ -31,7 +31,17 @@ Then, add a line near the top of your notebook:
 `!pip install https://github.com/osmosystems/osmo-jupyter.git@[CHANGESET]`
 Where [CHANGESET] is a changeset ID. Grab the latest changeset ID by [visiting GitHub](https://github.com/OsmoSystems/osmo-jupyter) and searching for "latest commit". Copy that value.
 
+**note:** This will be the exact library version that your notebook depends on.
+
+## Don't go there!
+
+Do not consume functions that have names beginning with an underscore (eg. `osmo_jupyter.db_access._to_aware()`). These functions are private and not part of the library's stable interface.
+
 ## Contributing
+
+### Feature requests
+
+The software team takes feature requests and pull requests! Just talk to one of us and/or file a JIRA ticket in the Feature Requests epic.
 
 ### High Bar
 

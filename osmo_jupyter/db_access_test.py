@@ -1,3 +1,4 @@
+import datetime
 import osmo_jupyter.db_access as module
 import pytest
 import textwrap
@@ -13,7 +14,7 @@ end_utc = '2018-09-09 20:00:00'
     [
         ('base case', False, None, 'SELECT', True),
         ('SELECT clause with both options on', True, 10, 'SELECT calculation_detail.*, reading.hub_id', True),
-        ('MOD clause for downsample option', True, 10, 'AND MOD(calculation_detail.reading_id, 10) = 0', True),
+        ('MOD clause present for downsample option', True, 10, 'AND MOD(calculation_detail.reading_id, 10) = 0', True),
         ('MOD clause not present without downsample option', True, None, 'MOD', False),
         ('no JOIN when not including hub ID', False, 10, 'JOIN', False),
     ]
@@ -48,3 +49,32 @@ def test_get_calculation_details_query_basic_case():
 
         ORDER BY calculation_detail.create_date
     ''')
+
+
+@pytest.mark.parametrize('input_datetime, expected_iso_output', [
+    ('2018-01-01 12:00', '2018-01-01T12:00:00-08:00'),
+    ('2018-06-01 12:00', '2018-06-01T12:00:00-07:00'),
+])
+def test_to_aware(input_datetime, expected_iso_output):
+    output_datetime = module._to_aware(input_datetime)
+
+    assert isinstance(output_datetime, datetime.datetime)
+    assert output_datetime.isoformat() == expected_iso_output
+
+
+def test_to_aware_blows_up_if_non_iso_format_provided():
+    time_string = '01/01/2018 12:00'
+
+    with pytest.raises(ValueError):
+        module._to_aware(time_string)
+
+
+def test_to_aware_blows_up_if_timezone_provided():
+    time_string = '2018-01-01 12:00Z'
+    with pytest.raises(ValueError):
+        module._to_aware(time_string)
+
+
+def test_to_utc_string():
+    time_string = '2018-01-01 01:11'
+    assert module._to_utc_string(time_string) == '2018-01-01 09:11:00'

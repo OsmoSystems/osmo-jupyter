@@ -1,43 +1,17 @@
-import dateutil
 import pytz
 import pandas as pd
 
 
 OSMO_HQ_TIMEZONE = pytz.timezone('US/Pacific')
-SQL_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'  # Time format favored by mysql
-
-
-def to_aware(local_time):
-    """ get a timezone-aware object from local time string(s).
-
-    Args:
-        local_time: string of local time in any valid non-timezone-aware ISO format
-            Time should be in Osmo HQ local time.
-            eg. ('2012-01-01 12:00:00', '2012-01-01 12:00', '2012-01-01')
-    Returns:
-        timezone-aware datetime object
-    """
-    time = dateutil.parser.isoparse(local_time)
-    return OSMO_HQ_TIMEZONE.localize(time)
-
-
-def to_utc_string(local_time):
-    ''' Convert a local time string to a string in UTC that can be passed to the database
-
-    Args:
-        local_time: string of local time in any valid non-timezone-aware ISO format
-            Time should be in Osmo HQ local time.
-            eg. ('2012-01-01 12:00:00', '2012-01-01 12:00', '2012-01-01')
-    Returns:
-        UTC time string that can be used, for instance, for database queries
-    '''
-    aware_datetime = to_aware(local_time)
-    return aware_datetime.astimezone(pytz.utc).strftime(SQL_TIME_FORMAT)
 
 
 def utc_series_to_local(pandas_timeseries):
     ''' Convert a Pandas series of UTC times to local time
     Useful for converting node data timestamps for use in local-time notebooks.
+
+    eg. 
+    >>> raw_node_data = osmo_jupyter.db_access.load_calculation_details(...)
+    >>> raw_node_data['create_date'] = utc_series_to_local(raw_node_data['create_date'])
 
     Args:
         pandas_timeseries: pandas Series of timezone-naive datetimes or strings in UTC
