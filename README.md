@@ -1,13 +1,15 @@
 # Jupyter Notebook Tools
 This is a set of tools that is designed to facilitate science in the context of Osmo Systems.
-The code herein generally expects to be run in the context of a jupyter notebook. TODO (PR feedback plz): eventually it might be used elsewhere. is it OK to put it all here for now and potentially have to refactor/move it later?
+The code herein generally expects to be run in the context of a jupyter notebook.
 
 ## What lives here
 
 Here's the basic heuristic for what should live in this library vs. in a notebook.
 
-**Is this function reusable across many experiments/activities, both now and for the foreseeable future, and is it fairly Osmo-specific?**
-yes = probably it should live here. no = probably not.
+* Is this function reusable across many experiments/activities?
+* Will that still be true for the foreseeable future?
+* Is it fairly Osmo-specific?
+**yes** = probably it should live here. **no** = probably not.
 
 Examples of code that should live here:
 
@@ -45,12 +47,12 @@ This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/docume
 ### Installing for development
 
 1. Check out the repository and switch to its directory
-2. `pip install --editable .`
+2. Install the package "editable" so that you can edit it and consume the edited version: `pip install --editable .`
 
 
 ### Running tests
 
-1. `pip install pytest pytest-watch flake8`
+1. `pip install -r test_requirements.txt`
  to watch file changes and auto-run tests during development, call `pytest-watch`
 2. to run unit tests, run `pytest`
 3. to run the linter, use `flake8`
