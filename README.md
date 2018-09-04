@@ -4,12 +4,12 @@ The code herein generally expects to be run in the context of a jupyter notebook
 
 ## What lives here
 
-Here's the basic heuristic for what should live in this library vs. in a notebook.
+Here's the basic heuristic for what should live in this library vs. in a notebook. **yes to all** = probably it should live here. **no to any** = probably not.
 
 * Is this function reusable across many experiments/activities?
 * Will that still be true for the foreseeable future?
 * Is it fairly Osmo-specific?
-**yes to all** = probably it should live here. **no to any** = probably not.
+
 
 Examples of code that should live here:
 
