@@ -25,7 +25,7 @@ Examples of code that should probably *not* live here:
 
 ## Using this library
 
-1. Before you can consume the library, you'll need to [set up an SSH key with GitHub](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/). This lets your computer access the private Git repository and you may have already done this.
+1. Before you can consume the library, you'll need to [set up an SSH key with GitHub](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/) and with your computer's SSH manager. When setting up your key, leave the passphrase blank. This lets your computer access the private Git repository via SSH and you may have already done this.
 
 2. Add these lines near the top of your notebook:
 
