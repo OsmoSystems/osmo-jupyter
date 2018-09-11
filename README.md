@@ -33,7 +33,7 @@ Examples of code that should probably *not* live here:
 
 `import osmo_jupyter`
 
-Replace [CHANGESET] with a changeset ID. Grab the latest changeset ID by [visiting GitHub](https://github.com/OsmoSystems/osmo-jupyter/commits/master). Click the uppermost "📋" button to copy the ID of the latest commit.
+Replace [CHANGESET] with a changeset ID. Grab the latest changeset ID by [visiting GitHub](https://github.com/OsmoSystems/osmo-jupyter/commits/master). Once there, click the uppermost clipboard icon (📋) button to copy the ID of the latest commit.
 
 **note:** This will be the exact library version that your notebook depends on.
 
