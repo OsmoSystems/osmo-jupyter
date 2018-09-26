@@ -213,7 +213,7 @@ def get_layout_with_annotations(
         if not colors_on_separate_axes:
             return y_axis_title
 
-        # "blue" axis uses a line break to not overlap unnecessarily with green
+        # "blue" axis uses a line break to not overlap with green
         line_break = AXIS_TITLE_BUFFERS_BY_COLOR[color]
 
         # If colors are on separate axes and a Y axis title is provided, use it as a suffix
