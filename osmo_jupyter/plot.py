@@ -87,7 +87,7 @@ def get_rgb_scatters(
     >>> go.FigureWidget(rgb_scatters(rgb_df, x_column='x_axis'))
     [result is a plot with your three channels]
 
-    Params:
+    Args:
         rgb_df: pandas.DataFrame instance with 'r', 'g', and 'b' columns, and a column for the X axis value
         x_column: Optional, name of the column in rgb_df to use for the X axis values. if None, we'll use the index
         colors_on_separate_axes: Optional, if True, will plot each color series on a separate axis
@@ -150,7 +150,7 @@ def get_rgb_columns(df, pattern, other_columns_to_include=None):
     >>> get_rgb_columns(df, '*_mean', ['Timestamp'])
     <DataFrame with columns ['r', 'g', 'b', 'Timestamp'] >
 
-    Params:
+    Args:
         df: pandas.DataFrame of source data
         pattern: string with an asterisk ("*") in place of the color letter, eg. '*_mean'
         other_columns_to_include: list of column names to be included
@@ -184,7 +184,7 @@ def get_layout_with_annotations(
     * If colors are on separate axes, they will be on the next consecutive axes, otherwise they will be on yaxis 2
     * You can use additional axes for plotting other things by passing in additional params
 
-    Params:
+    Args:
         x_axis_title: title to use for X axis, default 'Time'
         y_axis_title: title to use for Y axis where colors are plotted. Required if colors_on_separate_axes is False.
             If colors_on_separate_axes is True, it will be used as a suffix for the y axis titles "r", "g", and "b"
