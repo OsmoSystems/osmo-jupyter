@@ -274,7 +274,7 @@ def get_layout_with_annotations(
 
     return go.Layout(
         xaxis={'title': 'Time'},
-        annotations=event_annotations + dummy_annotation,
+        annotations=event_annotations if event_annotations else dummy_annotation,
         **primary_y_axis,
         **color_y_axes,
         **additional_layout_kwargs
