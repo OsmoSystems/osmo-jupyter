@@ -24,3 +24,9 @@ def by_rgb_sum(rgb_df):
     '''
     normalization_series = rgb_df['r'] + rgb_df['g'] + rgb_df['b']
     return rgb_df.apply(lambda column: column / normalization_series, axis='rows')
+
+
+def r_over_b(rgb_df):
+    r_over_b = rgb_df['r'] / rgb_df['b']
+    r_over_b.name = 'r/b'
+    return r_over_b
