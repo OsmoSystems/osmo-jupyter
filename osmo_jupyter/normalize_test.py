@@ -14,7 +14,7 @@ def test_normalize_to_max():
     })
 
     actual = module.to_max(dataframe)
-    assert pd.testing.assert_frame_equal(actual, expected)
+    pd.testing.assert_frame_equal(actual, expected)
 
 
 def test_normalize_by_rgb_sum():
@@ -29,5 +29,5 @@ def test_normalize_by_rgb_sum():
         'b': [8/14, 10/18, 9/19],
     })
 
-    actual = module.to_max(dataframe)
-    assert pd.testing.assert_frame_equal(actual, expected)
+    actual = module.by_rgb_sum(dataframe)
+    pd.testing.assert_frame_equal(actual, expected)
