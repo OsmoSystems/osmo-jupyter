@@ -45,7 +45,9 @@ def get_scatter(
             and we'll use its name
         y_axis: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for RGB values.
         marker_overrides: Optional, dict of go.Scatter.Marker attributes to override marker style.
+            Valid options are documented at https://plot.ly/python/reference/#scatter-marker
         scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.
+            Valid options are documented at https://plot.ly/python/reference/#scatter
     '''
     x_column_values = x_values or y_values.index
     name = dataset_name or y_values.name
@@ -90,7 +92,8 @@ def get_rgb_scatters(
         x_column: Optional, name of the column in rgb_df to use for the X axis values. if None, we'll use the index
         colors_on_separate_axes: Optional, if True, will plot each color series on a separate axis
         dataset_name: Optional, string to use in legend labels
-        marker_overrides: Optional, dict of additional arguments
+        marker_overrides: Optional, dict of additional arguments for go.Marker.
+            Valid options are documented at https://plot.ly/python/reference/#scatter-marker
         colors_to_include: Optional list of color letters to include - provide if you don't want all the colors.
             Should be a subset of COLOR_CHANNELS.
     Returns:
@@ -152,7 +155,6 @@ def get_rgb_columns(df, pattern, other_columns_to_include=None):
         df: pandas.DataFrame of source data
         pattern: string with an asterisk ("*") in place of the color letter, eg. '*_mean'
         other_columns_to_include: list of column names to be included
-
     '''
     other_columns_to_include = other_columns_to_include or []
 
@@ -191,6 +193,7 @@ def get_layout_with_annotations(
         events: dictionary of {x_axis_value: "annotation"} which will be used to annotate the chart
         additional_layout_kwargs: Any additional arguments will be passed to go.Layout. These can, for instance,
             be the result of _axis_kwargs() to add support for graphing more items.
+            Valid options are documented at https://plot.ly/python/reference/#layout
     '''
     events = events or {}
 
