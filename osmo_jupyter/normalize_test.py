@@ -1,6 +1,6 @@
 import pandas as pd
 
-import .normalize as module
+import osmo_jupyter.normalize as module
 
 
 def test_normalize_to_max():
