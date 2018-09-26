@@ -17,11 +17,6 @@ AXIS_SIDES_BY_COLOR = {
     'g': 'right',
     'b': 'right',
 }
-AXIS_TITLE_BUFFERS_BY_COLOR = {
-    'r': '',
-    'g': '',
-    'b': '<br>'  # As the second right-hand axis, give b a buffer
-}
 
 COLORS_BY_LETTER = {
     'r': 'red',
@@ -213,8 +208,9 @@ def get_layout_with_annotations(
         if not colors_on_separate_axes:
             return y_axis_title
 
-        # "blue" axis uses a line break to not overlap with green
-        line_break = AXIS_TITLE_BUFFERS_BY_COLOR[color]
+        # blue and green are both on the right side, and applying a line break to blue lets them both be there
+        # without overlapping
+        line_break = '<br>' if color is 'b' else ''
 
         # If colors are on separate axes and a Y axis title is provided, use it as a suffix
         suffix = f' {y_axis_title}' if y_axis_title else ''
