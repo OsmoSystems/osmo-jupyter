@@ -12,6 +12,16 @@ AXES_BY_COLOR = {
 ANNOTATION_AXIS = 1
 SHARED_COLOR_AXIS = 2
 
+AXIS_SIDES_BY_COLOR = {
+    'r': 'left',
+    'g': 'right',
+    'b': 'right',
+}
+AXIS_TITLE_BUFFERS_BY_COLOR = {
+    'r': '',
+    'g': '',
+    'b': '<br>'  # As the second right-hand axis, give b a buffer
+}
 
 COLORS_BY_LETTER = {
     'r': 'red',
@@ -189,7 +199,7 @@ def get_layout_with_annotations(
         y_axis_title: title to use for Y axis where colors are plotted. Required if colors_on_separate_axes is False.
             If colors_on_separate_axes is True, it will be used as a suffix for the y axis titles "r", "g", and "b"
         colors_on_separate_axes: whether colors (r,g and b) should be displayed on separate Y axes
-        events: dictionary of {x_axis_value: "annotation"} which will be used to annotate the chart
+        events: dictionary of {"annotation": x_axis_value} which will be used to annotate the chart
         additional_layout_kwargs: Any additional arguments will be passed to go.Layout. These can, for instance,
             be the result of _axis_kwargs() to add support for graphing more items.
             Valid options are documented at https://plot.ly/python/reference/#layout
@@ -204,28 +214,29 @@ def get_layout_with_annotations(
             return y_axis_title
 
         # "blue" axis uses a line break to not overlap unnecessarily with green
-        line_break = '<br>' if color == 'b' else ''
+        line_break = AXIS_TITLE_BUFFERS_BY_COLOR[color]
 
         # If colors are on separate axes and a Y axis title is provided, use it as a suffix
         suffix = f' {y_axis_title}' if y_axis_title else ''
         return f'{line_break}{color}{suffix}'
 
-    color_y_axes = _add_dicts(
+    colors_on_separate_axes_kwargs = _add_dicts(
         _axis_kwargs(
             axis_number=AXES_BY_COLOR[color],
             color=COLORS_BY_LETTER[color],
             title=get_color_y_axis_title(color),
             overlaying='y',
-            side='left' if AXES_BY_COLOR[color] <= 2 else 'right',
-            # visible=True,  # TODO AXES_BY_COLOR[color] <= 3,
+            side=AXIS_SIDES_BY_COLOR[color],
         )
         for color in COLOR_CHANNELS
-    ) if colors_on_separate_axes else _axis_kwargs(
+    )
+    colors_on_same_axes_kwargs = _axis_kwargs(
         axis_number=SHARED_COLOR_AXIS,
         title=y_axis_title,
         overlaying='y',
         side='left',
     )
+    color_y_axes = colors_on_separate_axes_kwargs if colors_on_separate_axes else colors_on_same_axes_kwargs
 
     # Prepare annotations & annotation axis
 
@@ -263,7 +274,7 @@ def get_layout_with_annotations(
 
     return go.Layout(
         xaxis={'title': 'Time'},
-        annotations=dummy_annotation + event_annotations,
+        annotations=event_annotations + dummy_annotation,
         **primary_y_axis,
         **color_y_axes,
         **additional_layout_kwargs
