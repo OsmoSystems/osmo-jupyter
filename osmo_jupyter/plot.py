@@ -114,7 +114,6 @@ def get_rgb_scatters(
                 **marker_overrides
             },
             opacity=0.8,
-            # yaxis='y3',
             yaxis=f'y{AXES_BY_COLOR[color]}' if colors_on_separate_axes else f'y{SHARED_COLOR_AXIS}'
         )
         for color in colors_to_include
