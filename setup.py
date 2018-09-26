@@ -14,7 +14,7 @@ setup(
         'numpy',
         'pandas',
         'petl',
-        'plotly >= 2, < 3',
+        'plotly >= 3, < 4',
         'pymysql',
         'requests',
         'scipy',
