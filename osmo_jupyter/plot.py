@@ -176,7 +176,7 @@ def get_rgb_columns(df, pattern, other_columns_to_include=None):
 
 def get_layout_with_annotations(
     x_axis_title='Time',
-    y_axis_title=None,
+    y_axis_title='',
     colors_on_separate_axes=False,
     events=None,
     **additional_layout_kwargs
@@ -199,9 +199,6 @@ def get_layout_with_annotations(
             Valid options are documented at https://plot.ly/python/reference/#layout
     '''
     events = events or {}
-
-    if not colors_on_separate_axes and not y_axis_title:
-        raise ValueError('If colors_on_separate_axes is False you must provide a y_axis_title')
 
     def get_color_y_axis_title(color):
         if not colors_on_separate_axes:
