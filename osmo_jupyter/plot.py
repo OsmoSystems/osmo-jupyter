@@ -82,6 +82,7 @@ def get_rgb_scatters(
     colors_on_separate_axes=False,
     dataset_name=None,
     marker_overrides=None,
+    scatter_overrides=None,
     colors_to_include=COLOR_CHANNELS,
 ):
     ''' get go.Scatter instances for each 'rgb' color in the input DataFrame
@@ -100,6 +101,8 @@ def get_rgb_scatters(
         dataset_name: Optional, string to use in legend labels
         marker_overrides: Optional, dict of additional arguments for go.Marker.
             Valid options are documented at https://plot.ly/python/reference/#scatter-marker
+        scatter_overrides: Optional, dict of additional_arguments for go.Scatter.
+            Valid options are documented at https://plot.ly/python/reference/#scatter
         colors_to_include: Optional list of color letters to include - provide if you don't want all the colors.
             Should be a subset of COLOR_CHANNELS.
     Returns:
@@ -118,7 +121,8 @@ def get_rgb_scatters(
                 'size': 5,
                 **marker_overrides
             },
-            y_axis_number=AXES_BY_COLOR[color] if colors_on_separate_axes else SHARED_COLOR_AXIS
+            y_axis_number=AXES_BY_COLOR[color] if colors_on_separate_axes else SHARED_COLOR_AXIS,
+            scatter_overrides=scatter_overrides,
         )
         for color in colors_to_include
     ]
@@ -267,7 +271,7 @@ def get_layout_with_annotations(
 
     # Combine these in dictionary form before passing them in to go.Layout so that conflicting keys can be resolved
     layout_kwargs = {
-        'xaxis': {'title': 'Time'},
+        'xaxis': {'title': x_axis_title},
         'annotations': event_annotations + dummy_annotation,
         **primary_y_axis,
         **color_y_axes,
