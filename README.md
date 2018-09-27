@@ -40,6 +40,7 @@ Replace [CHANGESET] with a changeset ID. Grab the latest changeset ID by [visiti
 
 3. Once you run the cell you created above, Jupyter will be able to tab-complete all of our public functions: type `osmo_jupyter.` and `<tab>`.
 
+4. Some usage examples are in the Google Drive at [Technical_Osmosystems/Tools/Jupyter Snippets](https://drive.google.com/drive/folders/1A-Rlb-VYTwQ6Tl3sm12eR-cnmCHbj6UP)
 
 ## Contributing
 
