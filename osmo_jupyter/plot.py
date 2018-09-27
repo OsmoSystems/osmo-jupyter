@@ -271,7 +271,7 @@ def get_layout_with_annotations(
 
     # Combine these in dictionary form before passing them in to go.Layout so that conflicting keys can be resolved
     layout_kwargs = {
-        'xaxis': {'title': 'Time'},
+        'xaxis': {'title': x_axis_title},
         'annotations': event_annotations + dummy_annotation,
         **primary_y_axis,
         **color_y_axes,
