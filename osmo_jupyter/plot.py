@@ -122,7 +122,7 @@ def get_rgb_scatters(
                 **marker_overrides
             },
             y_axis_number=AXES_BY_COLOR[color] if colors_on_separate_axes else SHARED_COLOR_AXIS,
-            **scatter_overrides
+            scatter_overrides=scatter_overrides,
         )
         for color in colors_to_include
     ]
