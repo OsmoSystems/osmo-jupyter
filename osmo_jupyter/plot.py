@@ -48,7 +48,8 @@ def get_scatter(
             we'll use the index from it
         dataset_name: Optional, name to put in the chart legend. If not provided, y_values is expected to be a Series
             and we'll use its name
-        y_axis_number: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for RGB values.
+        y_axis_number: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for
+            RGB values.
         marker_overrides: Optional, dict of go.Scatter.Marker attributes to override marker style.
             Valid options are documented at https://plot.ly/python/reference/#scatter-marker
         scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.
