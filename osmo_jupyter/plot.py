@@ -36,7 +36,7 @@ def get_scatter(
     y_values,
     x_values=None,
     dataset_name=None,
-    y_axis=1,
+    y_axis_number=1,
     marker_overrides=None,
     scatter_overrides=None,
 ):
@@ -48,13 +48,13 @@ def get_scatter(
             we'll use the index from it
         dataset_name: Optional, name to put in the chart legend. If not provided, y_values is expected to be a Series
             and we'll use its name
-        y_axis: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for RGB values.
+        y_axis_number: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for RGB values.
         marker_overrides: Optional, dict of go.Scatter.Marker attributes to override marker style.
             Valid options are documented at https://plot.ly/python/reference/#scatter-marker
         scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.
             Valid options are documented at https://plot.ly/python/reference/#scatter
     '''
-    x_column_values = x_values or y_values.index
+    x_column_values = x_values if x_values is not None else y_values.index
     name = dataset_name or y_values.name
     marker_overrides = marker_overrides or {}
     scatter_overrides = scatter_overrides or {}
@@ -70,7 +70,7 @@ def get_scatter(
             **marker_overrides
         },
         opacity=0.8,
-        yaxis=f'y{y_axis}',
+        yaxis=f'y{y_axis_number}',
         **scatter_overrides
     )
 
@@ -107,19 +107,17 @@ def get_rgb_scatters(
     marker_overrides = marker_overrides or {}
     x_column_values = rgb_df[x_column] if x_column else rgb_df.index
     return [
-        go.Scatter(
-            x=x_column_values,
-            y=list(rgb_df[color]),
-            name=f'{dataset_name} - {color}' if dataset_name is not None else color,
-            mode='markers',
-            marker={
+        get_scatter(
+            x_values=x_column_values,
+            y_values=rgb_df[color],
+            dataset_name=f'{dataset_name} - {color}' if dataset_name is not None else color,
+            marker_overrides={
                 'color': COLORS_BY_LETTER[color],
                 'symbol': 'circle-open',
                 'size': 5,
                 **marker_overrides
             },
-            opacity=0.8,
-            yaxis=f'y{AXES_BY_COLOR[color]}' if colors_on_separate_axes else f'y{SHARED_COLOR_AXIS}'
+            y_axis_number=AXES_BY_COLOR[color] if colors_on_separate_axes else SHARED_COLOR_AXIS
         )
         for color in colors_to_include
     ]
@@ -242,9 +240,11 @@ def get_layout_with_annotations(
         'yaxis': {
             'title': '',
             'visible': False,
+            # 'overlaying': 'y',
         }
     }
-    # We need to have at least 1 annotation on axis 1 or else plotted values will disappear
+    # We need to have at least 1 visible annotation on axis 1 or else plotted values will disappear
+    # Note that this annotation is "visible" but doesn't have text or an arrow so it will not really be visible
     # https://github.com/plotly/plotly.py/issues/1200
     dummy_annotation = [{
         'yref': 'y',
@@ -268,10 +268,12 @@ def get_layout_with_annotations(
         for title, x_value in events.items()
     ]
 
-    return go.Layout(
-        xaxis={'title': 'Time'},
-        annotations=event_annotations if event_annotations else dummy_annotation,
+    # Combine these in dictionary form before passing them in to go.Layout so that conflicting keys can be resolved
+    layout_kwargs = {
+        'xaxis': {'title': 'Time'},
+        'annotations': event_annotations + dummy_annotation,
         **primary_y_axis,
         **color_y_axes,
         **additional_layout_kwargs
-    )
+    }
+    return go.Layout(**layout_kwargs)
