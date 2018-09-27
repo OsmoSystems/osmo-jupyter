@@ -240,7 +240,6 @@ def get_layout_with_annotations(
         'yaxis': {
             'title': '',
             'visible': False,
-            # 'overlaying': 'y',
         }
     }
     # We need to have at least 1 visible annotation on axis 1 or else plotted values will disappear
