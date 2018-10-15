@@ -60,7 +60,7 @@ def get_scatter(
     marker_overrides = marker_overrides or {}
     scatter_overrides = scatter_overrides or {}
 
-    return go.Scatter(
+    scatter_kwargs = dict(
         x=x_column_values,
         y=y_values,
         name=name,
@@ -72,7 +72,10 @@ def get_scatter(
         },
         opacity=0.8,
         yaxis=f'y{y_axis_number}',
-        **scatter_overrides
+    )
+    scatter_kwargs.update(scatter_overrides)
+    return go.Scatter(
+        **scatter_kwargs
     )
 
 
