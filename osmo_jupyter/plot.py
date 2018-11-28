@@ -204,7 +204,7 @@ def add_rgb_columns(df_to_modify, rgb_df, pattern):
     eg.
     >>> main_df = pd.DataFrame(..., columns=['Timestamp', ...])
     >>> rgb_df = pd.DataFrame(..., columns=['r', 'g', 'b'])
-    >>> get_rgb_columns(main_df, rgb_df, '*_mean')
+    >>> add_rgb_columns(main_df, rgb_df, '*_mean')
     >>> main_df
     <DataFrame with columns ['Timestamp', ..., 'r_mean', 'g_mean', 'b_mean'] >
 
