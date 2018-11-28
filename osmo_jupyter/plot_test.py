@@ -34,7 +34,7 @@ class TestGetRgbColumns:
 
 
 class TestAddRgbColumns:
-    rgb_df = pd.DataFrame({
+    rgb_df_to_add = pd.DataFrame({
         'r': [1, 2, 3],
         'g': [4, 5, 6],
         'b': [7, 8, 9],
@@ -44,13 +44,13 @@ class TestAddRgbColumns:
         orig_df = pd.DataFrame({
             'other': [10, 11, 12]
         })
-        module.add_rgb_columns(orig_df, self.rgb_df, '*_abcd')
+        module.add_rgb_columns(orig_df, self.rgb_df_to_add, '*_abcd')
 
         expected = pd.DataFrame({
             'other': orig_df['other'],
-            'r_abcd': self.rgb_df['r'],
-            'g_abcd': self.rgb_df['g'],
-            'b_abcd': self.rgb_df['b'],
+            'r_abcd': self.rgb_df_to_add['r'],
+            'g_abcd': self.rgb_df_to_add['g'],
+            'b_abcd': self.rgb_df_to_add['b'],
         })
 
         pd.testing.assert_frame_equal(orig_df, expected)
@@ -60,6 +60,6 @@ class TestAddRgbColumns:
             'other': [10, 11, 12]
         })
 
-        rgb_df_with_missing_color = self.rgb_df[['r', 'g']]
+        rgb_df_with_missing_color = self.rgb_df_to_add[['r', 'g']]
         with pytest.raises(Exception):
             module.add_rgb_columns(orig_df, rgb_df_with_missing_color, '*_abcd')

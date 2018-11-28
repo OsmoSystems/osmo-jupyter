@@ -203,14 +203,14 @@ def add_rgb_columns(df_to_modify, rgb_df, pattern):
 
     eg.
     >>> main_df = pd.DataFrame(..., columns=['Timestamp', ...])
-    >>> rgb_df = pd.DataFrame(..., columns=['r', 'g', 'b'])
-    >>> add_rgb_columns(main_df, rgb_df, '*_mean')
+    >>> rgb_means_df = pd.DataFrame(..., columns=['r', 'g', 'b'])
+    >>> add_rgb_columns(main_df, rgb_means_df, '*_mean')
     >>> main_df
     <DataFrame with columns ['Timestamp', ..., 'r_mean', 'g_mean', 'b_mean'] >
 
     Args:
         df_to_modify: pandas.DataFrame to have columns added
-        rgb_df: pandas.DataFrame with columns ['r', 'g', 'b'] to be
+        rgb_df: pandas.DataFrame with columns ['r', 'g', 'b'] to be added to df_to_modify
         pattern: string with an asterisk ("*") in place of the color letter, eg. '*_mean'
     Returns:
         None. df_to_modify will be altered in place.
