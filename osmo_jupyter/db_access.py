@@ -162,14 +162,13 @@ def load_calculation_details(
     return calculation_details
 
 
-def get_node_temperature_data(start_time_local, end_time_local, node_ids, downsample_factor=1):
+def get_node_temperature_data(start_time_local, end_time_local, node_id, downsample_factor=1):
     ''' Load node temperature data only from the calculation_details table
 
     Args:
         start_time_local: string of ISO-formatted start datetime in local time, inclusive
         end_time_local: string of ISO-formatted end datetime in local time, inclusive
-        node_ids: iterable of node IDs to get data for
-            Default 20038 as it is the node set up in the BBB.
+        node_id: node ID to get data from
         downsample_factor: if this is a number, it will be used to select fewer rows.
             You should get *roughly* n / downsample_factor samples.
     Returns:
@@ -180,7 +179,7 @@ def get_node_temperature_data(start_time_local, end_time_local, node_ids, downsa
 
     raw_node_data = load_calculation_details(
         db_engine,
-        node_ids,
+        [node_id],
         start_time_local,
         end_time_local,
         downsample_factor

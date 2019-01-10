@@ -6,7 +6,6 @@ import pandas as pd
 import pytest
 
 import osmo_jupyter.db_access as module
-import osmo_jupyter.timezone as timezone
 
 node_ids = [123, 456]
 start_utc = '2018-08-08 19:00:00'
@@ -94,30 +93,22 @@ def mock_load_calculation_details(mocker):
     return mocker.patch.object(module, 'load_calculation_details')
 
 
-@pytest.fixture
-def mock_timezone_utc_series_to_local(mocker):
-    return mocker.patch.object(timezone, 'utc_series_to_local')
-
-
 def test_get_node_temperature_data(
     mock_configure_database,
     mock_load_calculation_details,
-    mock_timezone_utc_series_to_local
 ):
     mock_raw_node_data = pd.DataFrame({
-        'calculation_dimension': ['temperature', 'do'],
-        'calculated_value': [25.9, 7],
-        'create_date': ['01/01/2018 12:00', '01/01/2018 12:01'],
-        'other_things': ['ploop', 'more ploop'],
+        'calculation_dimension': ['temperature', 'do', 'temperature', 'temp'],
+        'calculated_value': [25.9, 7, 16.7, 28.3],
+        'create_date': ['01/01/2018 12:00', '01/01/2018 12:00', '01/01/2018 12:01', '01/01/2018 12:02'],
+        'other_things': ['ploop', 'more ploop', 'bloop', 'boop'],
     })
 
     mock_load_calculation_details.return_value = mock_raw_node_data
 
-    mock_timezone_utc_series_to_local.side_effect = lambda x: pd.to_datetime(x)
-
     expected_temperature_data = pd.DataFrame({
-        'timestamp': [datetime.datetime(2018, 1, 1, 12)],
-        'temperature': [25.9],
+        'timestamp': [datetime.datetime(2018, 1, 1, 4), datetime.datetime(2018, 1, 1, 4, 1)],
+        'temperature': [25.9, 16.7],
     })
 
     actual_temperature_data = module.get_node_temperature_data(
