@@ -160,3 +160,40 @@ def load_calculation_details(
     )
     connection.close()
     return calculation_details
+
+
+def get_node_temperature_data(start_time_local, end_time_local, node_id, downsample_factor=1):
+    ''' Load node temperature data only from the calculation_details table
+
+    Args:
+        start_time_local: string of ISO-formatted start datetime in local time, inclusive
+        end_time_local: string of ISO-formatted end datetime in local time, inclusive
+        node_id: node ID to get data from
+        downsample_factor: if this is a number, it will be used to select fewer rows.
+            You should get *roughly* n / downsample_factor samples.
+    Returns:
+        a pandas.DataFrame of temperature data (°C) in local time from the node IDs provided.
+    '''
+
+    db_engine = configure_database()
+
+    raw_node_data = load_calculation_details(
+        db_engine,
+        [node_id],
+        start_time_local,
+        end_time_local,
+        downsample_factor
+    )
+
+    print(f'{len(raw_node_data)} rows retrieved.')
+
+    temperature_data = raw_node_data[raw_node_data['calculation_dimension'] == 'temperature']
+
+    temperature_data_only = pd.DataFrame({
+        'timestamp': timezone.utc_series_to_local(
+            temperature_data['create_date']
+        ),
+        'temperature': temperature_data['calculated_value'],
+    }).reset_index(drop=True)
+
+    return temperature_data_only
