@@ -50,8 +50,8 @@ class TestImportSpectrometerData:
         test_data_file_path = pkg_resources.resource_filename('osmo_jupyter',
                                                               'test_fixtures/mock_spectrometer_data.txt'
                                                               )
-        test_spectrometer_df = module._import_spectrometer_txt(test_data_file_path)
-        mock_spectrometer_df = pd.DataFrame({
+        actual = module._import_spectrometer_txt(test_data_file_path)
+        expected = pd.DataFrame({
             'Unnamed: 0': ['2019-01-07 16:13:37.597000', '2019-01-07 16:13:42.397000', '2019-01-07 16:13:47.496000'],
             'Unnamed: 1': [1546906417597, 1546906422397, 1546906427496],
             '344.05': [-626.00, -640.67, -546.47],
@@ -59,7 +59,7 @@ class TestImportSpectrometerData:
             '1032.175': [-163.15, -79.00, 189.10]
         })
 
-        pd.testing.assert_frame_equal(mock_spectrometer_df, test_spectrometer_df)
+        pd.testing.assert_frame_equal(expected, actual)
 
     def test_broken_spectrometer_file(self):
         test_data_file_path = pkg_resources.resource_filename('osmo_jupyter',
