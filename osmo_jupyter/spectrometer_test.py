@@ -106,75 +106,82 @@ def test_import_and_format_spectrometer_data():
 
 @pytest.mark.parametrize(
     "minimum_wavelength, maximum_wavelength, expected_intensity_summary",
-    [(344, 1032, pd.DataFrame({
-                                'timestamp': [
-                                    '2019-01-07 16:13:37.597000',
-                                    '2019-01-07 16:13:42.397000',
-                                    '2019-01-07 16:13:47.496000',
-                                ],
-                                'intensity': [
-                                    0.5,
-                                    -220.84,
-                                    -546.47,
-                                ]
-                                }).set_index('timestamp')),
-     (None, 500, pd.DataFrame({
-                               'timestamp': [
-                                   '2019-01-07 16:13:37.597000',
-                                   '2019-01-07 16:13:42.397000',
-                                   '2019-01-07 16:13:47.496000',
-                               ],
-                               'intensity': [
-                                   -626.0,
-                                   -640.67,
-                                   -546.47,
-                               ]
-                               }).set_index('timestamp')),
-     (1032, None, pd.DataFrame({
-                                'timestamp': [
-                                    '2019-01-07 16:13:37.597000',
-                                    '2019-01-07 16:13:42.397000',
-                                    '2019-01-07 16:13:47.496000',
-                                ],
-                                'intensity': [
-                                    -163.15,
-                                    -79.0,
-                                    189.1,
-                                ]
-                                }).set_index('timestamp')),
-     (None, None, pd.DataFrame({
-                                 'timestamp': [
-                                     '2019-01-07 16:13:37.597000',
-                                     '2019-01-07 16:13:42.397000',
-                                     '2019-01-07 16:13:47.496000',
-                                 ],
-                                 'intensity': [
-                                     -54.05,
-                                     -173.56,
-                                     -301.28,
-                                     ]
-                                 }).set_index('timestamp')),
+    [
+        (
+            344,
+            1032,
+            pd.DataFrame({
+                'timestamp': [
+                    '2019-01-07 16:13:37.597000',
+                    '2019-01-07 16:13:42.397000',
+                    '2019-01-07 16:13:47.496000',
+                 ],
+                'intensity': [
+                        0.5,
+                        -220.84,
+                        -546.47,
+                 ]
+            }).set_index('timestamp')
+        ),
+        (
+            None,
+            500,
+            pd.DataFrame({
+                'timestamp': [
+                    '2019-01-07 16:13:37.597000',
+                    '2019-01-07 16:13:42.397000',
+                    '2019-01-07 16:13:47.496000',
+                ],
+                'intensity': [
+                    -626.0,
+                    -640.67,
+                    -546.47,
+                ]
+            }).set_index('timestamp')
+        ),
+        (
+            1032,
+            None,
+            pd.DataFrame({
+                'timestamp': [
+                    '2019-01-07 16:13:37.597000',
+                    '2019-01-07 16:13:42.397000',
+                    '2019-01-07 16:13:47.496000',
+                ],
+                'intensity': [
+                    -163.15,
+                    -79.0,
+                    189.1,
+                ]
+            }).set_index('timestamp')
+        ),
+        (
+            None,
+            None,
+            pd.DataFrame({
+                'timestamp': [
+                    '2019-01-07 16:13:37.597000',
+                    '2019-01-07 16:13:42.397000',
+                    '2019-01-07 16:13:47.496000',
+                ],
+                'intensity': [
+                     -54.05,
+                     -173.56,
+                     -301.28,
+                ]
+            }).set_index('timestamp')
+        ),
      ]
 )
 def test_spectrometer_intensity_summary(minimum_wavelength, maximum_wavelength, expected_intensity_summary):
+    intensity_summary_kwargs = {}
+    if minimum_wavelength is not None:
+        intensity_summary_kwargs['minimum_wavelength'] = minimum_wavelength
+    if maximum_wavelength is not None:
+        intensity_summary_kwargs['maximum_wavelength'] = maximum_wavelength
     actual = module.spectrometer_intensity_summary(
         FORMATTED_SPECTROMETER_DF,
-        minimum_wavelength=minimum_wavelength,
-        maximum_wavelength=maximum_wavelength
+        **intensity_summary_kwargs
     )
-    if minimum_wavelength is None:
-        actual = module.spectrometer_intensity_summary(
-            FORMATTED_SPECTROMETER_DF,
-            maximum_wavelength=maximum_wavelength
-        )
-    if maximum_wavelength is None:
-        actual = module.spectrometer_intensity_summary(
-            FORMATTED_SPECTROMETER_DF,
-            minimum_wavelength=minimum_wavelength
-        )
-    if maximum_wavelength is None and minimum_wavelength is None:
-        actual = module.spectrometer_intensity_summary(
-            FORMATTED_SPECTROMETER_DF,
-        )
 
     pd.testing.assert_frame_equal(actual, expected_intensity_summary)

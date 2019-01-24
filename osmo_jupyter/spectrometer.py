@@ -23,7 +23,6 @@ def _import_spectrometer_txt(spectrometer_data_file_path):
 
 
 def _clean_up_spectrometer_df_header(unformatted_spectrometer_df):
-
     ''' Cleans up header of raw spectrometer df, and removes redundant timestamp column.
 
     Args:
@@ -36,7 +35,7 @@ def _clean_up_spectrometer_df_header(unformatted_spectrometer_df):
 
     timestamp_column, epoch_column = unformatted_spectrometer_df.columns[[0, 1]]
     spectrometer_df_with_clean_header = unformatted_spectrometer_df.rename(
-        # timestamp column is in local time, epoch_time column is in UTC
+        # Timestamp column is in local time, epoch_time column is in UTC
         columns={
             timestamp_column: 'timestamp',
             epoch_column: 'epoch_time'
@@ -49,7 +48,7 @@ def _clean_up_spectrometer_df_header(unformatted_spectrometer_df):
 
 
 def _reformat_spectrometer_df(spectrometer_df_with_clean_header):
-    ''' Reformats a df of spectrometer data with many wavelength columns,to a more useful format with 2 columns
+    ''' Reformats a df of spectrometer data with many wavelength columns to a more useful format with 2 columns
 
     Args:
         spectrometer_df_with_clean_header: a pandas df of spectrometer data,
@@ -61,7 +60,7 @@ def _reformat_spectrometer_df(spectrometer_df_with_clean_header):
 
     n_timestamp_columns = 1
     wavelength_columns = spectrometer_df_with_clean_header.columns[n_timestamp_columns:]
-    # melt function is a pivot and turns 3648 columns, each one wavelength, into one column
+    # Melt function is a pivot and turns 3648 columns, each one wavelength, into one column
     reformatted_spectrometer_df = spectrometer_df_with_clean_header.melt(
         id_vars=['timestamp'],
         value_vars=wavelength_columns,
