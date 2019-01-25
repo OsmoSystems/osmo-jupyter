@@ -1,0 +1,17 @@
+Data from quasi_ratiometric_red_attempt_2_FLMT028191_09-56-48-677.txt Node
+Date: Mon Jan 07 09:56:48 PST 2019
+User: AwesomeOsmoOperator
+Spectrometer: FLMT02819
+Trigger mode: 0
+Integration Time (sec): 5.000000E-1
+Scans to average: 1
+Electric dark correction enabled: true
+Nonlinearity correction enabled: false
+Boxcar width: 0
+XAxis mode: Wavelengths
+Number of Pixels in Spectrum: 3648
+>>>>>Begin Spectral Data<<<<<
+		344.05	1031.859	1032.175
+2019-01-07 16:13:37.597000	1546906417597	-626	627	-163.15
+2019-01-07 16:13:42.397000	1546906422397	-640.67	198.99	-79
+2019-01-07 16:13:47.496000	1546906427496	-546.47	-546.47	189.1
