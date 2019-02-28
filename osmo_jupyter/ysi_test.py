@@ -48,14 +48,8 @@ class TestJoinNearestYsiData:
     def test_raises_if_YSI_index_not_datetime(self):
         with pytest.raises(ValueError):
             module.join_nearest_ysi_data(
-                other_data=pd.DataFrame({
-                    'timestamp': [ONE_MINUTE],
-                    'other_data': [1],
-                }),
-                ysi_data=pd.DataFrame({
-                    'timestamp': [ONE_MINUTE],
-                    'temperature': [20.0],
-                }).set_index('temperature')
+                other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
+                ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('temperature')
             )
 
     @pytest.mark.parametrize(
