@@ -253,7 +253,7 @@ def get_layout_with_annotations(
 
         # blue and green are both on the right side, and applying a line break to blue lets them both be there
         # without overlapping
-        line_break = '<br>' if color is 'b' else ''
+        line_break = '<br>' if color == 'b' else ''
 
         # If colors are on separate axes and a Y axis title is provided, use it as a suffix
         suffix = f' {y_axis_title}' if y_axis_title else ''
