@@ -5,7 +5,7 @@ def _guard_index_is_datetime(ysi_data):
     if not isinstance(ysi_data.index, pd.DatetimeIndex):
         raise ValueError(
             '''
-            ysi_data must be a DataFrame indexed by pre-parsed timestamps. Get this with, eg.:
+            ysi_data must be a DataFrame indexed by pre-parsed timestamps. Get this with, e.g.:
                 pd.read_csv(
                     <YSI filename>,
                     parse_dates=['Timestamp']
@@ -32,7 +32,7 @@ def join_nearest_ysi_data(
     '''
     Params:
         other_data: DataFrame with a timestamp column to be augmented with YSI data
-        ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps. Get this with, eg.:
+        ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps. Get this with, e.g.:
             pd.read_csv(
                 <YSI filename>,
                 parse_dates=['Timestamp']
@@ -46,13 +46,6 @@ def join_nearest_ysi_data(
     '''
     _guard_index_is_datetime(ysi_data)
     _guard_no_fractional_seconds(other_data[other_data_timestamp_column])
-
-    # TODO:
-    #  - consider: what happens for really long data sets? Will resampling to 1s use up all the memory?
-    #     - could do an outer join on both and combine the timestamp columns before interpolating.
-    #     - Could then just call interpolate w/o resampling
-    #  - test in jupyter notebooks
-    #  - a bit more commenting
 
     # Upsample YSI data to allow any timestamp to be joined on a strict match
     resampled_ysi_data = (

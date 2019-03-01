@@ -55,7 +55,7 @@ class TestJoinNearestYsiData:
     @pytest.mark.parametrize(
         'name,other_seconds,ysi_seconds,expected_other_seconds,expected_ysi_seconds',
         [
-            ['ysi seconds match other seconds', [3, 5, 7], [1, 3, 5, 7, 9], [3, 5, 7], [3.0, 5.0, 7.0]],
+            ['ysi seconds match other seconds', [3, 5, 7], [3, 5, 7], [3, 5, 7], [3.0, 5.0, 7.0]],
             ['interpolates to nearest second', [3, 5, 7], [2, 4, 8], [3, 5, 7], [2.0, 4.0, 8.0]],
             ['discards extra YSI data', [3, 5, 7], [0, 2, 4, 6, 8], [3, 5, 7], [2.0, 4.0, 6.0]],
             ['discards "other" data outside of ysi timerange', [3, 5, 7], [4, 5, 6], [5], [5]],
@@ -87,4 +87,15 @@ class TestJoinNearestYsiData:
         })
 
         # check_like=True ignores column order, which we don't care about
+        pd.testing.assert_frame_equal(actual, expected, check_like=True)
+
+    def test_accepts_custom_timestamp_column_name(self):
+        actual = module.join_nearest_ysi_data(
+            other_data=pd.DataFrame([{'custom_timestamp': ONE_MINUTE, 'other': 5.0}]),
+            ysi_data=pd.DataFrame([{'timestamp': ONE_MINUTE, 'temperature': 20.0}]).set_index('timestamp'),
+            other_data_timestamp_column='custom_timestamp'
+        )
+
+        expected = pd.DataFrame([{'custom_timestamp': ONE_MINUTE, 'other': 5.0, 'YSI temperature': 20.0}])
+
         pd.testing.assert_frame_equal(actual, expected, check_like=True)
