@@ -46,13 +46,13 @@ def join_nearest_ysi_data(
 ):
     '''
     Params:
-        other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column.
-        ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps. Get this with, e.g.:
+        other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column (datetime dtype).
+        ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps (datetime dtype). Get this with, e.g.:
             pd.read_csv(
                 <YSI filename>,
                 parse_dates=['Timestamp']
             ).set_index('Timestamp')
-        other_data_timestamp_column: Default: 'timestamp'. Column name in other_data containing pre-parsed timestamps.
+        other_data_timestamp_column: Default: 'timestamp'. Column name in other_data containing timestamps.
     Return:
         DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
         Discards "other_data" that is collected outside of the timerange of the YSI data.
