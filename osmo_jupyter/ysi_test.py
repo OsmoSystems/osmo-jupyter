@@ -8,39 +8,60 @@ from osmo_jupyter import ysi as module
 
 ONE_MINUTE = datetime(2018, 1, 1, 12, 30, 0)
 
-SINGLE_YSI_DATAPOINT = {'timestamp': ONE_MINUTE, 'temperature': 20.0}
+SINGLE_YSI_DATAPOINT = {'Timestamp': ONE_MINUTE, 'temperature': 20.0}
 SINGLE_OTHER_DATAPOINT = {'timestamp': ONE_MINUTE, 'other': 5.0}
 
 
-class TestGuardIndexIsDatetime:
+class TestGuardYsiIndexIsDatetime:
     def test_raises_if_index_is_not_datetime(self):
         with pytest.raises(ValueError):
-            module._guard_index_is_datetime(pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('temperature'))
+            module._guard_ysi_data_index_is_datetime(pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('temperature'))
 
     def test_does_not_raise_if_index_is_datetime(self):
-        module._guard_index_is_datetime(pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('timestamp'))
+        module._guard_ysi_data_index_is_datetime(pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('Timestamp'))
+
+
+class TestGuardOtherDataTimestampColumnIsDatetime:
+    def test_raises_if_column_is_not_datetime(self):
+        with pytest.raises(ValueError):
+            module._guard_other_data_timestamp_column_is_datetime(
+                other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
+                other_data_timestamp_column='other'
+            )
+
+    def test_does_not_raise_if_column_is_datetime(self):
+        module._guard_other_data_timestamp_column_is_datetime(
+            other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
+            other_data_timestamp_column='timestamp'
+        )
 
 
 class TestGuardNoFractionalSeconds:
     def test_raises_if_fractional_seconds(self):
-        with pytest.raises(ValueError):
-            module._guard_no_fractional_seconds(pd.Series([
-                datetime(2018, 1, 1, 12, 30, 0),
-                datetime(2018, 1, 1, 12, 30, 1, microsecond=51),
-            ]))
+        with pytest.raises(ValueError, match='other_data'):
+            module._guard_no_fractional_seconds(
+                datetime_series=pd.Series([
+                    datetime(2018, 1, 1, 12, 30, 0),
+                    datetime(2018, 1, 1, 12, 30, 1, microsecond=51),
+                ]),
+                series_name='other_data["timestamp"]'
+            )
 
     def test_does_not_raise_if_whole_seconds(self):
-        module._guard_no_fractional_seconds(pd.Series([
-            datetime(2018, 1, 1, 12, 30, 0),
-            datetime(2018, 1, 1, 12, 30, 1),
-        ]))
+        module._guard_no_fractional_seconds(
+            datetime_series=pd.Series([
+                datetime(2018, 1, 1, 12, 30, 0),
+                datetime(2018, 1, 1, 12, 30, 1),
+            ]),
+            series_name="other_data['timestamp']"
+        )
 
 
 class TestJoinNearestYsiData:
     def test_prefixes_with_YSI(self):
         actual = module.join_nearest_ysi_data(
             other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
-            ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('timestamp')
+            ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('Timestamp')
         )
 
         assert 'YSI temperature' in list(actual.columns.values)
@@ -50,6 +71,14 @@ class TestJoinNearestYsiData:
             module.join_nearest_ysi_data(
                 other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
                 ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('temperature')
+            )
+
+    def test_raises_if_other_data_timestamp_column_not_datetime(self):
+        with pytest.raises(ValueError):
+            module.join_nearest_ysi_data(
+                other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
+                ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('Timestamp'),
+                other_data_timestamp_column='other'
             )
 
     @pytest.mark.parametrize(
@@ -75,9 +104,9 @@ class TestJoinNearestYsiData:
                 'other_data': other_seconds,
             }),
             ysi_data=pd.DataFrame({
-                'timestamp': [ONE_MINUTE.replace(second=s) for s in ysi_seconds],
+                'Timestamp': [ONE_MINUTE.replace(second=s) for s in ysi_seconds],
                 'ysi_data': ysi_seconds,
-            }).set_index('timestamp')
+            }).set_index('Timestamp')
         )
 
         expected = pd.DataFrame({
@@ -92,7 +121,7 @@ class TestJoinNearestYsiData:
     def test_accepts_custom_timestamp_column_name(self):
         actual = module.join_nearest_ysi_data(
             other_data=pd.DataFrame([{'custom_timestamp': ONE_MINUTE, 'other': 5.0}]),
-            ysi_data=pd.DataFrame([{'timestamp': ONE_MINUTE, 'temperature': 20.0}]).set_index('timestamp'),
+            ysi_data=pd.DataFrame([{'Timestamp': ONE_MINUTE, 'temperature': 20.0}]).set_index('Timestamp'),
             other_data_timestamp_column='custom_timestamp'
         )
 

@@ -1,24 +1,39 @@
 import pandas as pd
 
 
-def _guard_index_is_datetime(ysi_data):
+def _guard_ysi_data_index_is_datetime(ysi_data):
     if not isinstance(ysi_data.index, pd.DatetimeIndex):
         raise ValueError(
             '''
             ysi_data must be a DataFrame indexed by pre-parsed timestamps. Get this with, e.g.:
                 pd.read_csv(
-                    <YSI filename>,
+                    <ysi_data csv filename>,
                     parse_dates=['Timestamp']
                 ).set_index('Timestamp')
             '''
         )
 
 
-def _guard_no_fractional_seconds(datetime_series):
+def _guard_other_data_timestamp_column_is_datetime(other_data, other_data_timestamp_column):
+    if not pd.core.dtypes.common.is_datetime64_dtype(other_data[other_data_timestamp_column]):
+        raise ValueError(
+            f'''
+            other_data['{other_data_timestamp_column}'] column must have pre-parsed timestamps
+            Get this with, e.g.:
+                pd.read_csv(
+                    <other data csv filename>,
+                    parse_dates=['{other_data_timestamp_column}']
+                )
+            '''
+        )
+
+
+def _guard_no_fractional_seconds(datetime_series, series_name):
     if any([t.microsecond for t in datetime_series]):
         raise ValueError(
-            '''
-            Data joining does not work if timestamps have fractional seconds.
+            f'''
+            {series_name} has fractional seconds.
+            Data joining does not (currently) work if timestamps have fractional seconds.
             (If you get this error, ask a dev - we can fix it)
             '''
         )
@@ -31,20 +46,29 @@ def join_nearest_ysi_data(
 ):
     '''
     Params:
-        other_data: DataFrame (with a timestamp column) to be augmented with YSI data
-        ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps. Get this with, e.g.:
+        other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column (datetime dtype).
+        ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps (datetime dtype). Get this with, e.g.:
             pd.read_csv(
                 <YSI filename>,
                 parse_dates=['Timestamp']
             ).set_index('Timestamp')
-        other_data_timestamp_column: Default: 'timestamp'. Column name in other_data containing pre-parsed timestamps.
+        other_data_timestamp_column: Default: 'timestamp'. Column name in other_data containing timestamps.
     Return:
         DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
         Discards "other_data" that is collected outside of the timerange of the YSI data.
         YSI columns will be prefixed with 'YSI ' (e.g. 'YSI Dissolved Oxygen (%)')
     '''
-    _guard_index_is_datetime(ysi_data)
-    _guard_no_fractional_seconds(other_data[other_data_timestamp_column])
+    _guard_ysi_data_index_is_datetime(ysi_data)
+    _guard_no_fractional_seconds(
+        datetime_series=ysi_data.index,
+        series_name='ysi_data.index'
+    )
+
+    _guard_other_data_timestamp_column_is_datetime(other_data, other_data_timestamp_column)
+    _guard_no_fractional_seconds(
+        datetime_series=other_data[other_data_timestamp_column],
+        series_name=f"other_data['{other_data_timestamp_column}']"
+    )
 
     # Upsample YSI data to allow any timestamp to be joined on a strict match
     resampled_ysi_data = (
