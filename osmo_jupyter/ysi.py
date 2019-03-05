@@ -4,7 +4,7 @@ import pandas as pd
 def _guard_ysi_data_index_is_datetime(ysi_data):
     if not isinstance(ysi_data.index, pd.DatetimeIndex):
         raise ValueError(
-            f'''
+            '''
             ysi_data must be a DataFrame indexed by pre-parsed timestamps. Get this with, e.g.:
                 pd.read_csv(
                     <ysi_data csv filename>,
