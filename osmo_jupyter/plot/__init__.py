@@ -1,7 +1,7 @@
-# Wildcard imports from each submodule preserve backwards-compatibility with previous import paths.
+# Import from submodule to preserve backwards-compatibility with previous import paths.
 # e.g. `from plot import get_scatter`
 
-from .scatter import *  # noqa: F401, F403 unused wildcard imports
+from .scatter import get_rgb_scatters, get_scatter, get_layout_with_annotations  # noqa: F401 unused imports
 
 
 # Q: What code should live here?
