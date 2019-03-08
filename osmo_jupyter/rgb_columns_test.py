@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-import osmo_jupyter.plot as module
+from . import rgb_columns as module
 
 
 class TestGetColorsWithPattern:
