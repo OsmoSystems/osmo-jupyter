@@ -42,17 +42,18 @@ def cut_array2d(array, block_shape):
     return block_centers, blocks
 
 
-def get_block_means_2d(block_centers, blocks):
+def get_block_means_2d(block_centers, blocks, averaging_function=np.mean):
     ''' Given 1D arrays of block_centers and blocks, construct a 2D array of block means.
 
     Args:
         block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
         blocks: a 1D array of 2D blocks
+        averaging_function: Optional (default=np.mean). Function to use to get the average of each block
 
     Returns:
         a 2D array of block means
     '''
-    block_means = [np.mean(block) for block in blocks]
+    block_means = [averaging_function(block) for block in blocks]
 
     # block_centers is a list of (x,y) tuples: pixel coordinates of the blocks within the image
     # We don't actually care about the pixel coordinates - just the number of blocks in each row and column
@@ -92,13 +93,14 @@ def display_heatmap(array, display_decimals=2, title='Heatmap'):
     return go.FigureWidget(heatmap)
 
 
-def heatmapify(array, block_shape=(50, 50), display_decimals=2, title='Heatmap'):
+def heatmapify(array, averaging_function=np.mean, block_shape=(50, 50), display_decimals=2, title='Heatmap'):
     ''' Constructs a heatmap from a 2D array. The heatmap is created by slicing the array into blocks the size of
         `block_shape`, and then averaging each block.
 
     Args:
         array: A 2D numpy array to render as a heatmap. e.g. a single channel of an RGB image:
             array = image[:, :, channel]  # channel is 0, 1, or 2, for r, g, b respectively
+        averaging_function: Optional (default=np.mean). Function to use to get the average of each block
         block_shape: Optional (default=(50,50)). The shape of block to group by and average over to create the heatmap
         display_decimals: Optional (default=2). The number of decimals to round to in the annotation
         title: Optional (default='Heatmap').
@@ -108,6 +110,6 @@ def heatmapify(array, block_shape=(50, 50), display_decimals=2, title='Heatmap')
         Can be displayed in a jupyter notebook using the display() function.
     '''
     block_centers, blocks = cut_array2d(array, block_shape)
-    block_means_2d = get_block_means_2d(block_centers, blocks)
+    block_means_2d = get_block_means_2d(block_centers, blocks, averaging_function)
 
     return display_heatmap(block_means_2d, display_decimals, title)

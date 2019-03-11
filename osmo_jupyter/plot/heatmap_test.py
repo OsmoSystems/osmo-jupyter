@@ -1,3 +1,5 @@
+from unittest.mock import sentinel
+
 import numpy as np
 import pytest
 
@@ -151,6 +153,29 @@ class TestGetBlockMeans2D:
         )
 
         expected = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+
+        np.testing.assert_array_equal(actual, expected)
+
+    def test_uses_provided_averaging_function(self):
+        def _mock_averaging_func(array):
+            return sentinel.averaged
+
+        actual = module.get_block_means_2d(
+            block_centers=[(0.5, 0.5), (0.5, 2.5)],
+            blocks=np.array([
+                [
+                    [1, 2],
+                    [2, 3],
+                ],
+                [
+                    [10, 11],
+                    [11, 30],
+                ]
+            ]),
+            averaging_function=_mock_averaging_func
+        )
+
+        expected = np.array([[sentinel.averaged, sentinel.averaged]])
 
         np.testing.assert_array_equal(actual, expected)
 
