@@ -1,0 +1,192 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>osmo_jupyter.plot package &#8212; osmo-jupyter  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="osmo-jupyter-plot-package">
+<h1>osmo_jupyter.plot package<a class="headerlink" href="#osmo-jupyter-plot-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-osmo_jupyter.plot.scatter">
+<span id="osmo-jupyter-plot-scatter-module"></span><h2>osmo_jupyter.plot.scatter module<a class="headerlink" href="#module-osmo_jupyter.plot.scatter" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.plot.scatter.get_layout_with_annotations">
+<code class="descclassname">osmo_jupyter.plot.scatter.</code><code class="descname">get_layout_with_annotations</code><span class="sig-paren">(</span><em>x_axis_title='Time'</em>, <em>y_axis_title=''</em>, <em>colors_on_separate_axes=False</em>, <em>events=None</em>, <em>**additional_layout_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.scatter.get_layout_with_annotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a go.Layout instance prepared for our standard graphing needs</p>
+<p>Notes re. our standard layout:
+* The primary Y axis (y0) is reserved for annotations. This is done to guarantee that annotations show
+* If colors are on separate axes, they will be on the next consecutive axes, otherwise they will be on yaxis 2
+* You can use additional axes for plotting other things by passing in additional params</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">x_axis_title: title to use for X axis, default ‘Time’
+y_axis_title: title to use for Y axis where colors are plotted. Required if colors_on_separate_axes is False.</p>
+<blockquote>
+<div>If colors_on_separate_axes is True, it will be used as a suffix for the y axis titles “r”, “g”, and “b”</div></blockquote>
+<p>colors_on_separate_axes: whether colors (r,g and b) should be displayed on separate Y axes
+events: dictionary of {“annotation”: x_axis_value} which will be used to annotate the chart
+additional_layout_kwargs: Any additional arguments will be passed to go.Layout. These can, for instance,</p>
+<blockquote class="last">
+<div>be the result of _axis_kwargs() to add support for graphing more items.
+Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#layout">https://plot.ly/python/reference/#layout</a></div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.plot.scatter.get_rgb_scatters">
+<code class="descclassname">osmo_jupyter.plot.scatter.</code><code class="descname">get_rgb_scatters</code><span class="sig-paren">(</span><em>rgb_df, x_column=None, colors_on_separate_axes=False, dataset_name=None, marker_overrides=None, scatter_overrides=None, colors_to_include=['r', 'g', 'b']</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.scatter.get_rgb_scatters" title="Permalink to this definition">¶</a></dt>
+<dd><p>get go.Scatter instances for each ‘rgb’ color in the input DataFrame</p>
+<p>example usage:
+&gt;&gt;&gt; import pandas as  pd
+&gt;&gt;&gt; import plotly.graph_objs as go
+&gt;&gt;&gt; rgb_df = pd.DataFrame({‘r’: [1,2,3], ‘g’: [2,3,4], ‘b’: [3,4,5], ‘x_axis’: [0,1,2]})
+&gt;&gt;&gt; go.FigureWidget(rgb_scatters(rgb_df, x_column=’x_axis’))
+[result is a plot with your three channels]</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">rgb_df: pandas.DataFrame instance with ‘r’, ‘g’, and ‘b’ columns, and a column for the X axis value
+x_column: Optional, name of the column in rgb_df to use for the X axis values. if None, we’ll use the index
+colors_on_separate_axes: Optional, if True, will plot each color series on a separate axis
+dataset_name: Optional, string to use in legend labels
+marker_overrides: Optional, dict of additional arguments for go.Marker.</p>
+<blockquote>
+<div>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter-marker">https://plot.ly/python/reference/#scatter-marker</a></div></blockquote>
+<dl class="last docutils">
+<dt>scatter_overrides: Optional, dict of additional_arguments for go.Scatter.</dt>
+<dd>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter">https://plot.ly/python/reference/#scatter</a></dd>
+<dt>colors_to_include: Optional list of color letters to include - provide if you don’t want all the colors.</dt>
+<dd>Should be a subset of COLOR_CHANNELS.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>list of go.Scatter objects, one each for r, g, and b or colors_to_include if provided</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.plot.scatter.get_scatter">
+<code class="descclassname">osmo_jupyter.plot.scatter.</code><code class="descname">get_scatter</code><span class="sig-paren">(</span><em>y_values</em>, <em>x_values=None</em>, <em>dataset_name=None</em>, <em>y_axis_number=1</em>, <em>marker_overrides=None</em>, <em>scatter_overrides=None</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.scatter.get_scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick way to get a go.Scatter to put on your plot with some conveniences.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">y_values: iterable of Y values can be a pandas Series or whatever
+x_values: Optional, X values to go along with those. If not provided, y_values is expected to be a Series and</p>
+<blockquote>
+<div>we’ll use the index from it</div></blockquote>
+<dl class="last docutils">
+<dt>dataset_name: Optional, name to put in the chart legend. If not provided, y_values is expected to be a Series</dt>
+<dd>and we’ll use its name</dd>
+<dt>y_axis_number: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for</dt>
+<dd>RGB values.</dd>
+<dt>marker_overrides: Optional, dict of go.Scatter.Marker attributes to override marker style.</dt>
+<dd>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter-marker">https://plot.ly/python/reference/#scatter-marker</a></dd>
+<dt>scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.</dt>
+<dd>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter">https://plot.ly/python/reference/#scatter</a></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.plot">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-osmo_jupyter.plot" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">osmo-jupyter</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, dev@osmobot.com.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/osmo_jupyter.plot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
