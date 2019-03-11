@@ -5,7 +5,8 @@ import plotly.figure_factory as ff
 
 def cut_array2d(array, block_shape):
     ''' Cuts up an array into blocks of shape `block_shape`. If `block_shape` doesn't factor perfectly into the
-        shape of the array, drops data from the right and bottom edges of the input `array`
+        shape of the array, drops data from the right and bottom edges of the input `array`.
+        Heavily, heavily adapted from https://stackoverflow.com/a/17385776/1701416
 
     Args:
         array: a 2D numpy array
@@ -16,8 +17,6 @@ def cut_array2d(array, block_shape):
             block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
             blocks: a 1D array of blocks of shape `block_shape`
     '''
-    # heavily, heavily adapted from https://stackoverflow.com/a/17385776/1701416
-    # Divide an array into contiguous blocks of a given shape.
     array_height, array_width = array.shape
     block_height, block_width = block_shape
 
@@ -26,15 +25,18 @@ def cut_array2d(array, block_shape):
     xcut = np.arange(0, array_width + 1, block_width)
 
     block_centers = [
-        ((ycut[i] + ycut[i+1] - 1) / 2, (xcut[j] + xcut[j+1] - 1) / 2)
+        (
+            (ycut[i] + ycut[i+1] - 1) / 2,
+            (xcut[j] + xcut[j+1] - 1) / 2
+        )
         for i, _ in enumerate(ycut[:-1])
         for j, _ in enumerate(xcut[:-1])
     ]
 
     blocks = [
         array[ycut[i]:ycut[i+1], xcut[j]:xcut[j+1]]
-        for i in range(len(ycut) - 1)
-        for j in range(len(xcut) - 1)
+        for i, _ in enumerate(ycut[:-1])
+        for j, _ in enumerate(xcut[:-1])
     ]
 
     return block_centers, blocks
