@@ -89,6 +89,29 @@ class TestCutArray2D:
         np.testing.assert_array_equal(actual_block_centers, expected_block_centers)
         np.testing.assert_array_equal(actual_blocks, expected_blocks)
 
+    def test_maintains_order_within_block(self):
+        mismatch_shaped_array = np.array([
+            [1, 2, 5, 6],
+            [3, 4, 7, 8],
+        ])
+
+        actual_block_centers, actual_blocks = module.cut_array2d(mismatch_shaped_array, block_shape=(2, 2))
+
+        expected_block_centers = [(0.5, 0.5), (0.5, 2.5)]
+        expected_blocks = np.array([
+            [
+                [1, 2],
+                [3, 4]
+            ],
+            [
+                [5, 6],
+                [7, 8]
+            ],
+        ])
+
+        np.testing.assert_array_equal(actual_block_centers, expected_block_centers)
+        np.testing.assert_array_equal(actual_blocks, expected_blocks)
+
     def test_returns_nothing_if_block_size_larger_than_array(self):
         small_array = np.array([
             [1, 1, 1],
