@@ -18,9 +18,12 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Project information -----------------------------------------------------
+from datetime import datetime
+
+date_updated = datetime.now().isoformat()
 
 project = 'osmo-jupyter'
-copyright = '2019, dev@osmobot.com'
+copyright = '{updated}, dev@osmobot.com'.format(updated=date_updated)
 author = 'dev@osmobot.com'
 
 # The short X.Y version
