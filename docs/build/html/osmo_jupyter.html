@@ -1,0 +1,597 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>osmo_jupyter package &#8212; osmo-jupyter  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="osmo-jupyter-package">
+<h1>osmo_jupyter package<a class="headerlink" href="#osmo-jupyter-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="osmo_jupyter.plot.html">osmo_jupyter.plot package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot.scatter">osmo_jupyter.plot.scatter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-osmo_jupyter.constants">
+<span id="osmo-jupyter-constants-module"></span><h2>osmo_jupyter.constants module<a class="headerlink" href="#module-osmo_jupyter.constants" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-osmo_jupyter.db_access">
+<span id="osmo-jupyter-db-access-module"></span><h2>osmo_jupyter.db_access module<a class="headerlink" href="#module-osmo_jupyter.db_access" title="Permalink to this headline">¶</a></h2>
+<p>Functions to access node data from the Osmo database</p>
+<dl class="function">
+<dt id="osmo_jupyter.db_access.configure_database">
+<code class="descclassname">osmo_jupyter.db_access.</code><code class="descname">configure_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access.configure_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure a database object for read-only technician access to Osmo data.
+Requires user input to collect database password.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>sqlalchemy Engine object which can be used with other functions in this module.</dd>
+<dt>Raises:</dt>
+<dd>ValueError: if connection can’t be made, usually because password is incorrect</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access.get_node_temperature_data">
+<code class="descclassname">osmo_jupyter.db_access.</code><code class="descname">get_node_temperature_data</code><span class="sig-paren">(</span><em>start_time_local</em>, <em>end_time_local</em>, <em>node_id</em>, <em>downsample_factor=1</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access.get_node_temperature_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load node temperature data only from the calculation_details table</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">start_time_local: string of ISO-formatted start datetime in local time, inclusive
+end_time_local: string of ISO-formatted end datetime in local time, inclusive
+node_id: node ID to get data from
+downsample_factor: if this is a number, it will be used to select fewer rows.</p>
+<blockquote class="last">
+<div>You should get <em>roughly</em> n / downsample_factor samples.</div></blockquote>
+</dd>
+<dt>Returns:</dt>
+<dd>a pandas.DataFrame of temperature data (°C) in local time from the node IDs provided.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access.load_calculation_details">
+<code class="descclassname">osmo_jupyter.db_access.</code><code class="descname">load_calculation_details</code><span class="sig-paren">(</span><em>db_engine</em>, <em>node_ids</em>, <em>start_time_local</em>, <em>end_time_local</em>, <em>include_hub_id=False</em>, <em>downsample_factor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access.load_calculation_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load node data from the calculation_details table, optionally with hub ID included from the readings table</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">db_engine: database engine created using <cite>connect_to_db</cite>
+node_ids: iterable of node IDs to get data for
+start_time_local: string of ISO-formatted start datetime in local time, inclusive
+end_time_local: string of ISO-formatted end datetime in local time, inclusive
+include_hub_id: if True, the output will include a ‘hub_id’ column.</p>
+<blockquote>
+<div>Default False because the request including hub_id takes extra time.</div></blockquote>
+<dl class="last docutils">
+<dt>downsample_factor: if this is a number, it will be used to select fewer rows.</dt>
+<dd>You should get <em>roughly</em> n / downsample_factor samples.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>a pandas.DataFrame of data from the node IDs provided.</dd>
+<dt>Raises:</dt>
+<dd><dl class="first last docutils">
+<dt>sqlalchemy.OperationalError: database connection is not working</dt>
+<dd>This is often due to a network disconnect.
+In this case, a good debugging step is to reconnect to the database.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.db_access_test">
+<span id="osmo-jupyter-db-access-test-module"></span><h2>osmo_jupyter.db_access_test module<a class="headerlink" href="#module-osmo_jupyter.db_access_test" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.mock_configure_database">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">mock_configure_database</code><span class="sig-paren">(</span><em>mocker</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.mock_configure_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.mock_load_calculation_details">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">mock_load_calculation_details</code><span class="sig-paren">(</span><em>mocker</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.mock_load_calculation_details" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_get_calculation_details_query_basic_case">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_get_calculation_details_query_basic_case</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_get_calculation_details_query_basic_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_get_calculation_details_query_contents_with_options">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_get_calculation_details_query_contents_with_options</code><span class="sig-paren">(</span><em>name</em>, <em>include_hub_id</em>, <em>downsample_factor</em>, <em>query_contents_to_look_for</em>, <em>should_be_present</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_get_calculation_details_query_contents_with_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_get_node_temperature_data">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_get_node_temperature_data</code><span class="sig-paren">(</span><em>mock_configure_database</em>, <em>mock_load_calculation_details</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_get_node_temperature_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_to_aware">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_to_aware</code><span class="sig-paren">(</span><em>input_datetime</em>, <em>expected_iso_output</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_to_aware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_to_aware_blows_up_if_non_iso_format_provided">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_to_aware_blows_up_if_non_iso_format_provided</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_to_aware_blows_up_if_non_iso_format_provided" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_to_aware_blows_up_if_timezone_provided">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_to_aware_blows_up_if_timezone_provided</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_to_aware_blows_up_if_timezone_provided" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.db_access_test.test_to_utc_string">
+<code class="descclassname">osmo_jupyter.db_access_test.</code><code class="descname">test_to_utc_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access_test.test_to_utc_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.files">
+<span id="osmo-jupyter-files-module"></span><h2>osmo_jupyter.files module<a class="headerlink" href="#module-osmo_jupyter.files" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.files.pick_file">
+<code class="descclassname">osmo_jupyter.files.</code><code class="descname">pick_file</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.files.pick_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.normalize">
+<span id="osmo-jupyter-normalize-module"></span><h2>osmo_jupyter.normalize module<a class="headerlink" href="#module-osmo_jupyter.normalize" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.normalize.by_rgb_sum">
+<code class="descclassname">osmo_jupyter.normalize.</code><code class="descname">by_rgb_sum</code><span class="sig-paren">(</span><em>rgb_df</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.normalize.by_rgb_sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize each series in the DataFrame by dividing by the sum of the r, g, and b values in each row</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>rgb_df: pandas.DataFrame instance with ‘r’, ‘g’, and ‘b’ columns</dd>
+<dt>Returns</dt>
+<dd>new DataFrame with all columns normalized by r+g+b</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.normalize.r_over_b">
+<code class="descclassname">osmo_jupyter.normalize.</code><code class="descname">r_over_b</code><span class="sig-paren">(</span><em>rgb_df</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.normalize.r_over_b" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.normalize.to_max">
+<code class="descclassname">osmo_jupyter.normalize.</code><code class="descname">to_max</code><span class="sig-paren">(</span><em>dataframe</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.normalize.to_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalization method that finds the max value for each series and sets it to 1, dividing all other values
+accordingly.</p>
+<p>Useful for viewing curves on top of one another while also forcing them to have the same zero value (so that
+proportionality of changes is easy to find).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>dataframe: pandas.DataFrame in which each column will be normalized</dd>
+<dt>Returns:</dt>
+<dd>new DataFrame with normalized columns</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.normalize_test">
+<span id="osmo-jupyter-normalize-test-module"></span><h2>osmo_jupyter.normalize_test module<a class="headerlink" href="#module-osmo_jupyter.normalize_test" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.normalize_test.test_normalize_by_rgb_sum">
+<code class="descclassname">osmo_jupyter.normalize_test.</code><code class="descname">test_normalize_by_rgb_sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.normalize_test.test_normalize_by_rgb_sum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.normalize_test.test_normalize_to_max">
+<code class="descclassname">osmo_jupyter.normalize_test.</code><code class="descname">test_normalize_to_max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.normalize_test.test_normalize_to_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.rgb_columns">
+<span id="osmo-jupyter-rgb-columns-module"></span><h2>osmo_jupyter.rgb_columns module<a class="headerlink" href="#module-osmo_jupyter.rgb_columns" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.rgb_columns.add_rgb_columns">
+<code class="descclassname">osmo_jupyter.rgb_columns.</code><code class="descname">add_rgb_columns</code><span class="sig-paren">(</span><em>df_to_modify</em>, <em>rgb_df</em>, <em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns.add_rgb_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add rgb columns to a DataFrame (IN PLACE!) with a provided prefix or suffix pattern</p>
+<p>eg.
+&gt;&gt;&gt; main_df = pd.DataFrame(…, columns=[‘Timestamp’, …])
+&gt;&gt;&gt; rgb_means_df = pd.DataFrame(…, columns=[‘r’, ‘g’, ‘b’])
+&gt;&gt;&gt; add_rgb_columns(main_df, rgb_means_df, ‘<a href="#id1"><span class="problematic" id="id2">*</span></a>_mean’)
+&gt;&gt;&gt; main_df
+&lt;DataFrame with columns [‘Timestamp’, …, ‘r_mean’, ‘g_mean’, ‘b_mean’] &gt;</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>df_to_modify: pandas.DataFrame to have columns added
+rgb_df: pandas.DataFrame with columns [‘r’, ‘g’, ‘b’] to be added to df_to_modify
+pattern: string with an asterisk (“*”) in place of the color letter, eg. ‘<a href="#id3"><span class="problematic" id="id4">*</span></a>_mean’</dd>
+<dt>Returns:</dt>
+<dd>None. df_to_modify will be altered in place.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.rgb_columns.get_rgb_columns">
+<code class="descclassname">osmo_jupyter.rgb_columns.</code><code class="descname">get_rgb_columns</code><span class="sig-paren">(</span><em>df</em>, <em>pattern</em>, <em>other_columns_to_include=None</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns.get_rgb_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get columns from the input DataFrame corresponding to colors, removing a shared prefix or suffix</p>
+<p>eg.
+&gt;&gt;&gt; df = pd.DataFrame(…, columns=[‘r_mean’, ‘g_mean’, ‘b_mean’, ‘Timestamp’, ‘other’, …])
+&gt;&gt;&gt; get_rgb_columns(df, ‘<a href="#id5"><span class="problematic" id="id6">*</span></a>_mean’, [‘Timestamp’])
+&lt;DataFrame with columns [‘r’, ‘g’, ‘b’, ‘Timestamp’] &gt;</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>df: pandas.DataFrame of source data
+pattern: string with an asterisk (“*”) in place of the color letter, eg. ‘<a href="#id7"><span class="problematic" id="id8">*</span></a>_mean’
+other_columns_to_include: list of column names to be included</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.rgb_columns_test">
+<span id="osmo-jupyter-rgb-columns-test-module"></span><h2>osmo_jupyter.rgb_columns_test module<a class="headerlink" href="#module-osmo_jupyter.rgb_columns_test" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="osmo_jupyter.rgb_columns_test.TestAddRgbColumns">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.rgb_columns_test.</code><code class="descname">TestAddRgbColumns</code><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestAddRgbColumns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="osmo_jupyter.rgb_columns_test.TestAddRgbColumns.rgb_df_to_add">
+<code class="descname">rgb_df_to_add</code><em class="property"> =    r  g  b 0  1  4  7 1  2  5  8 2  3  6  9</em><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestAddRgbColumns.rgb_df_to_add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.rgb_columns_test.TestAddRgbColumns.test_basic_case">
+<code class="descname">test_basic_case</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestAddRgbColumns.test_basic_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.rgb_columns_test.TestAddRgbColumns.test_missing_rgb_column__blows_up">
+<code class="descname">test_missing_rgb_column__blows_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestAddRgbColumns.test_missing_rgb_column__blows_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="osmo_jupyter.rgb_columns_test.TestGetColorsWithPattern">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.rgb_columns_test.</code><code class="descname">TestGetColorsWithPattern</code><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestGetColorsWithPattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.rgb_columns_test.TestGetColorsWithPattern.test_basic_case">
+<code class="descname">test_basic_case</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestGetColorsWithPattern.test_basic_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.rgb_columns_test.TestGetColorsWithPattern.test_missing_asterisk__blows_up_helpfully">
+<code class="descname">test_missing_asterisk__blows_up_helpfully</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestGetColorsWithPattern.test_missing_asterisk__blows_up_helpfully" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="osmo_jupyter.rgb_columns_test.TestGetRgbColumns">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.rgb_columns_test.</code><code class="descname">TestGetRgbColumns</code><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestGetRgbColumns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.rgb_columns_test.TestGetRgbColumns.test_basic_case">
+<code class="descname">test_basic_case</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.rgb_columns_test.TestGetRgbColumns.test_basic_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.spectrometer">
+<span id="osmo-jupyter-spectrometer-module"></span><h2>osmo_jupyter.spectrometer module<a class="headerlink" href="#module-osmo_jupyter.spectrometer" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.spectrometer.import_and_format_spectrometer_data">
+<code class="descclassname">osmo_jupyter.spectrometer.</code><code class="descname">import_and_format_spectrometer_data</code><span class="sig-paren">(</span><em>spectrometer_data_file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer.import_and_format_spectrometer_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports and reformats a raw spectrometer data file to be useful and efficient for notebooks</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>spectrometer_data_file_path: file path to .txt file produce by oceanview software in the format</dt>
+<dd>‘Time Series (column data)’</dd>
+</dl>
+</dd>
+<dt>Return:</dt>
+<dd>A pandas df, indexed by timestamp, with 2 columns: wavelength and intensity</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.spectrometer.spectrometer_intensity_summary">
+<code class="descclassname">osmo_jupyter.spectrometer.</code><code class="descname">spectrometer_intensity_summary</code><span class="sig-paren">(</span><em>reformatted_spectrometer_df</em>, <em>minimum_wavelength=340</em>, <em>maximum_wavelength=1035</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer.spectrometer_intensity_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates intensity summary (mean) of spectrometer data over some spectrum of wavelengths.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>reformatted_spectrometer_df: pandas df of spectrometer data formatted by import_and_format_spectrometer_data()
+minimum_wavelength (optional): sets a lower bound for range over which wavelengths will be summarized
+maximum_wavelength (optional): sets an upper bound for range over which wavelengths will be summarized</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>A pandas df, indexed by timestamp, with 1 intensity column that summarizes (calculates mean) intensity</dt>
+<dd>data over some spectrum</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.spectrometer_test">
+<span id="osmo-jupyter-spectrometer-test-module"></span><h2>osmo_jupyter.spectrometer_test module<a class="headerlink" href="#module-osmo_jupyter.spectrometer_test" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="osmo_jupyter.spectrometer_test.TestImportSpectrometerData">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.spectrometer_test.</code><code class="descname">TestImportSpectrometerData</code><a class="headerlink" href="#osmo_jupyter.spectrometer_test.TestImportSpectrometerData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.spectrometer_test.TestImportSpectrometerData.test_broken_spectrometer_file">
+<code class="descname">test_broken_spectrometer_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer_test.TestImportSpectrometerData.test_broken_spectrometer_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.spectrometer_test.TestImportSpectrometerData.test_import_spectrometer_txt">
+<code class="descname">test_import_spectrometer_txt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer_test.TestImportSpectrometerData.test_import_spectrometer_txt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.spectrometer_test.test_clean_up_spectrometer_df_header">
+<code class="descclassname">osmo_jupyter.spectrometer_test.</code><code class="descname">test_clean_up_spectrometer_df_header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer_test.test_clean_up_spectrometer_df_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.spectrometer_test.test_import_and_format_spectrometer_data">
+<code class="descclassname">osmo_jupyter.spectrometer_test.</code><code class="descname">test_import_and_format_spectrometer_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer_test.test_import_and_format_spectrometer_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.spectrometer_test.test_reformat_spectrometer_df">
+<code class="descclassname">osmo_jupyter.spectrometer_test.</code><code class="descname">test_reformat_spectrometer_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer_test.test_reformat_spectrometer_df" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.spectrometer_test.test_spectrometer_intensity_summary">
+<code class="descclassname">osmo_jupyter.spectrometer_test.</code><code class="descname">test_spectrometer_intensity_summary</code><span class="sig-paren">(</span><em>minimum_wavelength</em>, <em>maximum_wavelength</em>, <em>expected_intensity_summary</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer_test.test_spectrometer_intensity_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.timezone">
+<span id="osmo-jupyter-timezone-module"></span><h2>osmo_jupyter.timezone module<a class="headerlink" href="#module-osmo_jupyter.timezone" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.timezone.utc_series_to_local">
+<code class="descclassname">osmo_jupyter.timezone.</code><code class="descname">utc_series_to_local</code><span class="sig-paren">(</span><em>pandas_timeseries</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.timezone.utc_series_to_local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a Pandas series of UTC times to local time
+Useful for converting node data timestamps for use in local-time notebooks.</p>
+<p>eg.
+&gt;&gt;&gt; raw_node_data = osmo_jupyter.db_access.load_calculation_details(…)
+&gt;&gt;&gt; raw_node_data[‘create_date’] = utc_series_to_local(raw_node_data[‘create_date’])</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>pandas_timeseries: pandas Series of timezone-naive datetimes or strings in UTC</dd>
+<dt>Returns:</dt>
+<dd>Pandas timeseries of timezone-naive datetimes corresponding to Osmo HQ local time</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.timezone_test">
+<span id="osmo-jupyter-timezone-test-module"></span><h2>osmo_jupyter.timezone_test module<a class="headerlink" href="#module-osmo_jupyter.timezone_test" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.timezone_test.test_utc_series_to_local">
+<code class="descclassname">osmo_jupyter.timezone_test.</code><code class="descname">test_utc_series_to_local</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.timezone_test.test_utc_series_to_local" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.ysi">
+<span id="osmo-jupyter-ysi-module"></span><h2>osmo_jupyter.ysi module<a class="headerlink" href="#module-osmo_jupyter.ysi" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.ysi.join_nearest_ysi_data">
+<code class="descclassname">osmo_jupyter.ysi.</code><code class="descname">join_nearest_ysi_data</code><span class="sig-paren">(</span><em>other_data</em>, <em>ysi_data</em>, <em>other_data_timestamp_column='timestamp'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi.join_nearest_ysi_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Params:</dt>
+<dd><p class="first">other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column (datetime dtype).
+ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps (datetime dtype). Get this with, e.g.:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>pd.read_csv(</dt>
+<dd>&lt;YSI filename&gt;,
+parse_dates=[‘Timestamp’]</dd>
+</dl>
+<p>).set_index(‘Timestamp’)</p>
+</div></blockquote>
+<p class="last">other_data_timestamp_column: Default: ‘timestamp’. Column name in other_data containing timestamps.</p>
+</dd>
+<dt>Return:</dt>
+<dd>DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
+Discards “other_data” that is collected outside of the timerange of the YSI data.
+YSI columns will be prefixed with ‘YSI ‘ (e.g. ‘YSI Dissolved Oxygen (%)’)</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.ysi_test">
+<span id="osmo-jupyter-ysi-test-module"></span><h2>osmo_jupyter.ysi_test module<a class="headerlink" href="#module-osmo_jupyter.ysi_test" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="osmo_jupyter.ysi_test.TestGuardNoFractionalSeconds">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.ysi_test.</code><code class="descname">TestGuardNoFractionalSeconds</code><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardNoFractionalSeconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestGuardNoFractionalSeconds.test_does_not_raise_if_whole_seconds">
+<code class="descname">test_does_not_raise_if_whole_seconds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardNoFractionalSeconds.test_does_not_raise_if_whole_seconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestGuardNoFractionalSeconds.test_raises_if_fractional_seconds">
+<code class="descname">test_raises_if_fractional_seconds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardNoFractionalSeconds.test_raises_if_fractional_seconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="osmo_jupyter.ysi_test.TestGuardOtherDataTimestampColumnIsDatetime">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.ysi_test.</code><code class="descname">TestGuardOtherDataTimestampColumnIsDatetime</code><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardOtherDataTimestampColumnIsDatetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestGuardOtherDataTimestampColumnIsDatetime.test_does_not_raise_if_column_is_datetime">
+<code class="descname">test_does_not_raise_if_column_is_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardOtherDataTimestampColumnIsDatetime.test_does_not_raise_if_column_is_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestGuardOtherDataTimestampColumnIsDatetime.test_raises_if_column_is_not_datetime">
+<code class="descname">test_raises_if_column_is_not_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardOtherDataTimestampColumnIsDatetime.test_raises_if_column_is_not_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="osmo_jupyter.ysi_test.TestGuardYsiIndexIsDatetime">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.ysi_test.</code><code class="descname">TestGuardYsiIndexIsDatetime</code><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardYsiIndexIsDatetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestGuardYsiIndexIsDatetime.test_does_not_raise_if_index_is_datetime">
+<code class="descname">test_does_not_raise_if_index_is_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardYsiIndexIsDatetime.test_does_not_raise_if_index_is_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestGuardYsiIndexIsDatetime.test_raises_if_index_is_not_datetime">
+<code class="descname">test_raises_if_index_is_not_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestGuardYsiIndexIsDatetime.test_raises_if_index_is_not_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="osmo_jupyter.ysi_test.TestJoinNearestYsiData">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.ysi_test.</code><code class="descname">TestJoinNearestYsiData</code><a class="headerlink" href="#osmo_jupyter.ysi_test.TestJoinNearestYsiData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_accepts_custom_timestamp_column_name">
+<code class="descname">test_accepts_custom_timestamp_column_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_accepts_custom_timestamp_column_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_interpolates_to_nearest_second">
+<code class="descname">test_interpolates_to_nearest_second</code><span class="sig-paren">(</span><em>name</em>, <em>other_seconds</em>, <em>ysi_seconds</em>, <em>expected_other_seconds</em>, <em>expected_ysi_seconds</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_interpolates_to_nearest_second" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_prefixes_with_YSI">
+<code class="descname">test_prefixes_with_YSI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_prefixes_with_YSI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_raises_if_YSI_index_not_datetime">
+<code class="descname">test_raises_if_YSI_index_not_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_raises_if_YSI_index_not_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_raises_if_other_data_timestamp_column_not_datetime">
+<code class="descname">test_raises_if_other_data_timestamp_column_not_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi_test.TestJoinNearestYsiData.test_raises_if_other_data_timestamp_column_not_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-osmo_jupyter" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">osmo-jupyter</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, dev@osmobot.com.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/osmo_jupyter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
