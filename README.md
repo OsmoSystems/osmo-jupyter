@@ -67,7 +67,42 @@ This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/docume
 
 ### Running tests
 
+#### Using tox
+0. `pip3 install tox`  # Only have to do this once
+1. to run tests and linter: `tox`
+2. if you have installed new dependencies: `tox -r`
+
+#### (old) Using pytest directly
 1. `pip install -r test_requirements.txt`
  to watch file changes and auto-run tests during development, call `pytest-watch`
 2. to run unit tests, run `pytest`
 3. to run the linter, use `flake8`
+
+
+### Generating documentation
+
+1. Installs sphinx and the sphinx_rtd_theme
+
+    ```bash
+    ~/osmo/osmo-jupyter$ pip3 install -r docs_requirements.txt
+    ```
+
+1. Navigate to docs/ directory:
+
+    ```bash
+    ~/osmo/osmo-jupyter$ cd docs/
+    ```
+
+1. Re-auto-generate docs from docstrings, excluding test files. (See [sphinx-apidoc](http://www.sphinx-doc.org/en/1.4/man/sphinx-apidoc.html) for details about parameters)
+
+    ```bash
+    ~/osmo/osmo-jupyter/docs$ sphinx-apidoc -f -o source/ ../osmo_jupyter/ ../osmo_jupyter/*test.py ../osmo_jupyter/*/*test.py
+    ```
+
+1. Re-build html docs:
+
+    ```bash
+    ~/osmo/osmo-jupyter/docs$ make html
+    ```
+
+
