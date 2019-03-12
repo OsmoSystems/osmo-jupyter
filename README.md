@@ -70,7 +70,10 @@ This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/docume
 #### Using tox
 0. `pip3 install tox`  # Only have to do this once
 1. to run tests and linter: `tox`
-2. if you have installed new dependencies: `tox -r`
+    - if you have installed new dependencies: `tox -r`
+1. to continuously re-run tests:
+    1. `source .tox/py26/bin/activate` - activates the tox environment that has everything installed
+    1. `ptw --ignore .tox .` - use pytest-watch (ptw) to re-run tests if anything changes in the source code
 
 
 ### Generating documentation
