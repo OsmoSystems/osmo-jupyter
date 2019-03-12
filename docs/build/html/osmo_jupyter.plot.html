@@ -82,6 +82,7 @@
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">osmo_jupyter.plot package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.plot.heatmap">osmo_jupyter.plot.heatmap module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.plot.scatter">osmo_jupyter.plot.scatter module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.plot">Module contents</a></li>
 </ul>
@@ -154,6 +155,80 @@
 <h1>osmo_jupyter.plot package<a class="headerlink" href="#osmo-jupyter-plot-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-osmo_jupyter.plot.heatmap">
+<span id="osmo-jupyter-plot-heatmap-module"></span><h2>osmo_jupyter.plot.heatmap module<a class="headerlink" href="#module-osmo_jupyter.plot.heatmap" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.plot.heatmap.cut_array2d">
+<code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">cut_array2d</code><span class="sig-paren">(</span><em>array</em>, <em>block_shape</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.cut_array2d" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Cuts up an array into blocks of shape <cite>block_shape</cite>. If <cite>block_shape</cite> doesn’t factor perfectly into the</dt>
+<dd>shape of the array, drops data from the right and bottom edges of the input <cite>array</cite>.
+Heavily, heavily adapted from <a class="reference external" href="https://stackoverflow.com/a/17385776/1701416">https://stackoverflow.com/a/17385776/1701416</a></dd>
+<dt>Args:</dt>
+<dd>array: a 2D numpy array
+block_shape: a 2-tuple. The shape of the blocks you want the <cite>array</cite> to be cut into</dd>
+<dt>Return:</dt>
+<dd><dl class="first last docutils">
+<dt>(block_centers, blocks) tuple where</dt>
+<dd>block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
+blocks: a 1D array of blocks of shape <cite>block_shape</cite></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.plot.heatmap.display_heatmap">
+<code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">display_heatmap</code><span class="sig-paren">(</span><em>array</em>, <em>display_decimals=2</em>, <em>title='Heatmap'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.display_heatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the heatmap figure from provided array</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>array: A 2D numpy array to render as a heatmap
+display_decimals: Optional (default=2). the number of decimals to round to in the annotation
+title: Optional (default=’Heatmap’)</dd>
+<dt>Returns:</dt>
+<dd>A heatmap Figure.
+Can be displayed in a jupyter notebook using the display() function.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.plot.heatmap.get_block_means_2d">
+<code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">get_block_means_2d</code><span class="sig-paren">(</span><em>block_centers</em>, <em>blocks</em>, <em>averaging_function=&lt;function mean&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.get_block_means_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given 1D arrays of block_centers and blocks, construct a 2D array of block means.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
+blocks: a 1D array of 2D blocks
+averaging_function: Optional (default=np.mean). Function to use to get the average of each block (a 2D array)</dd>
+<dt>Returns:</dt>
+<dd>a 2D array of block means</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.plot.heatmap.heatmapify">
+<code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">heatmapify</code><span class="sig-paren">(</span><em>array</em>, <em>averaging_function=&lt;function mean&gt;</em>, <em>block_shape=(50</em>, <em>50)</em>, <em>display_decimals=2</em>, <em>title='Heatmap'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.heatmapify" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Constructs a heatmap from a 2D array. The heatmap is created by slicing the array into blocks the size of</dt>
+<dd><cite>block_shape</cite>, and then averaging each block.</dd>
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>array: A 2D numpy array to render as a heatmap. e.g. a single channel of an RGB image:</dt>
+<dd>array = image[:, :, channel]  # channel is 0, 1, or 2, for r, g, b respectively</dd>
+</dl>
+<p class="last">averaging_function: Optional (default=np.mean). Function to use to get the average of each block (a 2D array)
+block_shape: Optional (default=(50,50)). The shape of block to group by and average over to create the heatmap
+display_decimals: Optional (default=2). The number of decimals to round to in the annotation
+title: Optional (default=’Heatmap’).</p>
+</dd>
+<dt>Returns:</dt>
+<dd>A heatmap Figure.
+Can be displayed in a jupyter notebook using the display() function.</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-osmo_jupyter.plot.scatter">
 <span id="osmo-jupyter-plot-scatter-module"></span><h2>osmo_jupyter.plot.scatter module<a class="headerlink" href="#module-osmo_jupyter.plot.scatter" title="Permalink to this headline">¶</a></h2>
@@ -253,7 +328,7 @@ x_values: Optional, X values to go along with those. If not provided, y_values i
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019-03-11T16:27:24.518340, dev@osmobot.com
+        &copy; Copyright 2019-03-12T15:19:44.576278, dev@osmobot.com
 
     </p>
   </div>

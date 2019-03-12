@@ -4,6 +4,14 @@ osmo\_jupyter.plot package
 Submodules
 ----------
 
+osmo\_jupyter.plot.heatmap module
+---------------------------------
+
+.. automodule:: osmo_jupyter.plot.heatmap
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 osmo\_jupyter.plot.scatter module
 ---------------------------------
 
