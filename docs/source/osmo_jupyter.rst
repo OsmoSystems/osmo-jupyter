@@ -27,14 +27,6 @@ osmo\_jupyter.db\_access module
     :undoc-members:
     :show-inheritance:
 
-osmo\_jupyter.db\_access\_test module
--------------------------------------
-
-.. automodule:: osmo_jupyter.db_access_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 osmo\_jupyter.files module
 --------------------------
 
@@ -51,26 +43,10 @@ osmo\_jupyter.normalize module
     :undoc-members:
     :show-inheritance:
 
-osmo\_jupyter.normalize\_test module
-------------------------------------
-
-.. automodule:: osmo_jupyter.normalize_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 osmo\_jupyter.rgb\_columns module
 ---------------------------------
 
 .. automodule:: osmo_jupyter.rgb_columns
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-osmo\_jupyter.rgb\_columns\_test module
----------------------------------------
-
-.. automodule:: osmo_jupyter.rgb_columns_test
     :members:
     :undoc-members:
     :show-inheritance:
@@ -83,14 +59,6 @@ osmo\_jupyter.spectrometer module
     :undoc-members:
     :show-inheritance:
 
-osmo\_jupyter.spectrometer\_test module
----------------------------------------
-
-.. automodule:: osmo_jupyter.spectrometer_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 osmo\_jupyter.timezone module
 -----------------------------
 
@@ -99,26 +67,10 @@ osmo\_jupyter.timezone module
     :undoc-members:
     :show-inheritance:
 
-osmo\_jupyter.timezone\_test module
------------------------------------
-
-.. automodule:: osmo_jupyter.timezone_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 osmo\_jupyter.ysi module
 ------------------------
 
 .. automodule:: osmo_jupyter.ysi
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-osmo\_jupyter.ysi\_test module
-------------------------------
-
-.. automodule:: osmo_jupyter.ysi_test
     :members:
     :undoc-members:
     :show-inheritance:
