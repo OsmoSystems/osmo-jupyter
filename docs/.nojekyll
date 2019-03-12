@@ -1,0 +1,4 @@
+# Sphinx puts static assets in a `_static` folder
+# By default, Jekyll (GitHub pages) does not build any files or directories with underscore. 
+# Including this .nojekyll file in the docs folder turns off Jekyll.
+# See https://github.com/sphinx-doc/sphinx/issues/3382
