@@ -72,16 +72,10 @@ This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/docume
 1. to run tests and linter: `tox`
 2. if you have installed new dependencies: `tox -r`
 
-#### (old) Using pytest directly
-1. `pip install -r test_requirements.txt`
- to watch file changes and auto-run tests during development, call `pytest-watch`
-2. to run unit tests, run `pytest`
-3. to run the linter, use `flake8`
-
 
 ### Generating documentation
 
-1. Installs sphinx and the sphinx_rtd_theme
+1. Install sphinx and the sphinx_rtd_theme
 
     ```bash
     ~/osmo/osmo-jupyter$ pip3 install -r docs_requirements.txt
