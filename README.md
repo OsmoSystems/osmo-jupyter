@@ -2,6 +2,9 @@
 This is a set of tools that is designed to facilitate science in the context of Osmo Systems.
 The code herein generally expects to be run in the context of a jupyter notebook.
 
+## Quick reference
+See the [auto-generated docs](https://osmosystems.github.io/osmo-jupyter/)
+
 ## What lives here
 
 Here's the basic heuristic for what should live in this library vs. in a notebook. **yes to all** = probably it should live here. **no to any** = probably not.
@@ -41,6 +44,8 @@ Replace [CHANGESET] with a changeset ID. Grab the latest changeset ID by [visiti
 3. Once you run the cell you created above, Jupyter will be able to tab-complete all of our public functions: type `osmo_jupyter.` and `<tab>`.
 
 4. Some usage examples are in the Google Drive at [Technical_Osmosystems/Tools/Jupyter Snippets](https://drive.google.com/drive/folders/1A-Rlb-VYTwQ6Tl3sm12eR-cnmCHbj6UP)
+
+5. See the [auto-generated docs](https://osmosystems.github.io/osmo-jupyter/)
 
 ## Contributing
 
