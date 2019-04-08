@@ -1,13 +1,9 @@
 import numpy as np
 import plotly.graph_objs as go
 
-from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN
-
-
-# Corresponds to 100% saturation at 1atm - use to convert between partial pressure and saturation
+from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN, \
+    DEGREES_CELSIUS_AT_ZERO_KELVIN, IDEAL_GAS_CONSTANT_J_PER_MOL_K, DO_PARTIAL_PRESSURE_MMHG_AT_1ATM
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
-
-DO_PARTIAL_PRESSURE_MMHG_AT_1ATM = 160
 
 
 def _get_rate_constant(temperature_c, preexponential_factor, activation_energy):
@@ -20,18 +16,14 @@ def _get_rate_constant(temperature_c, preexponential_factor, activation_energy):
     T is absolute temperature in kelvin
     A is preexponential factor (a constant)
     Ea is the activation energy
-    R is the universal gas constant
+    R is the ideal gas constant
     '''
-    ideal_gas_constant = 8.3144598  # Ideal gas constant, in joules per kelvin per mol
-    temperature_kelvin = temperature_c + 273.15
-    # This is silly and hacky, but it's what works to get the activation energy orders of magnitude to be near 1
-    # Makes the job easier for the regression
-    activation_energy_scaling_factor = 10000
-    exponent = -activation_energy * activation_energy_scaling_factor / (ideal_gas_constant * temperature_kelvin)
+    temperature_kelvin = temperature_c + DEGREES_CELSIUS_AT_ZERO_KELVIN
+    exponent = -activation_energy / (IDEAL_GAS_CONSTANT_J_PER_MOL_K * temperature_kelvin)
     return preexponential_factor * np.power(np.e, exponent)
 
 
-def _estimate_optical_reading(do_pct_sat, temperature):
+def _estimate_optical_reading(do_pct_sat, temperature_c):
     ''' This is a fit which worked pretty well with Ocean Optix patch data.
     It's a version of the two-site model which uses arrhenius equations for temperature dependence.
     Note that there are a lot of ways this could be tweaked.
@@ -44,18 +36,18 @@ def _estimate_optical_reading(do_pct_sat, temperature):
     k_p_i = 1.476e-02
     k_p_a = -1.725e+08  # Note: negative activation energy is not necessarily crazy.
     k_p_b = 2.094e+00
-    activation_energy_i0 = -1.141e+00
-    activation_energy = 7.826e-01
+    activation_energy_i0 = -1.141e+00 * 10000
+    activation_energy = 7.826e-01 * 10000
 
     # Original OO data had DO units in "percent of 760mmHg" or percent of 1atm.
     # Convert from percent saturation (% of 160mmHg)
     do_pct_of_760mmhg = do_pct_sat * DO_PARTIAL_PRESSURE_MMHG_AT_1ATM / 760
 
     # Assume activation energy is shared for all parameters except f, but the pre-exponential factor is different.
-    i0 = _get_rate_constant(temperature, k_p_i, activation_energy_i0)
-    ka = _get_rate_constant(temperature, k_p_a, activation_energy)
-    kb = _get_rate_constant(temperature, k_p_b, activation_energy)
-    f = _get_rate_constant(temperature, k_p_f, activation_energy)
+    i0 = _get_rate_constant(temperature_c, k_p_i, activation_energy_i0)
+    ka = _get_rate_constant(temperature_c, k_p_a, activation_energy)
+    kb = _get_rate_constant(temperature_c, k_p_b, activation_energy)
+    f = _get_rate_constant(temperature_c, k_p_f, activation_energy)
     return i0 * f / (1 + ka * do_pct_of_760mmhg) + (1 - f) * i0 / (1 + kb * do_pct_of_760mmhg)
 
 

@@ -26,3 +26,26 @@ class TestNormalizedReading:
     )
     def test_normalized_reading_middlin_values_are_middlin(self, name, do, temperature):
         assert 0 < module.get_optical_reading_normalized(do, temperature) < 1
+
+
+class TestGetRateConstant:
+    def test_get_rate_constant(self):
+        # Spot-check rate function with some actual numbers
+        actual = module._get_rate_constant(temperature_c=0, preexponential_factor=10, activation_energy=1)
+        assert actual == pytest.approx(9.995598)
+
+
+class TestEstimateOpticalReading:
+    @pytest.mark.parametrize(
+        'name, do_pct_sat, temperature_c, expected',
+        [
+            ('zero DO min temp', 0, TEMPERATURE_STANDARD_OPERATING_MIN, 1.727900),
+            ('zero DO max temp', 0, TEMPERATURE_STANDARD_OPERATING_MAX, 1.268441),
+            ('max DO min temp', 100, TEMPERATURE_STANDARD_OPERATING_MIN, 0.625286),
+            ('max DO max temp', 100, TEMPERATURE_STANDARD_OPERATING_MAX, 0.396912),
+        ]
+    )
+    def test_estimate_optical_reading(self, name, do_pct_sat, temperature_c, expected):
+        # Spot-check function with some actual numbers
+        actual = module._estimate_optical_reading(do_pct_sat, temperature_c)
+        assert actual == pytest.approx(expected)
