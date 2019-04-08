@@ -5,7 +5,7 @@ IDEAL_GAS_CONSTANT_L_ATM_PER_MOL_K = 0.08205  # (L * atm) / (mol * K)
 
 DEGREES_CELSIUS_AT_ZERO_KELVIN = 273.15
 
-# Full range of possible DOs, in percent sat
+# Full range of possible (in normal circumstances) DOs, in percent sat
 DO_MIN = 0
 DO_MAX = 100
 
