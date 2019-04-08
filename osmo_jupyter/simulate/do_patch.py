@@ -23,6 +23,7 @@ def _get_rate_constant(temperature_c, preexponential_factor, activation_energy):
     return preexponential_factor * np.power(np.e, exponent)
 
 
+# TODO: decsribe parameters in docstring
 def _estimate_optical_reading(do_pct_sat, temperature_c):
     ''' This is a fit which worked pretty well with Ocean Optix patch data.
     It's a version of the two-site model which uses arrhenius equations for temperature dependence.
@@ -36,8 +37,8 @@ def _estimate_optical_reading(do_pct_sat, temperature_c):
     k_p_i = 1.476e-02
     k_p_a = -1.725e+08  # Note: negative activation energy is not necessarily crazy.
     k_p_b = 2.094e+00
-    activation_energy_i0 = -1.141e+00 * 10000
-    activation_energy = 7.826e-01 * 10000
+    activation_energy_i0 = -1.141e+04
+    activation_energy = 7.826e+03
 
     # Original OO data had DO units in "percent of 760mmHg" or percent of 1atm.
     # Convert from percent saturation (% of 160mmHg)
@@ -51,6 +52,7 @@ def _estimate_optical_reading(do_pct_sat, temperature_c):
     return i0 * f / (1 + ka * do_pct_of_760mmhg) + (1 - f) * i0 / (1 + kb * do_pct_of_760mmhg)
 
 
+# TODO: decsribe parameters in docstring
 def get_optical_reading_normalized(do_pct_sat, temperature, min_value=0, max_value=1):
     ''' get an optical reading between a min and max value,
     with a DO and temperature relationship closely matching that seen in our patches in the past.
@@ -72,6 +74,7 @@ def get_optical_reading_normalized(do_pct_sat, temperature, min_value=0, max_val
     )
     fit_optical_reading_range = fit_optical_reading_max - fit_optical_reading_min
 
+    # TODO: fix magic number
     do_partial_pressure = do_pct_sat * 1.6
 
     fit_optical_reading = _estimate_optical_reading(

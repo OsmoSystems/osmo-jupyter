@@ -1,7 +1,8 @@
 import numpy as np
 from plotly import graph_objs as go
 
-from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN, DO_MIN, DO_MAX
+from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN, \
+    DO_MIN, DO_MAX
 
 
 # These are functions to help plot surfaces of DO, temperature, and optical reading

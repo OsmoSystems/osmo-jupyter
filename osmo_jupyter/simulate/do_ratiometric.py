@@ -29,6 +29,7 @@ def simulate_spatial_ratiometric_reading(
 
 def get_ratiometric_reading_plot():
     ''' Quick plot of a spatial ratiometric optical reading over a range of temperatures and DO values. '''
+    # TODO: DRY this up
     temperatures_to_plot = np.arange(TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX + 1, 5)
     do_domain = np.linspace(0, 100, 100)
     return go.FigureWidget(
