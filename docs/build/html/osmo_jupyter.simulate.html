@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>osmo_jupyter.simulate package &mdash; osmo-jupyter  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> osmo-jupyter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">osmo_jupyter.simulate package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_and_temp_plot">osmo_jupyter.simulate.do_and_temp_plot module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_patch">osmo_jupyter.simulate.do_patch module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_ratiometric">osmo_jupyter.simulate.do_ratiometric module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.simulate">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">osmo-jupyter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>osmo_jupyter.simulate package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/osmo_jupyter.simulate.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="osmo-jupyter-simulate-package">
+<h1>osmo_jupyter.simulate package<a class="headerlink" href="#osmo-jupyter-simulate-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-osmo_jupyter.simulate.do_and_temp_plot">
+<span id="osmo-jupyter-simulate-do-and-temp-plot-module"></span><h2>osmo_jupyter.simulate.do_and_temp_plot module<a class="headerlink" href="#module-osmo_jupyter.simulate.do_and_temp_plot" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_and_temp_plot.get_meshgrid_of_do_and_temp">
+<code class="descclassname">osmo_jupyter.simulate.do_and_temp_plot.</code><code class="descname">get_meshgrid_of_do_and_temp</code><span class="sig-paren">(</span><em>fn_of_do_and_temp</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_plot.get_meshgrid_of_do_and_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get values that correspond to the (global) DO and temperature meshgrids</p>
+<dl class="docutils">
+<dt>Params:</dt>
+<dd>fn_of_do_and_temp: Function which takes DO and temperature positional arguments (in that order)</dd>
+<dt>Returns:</dt>
+<dd><dl class="first docutils">
+<dt>2d np.array of values from fn_of_do_and_temp</dt>
+<dd>dimension 0 will iterate over DO
+dimension 1 will iterate over temperatures</dd>
+</dl>
+<p class="last">this meshgrid will be appropriate to use on the Z axis of a plotly Surface
+where DO_MESHGRID is on the X axis and TEMPERATURE_MESHGRID is on the Y axis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_and_temp_plot.plot_fn_of_do_and_temp_as_surface">
+<code class="descclassname">osmo_jupyter.simulate.do_and_temp_plot.</code><code class="descname">plot_fn_of_do_and_temp_as_surface</code><span class="sig-paren">(</span><em>fn_of_do_and_temp</em>, <em>title</em>, <em>z_axis_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_plot.plot_fn_of_do_and_temp_as_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a surface plot of a DO- and temperature-dependent function.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>fn_of_do_and_temp: a function which takes DO saturation and temperature as positional arguments (in that order).</dt>
+<dd>This function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to compute values at a standard range
+of temperature and DO values.</dd>
+</dl>
+<p class="last">title: title to use on the resulting chart
+z_axis_title: label for the Z axis - what does your function describe?</p>
+</dd>
+<dt>Returns:</dt>
+<dd>plotly FigureWidget for your viewing pleasure</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_and_temp_plot.plot_meshgrid_of_do_and_temp_as_surface">
+<code class="descclassname">osmo_jupyter.simulate.do_and_temp_plot.</code><code class="descname">plot_meshgrid_of_do_and_temp_as_surface</code><span class="sig-paren">(</span><em>meshgrid_of_do_and_temp</em>, <em>title</em>, <em>z_axis_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_plot.plot_meshgrid_of_do_and_temp_as_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a surface plot of a DO- and temperature-dependent function.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>meshgrid_of_do_and_temp: a meshgrid corresponding to DO_MESHGRID and TEMPERATURE_MESHGRID.
+title: title to use on the resulting chart
+z_axis_title: label for the Z axis - what does your function describe?</dd>
+<dt>Returns:</dt>
+<dd>plotly FigureWidget for your viewing pleasure</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.simulate.do_patch">
+<span id="osmo-jupyter-simulate-do-patch-module"></span><h2>osmo_jupyter.simulate.do_patch module<a class="headerlink" href="#module-osmo_jupyter.simulate.do_patch" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_patch.get_optical_reading_normalized">
+<code class="descclassname">osmo_jupyter.simulate.do_patch.</code><code class="descname">get_optical_reading_normalized</code><span class="sig-paren">(</span><em>do_pct_sat</em>, <em>temperature</em>, <em>min_value=0</em>, <em>max_value=1</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_patch.get_optical_reading_normalized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an optical reading between a min and max value, with a DO and temperature relationship closely
+matching that seen in our patches in the past.</p>
+<p>This function also converts DO values to partial pressure to deal with the partial pressure unit used in the
+legacy fit.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>do_pct_sat: Dissolved Oxygen in percent saturation
+temperature: Temperature in degrees Celcius
+min_value: Optional (default=0). Minimum value for the normalized range
+max_value: Optional (default=1). Maximum value for the nomralized range</dd>
+<dt>Returns:</dt>
+<dd>An optical reading normalized to be within (optional) min_value and max_value.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_patch.get_optical_reading_plot">
+<code class="descclassname">osmo_jupyter.simulate.do_patch.</code><code class="descname">get_optical_reading_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_patch.get_optical_reading_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick plot of a single-patch optical reading over a range of temperatures and DO values.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.simulate.do_ratiometric">
+<span id="osmo-jupyter-simulate-do-ratiometric-module"></span><h2>osmo_jupyter.simulate.do_ratiometric module<a class="headerlink" href="#module-osmo_jupyter.simulate.do_ratiometric" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_ratiometric.get_ratiometric_reading_plot">
+<code class="descclassname">osmo_jupyter.simulate.do_ratiometric.</code><code class="descname">get_ratiometric_reading_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_ratiometric.get_ratiometric_reading_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick plot of a spatial ratiometric optical reading over a range of temperatures and DO values.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.simulate.do_ratiometric.simulate_spatial_ratiometric_reading">
+<code class="descclassname">osmo_jupyter.simulate.do_ratiometric.</code><code class="descname">simulate_spatial_ratiometric_reading</code><span class="sig-paren">(</span><em>do</em>, <em>temperature</em>, <em>sealed_patch_do=0</em>, <em>sealed_patch_kwargs={}</em>, <em>unsealed_patch_kwargs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_ratiometric.simulate_spatial_ratiometric_reading" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate a “spatial ratiometric” reading using a sealed DO patch as the ratiometric reference</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>do: Dissolved Oxygen in percent saturation in the unsealed patch
+temperature: Temperature in degrees Celcius
+sealed_patch_do: Optional (default=0). Dissolved Oxygen in percent saturation in the sealed patch
+sealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the sealed patch
+unsealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the unsealed patch</dd>
+<dt>Returns:</dt>
+<dd>An optical reading normalized to be within (optional) min_value and max_value.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.simulate">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-osmo_jupyter.simulate" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-04-08T18:01:28.338016, dev@osmobot.com
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
