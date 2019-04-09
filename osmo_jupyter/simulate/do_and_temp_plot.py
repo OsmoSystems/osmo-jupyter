@@ -43,30 +43,16 @@ def get_meshgrid_of_do_and_temp(fn_of_do_and_temp):
     ])
 
 
-def plot_surface_of_do_and_temp(
-    fn_or_meshgrid_of_do_and_temp,
-    title,
-    z_axis_title,
-):
+def plot_meshgrid_of_do_and_temp_as_surface(meshgrid_of_do_and_temp, title, z_axis_title):
     ''' Create a surface plot of a DO- and temperature-dependent function.
 
     Args:
-        fn_or_meshgrid_of_do_and_temp: either a function which takes DO saturation and temperature as positional
-            arguments (in that order), OR a meshgrid corresponding to DO_MESHGRID and TEMPERATURE_MESHGRID.
-            If callable, this function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to
-            compute values at a standard range of temperature and DO values.
+        meshgrid_of_do_and_temp: a meshgrid corresponding to DO_MESHGRID and TEMPERATURE_MESHGRID.
         title: title to use on the resulting chart
         z_axis_title: label for the Z axis - what does your function describe?
     Returns:
         plotly FigureWidget for your viewing pleasure
     '''
-    # Accept either a pre-formed Z-axis meshgrid or a function that makes one
-    z_meshgrid = (
-        get_meshgrid_of_do_and_temp(fn_or_meshgrid_of_do_and_temp)
-        if callable(fn_or_meshgrid_of_do_and_temp)
-        else fn_or_meshgrid_of_do_and_temp
-    )
-
     contour = {
         'show': True,
         'width': 1,
@@ -82,7 +68,7 @@ def plot_surface_of_do_and_temp(
             go.Surface(
                 x=DO_MESHGRID,
                 y=TEMPERATURE_MESHGRID,
-                z=z_meshgrid,
+                z=meshgrid_of_do_and_temp,
                 showscale=False,
                 surfacecolor=TEMPERATURE_MESHGRID,
                 opacity=0.9,
@@ -103,4 +89,23 @@ def plot_surface_of_do_and_temp(
             'width': 700,
             'height': 700,
         }
+    )
+
+
+def plot_fn_of_do_and_temp_as_surface(fn_of_do_and_temp, title, z_axis_title):
+    ''' Create a surface plot of a DO- and temperature-dependent function.
+
+    Args:
+        fn_of_do_and_temp: a function which takes DO saturation and temperature as positional arguments (in that order).
+            This function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to compute values at a standard range
+            of temperature and DO values.
+        title: title to use on the resulting chart
+        z_axis_title: label for the Z axis - what does your function describe?
+    Returns:
+        plotly FigureWidget for your viewing pleasure
+    '''
+    return plot_meshgrid_of_do_and_temp_as_surface(
+        get_meshgrid_of_do_and_temp(fn_of_do_and_temp),
+        title,
+        z_axis_title
     )
