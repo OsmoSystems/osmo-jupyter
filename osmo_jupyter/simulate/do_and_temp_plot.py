@@ -5,7 +5,7 @@ from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATU
     DO_MIN, DO_MAX
 
 
-# These are functions to help plot surfaces of DO, temperature, and optical reading
+# These are functions to help plot simulations of DO, temperature, and optical reading
 
 
 # Meshgrid and domain helpers

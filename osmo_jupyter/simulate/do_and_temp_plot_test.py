@@ -1,7 +1,7 @@
 # import pytest
 from unittest.mock import sentinel
 
-import osmo_jupyter.simulate.plot as module
+import osmo_jupyter.simulate.do_and_temp_plot as module
 
 
 class TestGetMeshgridOfDoAndTemp:

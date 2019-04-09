@@ -2,8 +2,9 @@ import numpy as np
 import plotly.graph_objs as go
 
 from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN, \
-    DEGREES_CELSIUS_AT_ZERO_KELVIN, IDEAL_GAS_CONSTANT_J_PER_MOL_K, DO_PARTIAL_PRESSURE_MMHG_AT_1ATM
+    DEGREES_CELSIUS_AT_ZERO_KELVIN, IDEAL_GAS_CONSTANT_J_PER_MOL_K, DO_PARTIAL_PRESSURE_MMHG_AT_1ATM, DO_MAX
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
+from osmo_jupyter.simulate.do_and_temp_plot import DO_DOMAIN, TEMPERATURE_DOMAIN
 
 
 def _get_rate_constant(temperature_c, preexponential_factor, activation_energy):
@@ -23,7 +24,6 @@ def _get_rate_constant(temperature_c, preexponential_factor, activation_energy):
     return preexponential_factor * np.power(np.e, exponent)
 
 
-# TODO: decsribe parameters in docstring
 def _estimate_optical_reading(do_pct_sat, temperature_c):
     ''' This is a fit which worked pretty well with Ocean Optix patch data.
     It's a version of the two-site model which uses arrhenius equations for temperature dependence.
@@ -52,13 +52,21 @@ def _estimate_optical_reading(do_pct_sat, temperature_c):
     return i0 * f / (1 + ka * do_pct_of_760mmhg) + (1 - f) * i0 / (1 + kb * do_pct_of_760mmhg)
 
 
-# TODO: decsribe parameters in docstring
 def get_optical_reading_normalized(do_pct_sat, temperature, min_value=0, max_value=1):
-    ''' get an optical reading between a min and max value,
-    with a DO and temperature relationship closely matching that seen in our patches in the past.
+    ''' Get an optical reading between a min and max value, with a DO and temperature relationship closely
+    matching that seen in our patches in the past.
 
     This function also converts DO values to partial pressure to deal with the partial pressure unit used in the
     legacy fit.
+
+    Args:
+        do_pct_sat: Dissolved Oxygen in percent saturation
+        temperature: Temperature in degrees Celcius
+        min_value: Optional (default=0). Minimum value for the normalized range
+        max_value: Optional (default=1). Maximum value for the nomralized range
+
+    Returns:
+        An optical reading normalized to be within (optional) min_value and max_value.
     '''
 
     # Find minimum and maximum values to normalize with
@@ -74,8 +82,7 @@ def get_optical_reading_normalized(do_pct_sat, temperature, min_value=0, max_val
     )
     fit_optical_reading_range = fit_optical_reading_max - fit_optical_reading_min
 
-    # TODO: fix magic number
-    do_partial_pressure = do_pct_sat * 1.6
+    do_partial_pressure = do_pct_sat * DO_PARTIAL_PRESSURE_MMHG_AT_1ATM / DO_MAX
 
     fit_optical_reading = _estimate_optical_reading(
         do_partial_pressure,
@@ -92,19 +99,19 @@ def get_optical_reading_normalized(do_pct_sat, temperature, min_value=0, max_val
 
 def get_optical_reading_plot():
     ''' Quick plot of a single-patch optical reading over a range of temperatures and DO values. '''
-    temperatures_to_plot = np.arange(TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX + 1, 5)
-    do_domain = np.linspace(0, 100, 100)
+    temperatures_to_plot = TEMPERATURE_DOMAIN[::5]
+
     return go.FigureWidget(
         [
             go.Scatter(
-                x=do_domain,
-                y=get_optical_reading_normalized(do_domain, temperature),
+                x=DO_DOMAIN,
+                y=get_optical_reading_normalized(DO_DOMAIN, temperature),
                 mode='lines',
                 line={
                     'color': color_from_temperature(temperature),
                     'width': 1,
                 },
-                name=f'T={temperature:d}',
+                name=f'T={temperature}',
             )
             for temperature in temperatures_to_plot
         ],
