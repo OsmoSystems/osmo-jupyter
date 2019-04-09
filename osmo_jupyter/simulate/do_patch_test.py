@@ -49,5 +49,4 @@ class TestEstimateOpticalReading:
     def test_estimate_optical_reading(self, name, do_pct_sat, temperature_c, expected):
         # Spot-check function with some actual numbers. This will of course change if we update the curve.
         actual = module._estimate_optical_reading(do_pct_sat, temperature_c)
-        assert actual == pytest.approx(expected)
         np.testing.assert_almost_equal(actual, expected)
