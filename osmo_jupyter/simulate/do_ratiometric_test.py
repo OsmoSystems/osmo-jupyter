@@ -14,6 +14,14 @@ class TestSimulateSpatialRatiometricReading:
         actual = module.simulate_spatial_ratiometric_reading(do=0, temperature=0, sealed_patch_do=0)
         assert actual == 1
 
+    def test_unsealed_do_larger_than_sealed_do_returns_less_than_1(self):
+        actual = module.simulate_spatial_ratiometric_reading(do=50, temperature=0, sealed_patch_do=0)
+        assert actual < 1
+
+    def test_sealed_do_larger_than_unsealed_do_returns_greater_than_1(self):
+        actual = module.simulate_spatial_ratiometric_reading(do=0, temperature=0, sealed_patch_do=50)
+        assert actual > 1
+
     def test_calls_with_correct_kwargs(self, mock_get_optical_reading_normalized):
         unsealed_patch_kwargs = {'min_value': sentinel.unsealed_min}
         sealed_patch_kwargs = {'min_value': sentinel.sealed_min}
