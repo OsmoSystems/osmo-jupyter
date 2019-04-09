@@ -4,7 +4,7 @@ import plotly.graph_objs as go
 from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN, \
     DEGREES_CELSIUS_AT_ZERO_KELVIN, IDEAL_GAS_CONSTANT_J_PER_MOL_K, DO_PARTIAL_PRESSURE_MMHG_AT_1ATM, DO_MAX
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
-from osmo_jupyter.simulate.do_and_temp_plot import DO_DOMAIN, TEMPERATURE_DOMAIN
+from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN, TEMPERATURE_DOMAIN
 
 
 def _get_rate_constant(temperature_c, preexponential_factor, activation_energy):

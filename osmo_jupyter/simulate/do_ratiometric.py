@@ -2,7 +2,7 @@ import plotly.graph_objs as go
 
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
 from osmo_jupyter.simulate.do_patch import get_optical_reading_normalized
-from osmo_jupyter.simulate.do_and_temp_plot import DO_DOMAIN, TEMPERATURE_DOMAIN
+from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN, TEMPERATURE_DOMAIN
 
 
 def simulate_spatial_ratiometric_reading(
