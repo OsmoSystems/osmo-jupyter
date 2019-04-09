@@ -4,6 +4,14 @@ osmo\_jupyter.plot package
 Submodules
 ----------
 
+osmo\_jupyter.plot.color\_from\_temperature module
+--------------------------------------------------
+
+.. automodule:: osmo_jupyter.plot.color_from_temperature
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 osmo\_jupyter.plot.heatmap module
 ---------------------------------
 

@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
     osmo_jupyter.plot
+    osmo_jupyter.simulate
 
 Submodules
 ----------
