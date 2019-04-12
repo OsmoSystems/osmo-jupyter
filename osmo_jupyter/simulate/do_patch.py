@@ -7,10 +7,14 @@ from osmo_jupyter.plot.color_from_temperature import color_from_temperature
 from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN, TEMPERATURE_DOMAIN
 
 
+# Sharing docstring content - note that this has to be shared via mutating a function's `__doc__` attribute.
+# This is because the mechanism that defines __doc__ in the first place doesn't support addition or f-strings.
+# For more exciting detail, check out https://bugs.python.org/issue28739.
 FIT_SOURCE_DOCUMENTATION = '''
 ---
 Details about the optical reading fit and source data:
-    Source data: Ocean Optics patch data.
+    Source data: Ocean Optics calibration data measuriung fluorescence decay (tau). We expect fluorescent decay
+    to be directly proportional to fluorescence intensity across DO and temperature values
 
     Fit type: a version of the two-site model which uses arrhenius equations for temperature dependence.
     (Note that there are a lot of ways this could be tweaked.)
@@ -63,7 +67,6 @@ def _estimate_optical_reading(do_pct_sat, temperature_c):
     return i0 * f / (1 + ka * do_pct_of_760mmhg) + (1 - f) * i0 / (1 + kb * do_pct_of_760mmhg)
 
 
-# Dynamically update the __doc__ to include the FIT_SOURCE_DOCUMENTATION
 _estimate_optical_reading.__doc__ += FIT_SOURCE_DOCUMENTATION
 
 
@@ -109,7 +112,6 @@ def get_optical_reading_normalized(do_pct_sat, temperature, min_value=0, max_val
     return normalized_optical_reading * range_ + min_value
 
 
-# Dynamically update the __doc__ to include the FIT_SOURCE_DOCUMENTATION
 get_optical_reading_normalized.__doc__ += FIT_SOURCE_DOCUMENTATION
 
 
@@ -141,5 +143,4 @@ def get_optical_reading_plot():
     )
 
 
-# Dynamically update the __doc__ to include the FIT_SOURCE_DOCUMENTATION
 get_optical_reading_plot.__doc__ += FIT_SOURCE_DOCUMENTATION
