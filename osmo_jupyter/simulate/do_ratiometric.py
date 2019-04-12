@@ -1,7 +1,7 @@
 import plotly.graph_objs as go
 
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
-from osmo_jupyter.simulate.do_patch import get_optical_reading_normalized
+from osmo_jupyter.simulate.do_patch import get_optical_reading_normalized, FIT_SOURCE_DOCUMENTATION
 from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN, TEMPERATURE_DOMAIN
 
 
@@ -22,7 +22,7 @@ def simulate_spatial_ratiometric_reading(
         unsealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the unsealed patch
 
     Returns:
-        An optical reading normalized to be within (optional) min_value and max_value.
+        A spatial ratiometric result: the ratio between normalized optical readings of the unsealed and sealed patches
     '''
 
     unsealed_patch_reading = get_optical_reading_normalized(
@@ -36,6 +36,9 @@ def simulate_spatial_ratiometric_reading(
         **sealed_patch_kwargs
     )
     return unsealed_patch_reading / sealed_patch_reading
+
+
+simulate_spatial_ratiometric_reading.__doc__ += FIT_SOURCE_DOCUMENTATION
 
 
 def get_ratiometric_reading_plot():
@@ -62,3 +65,6 @@ def get_ratiometric_reading_plot():
             'yaxis': {'title': 'Spatial Ratiometric Reading (unitless)'}
         }
     )
+
+
+get_ratiometric_reading_plot.__doc__ += FIT_SOURCE_DOCUMENTATION
