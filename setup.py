@@ -10,6 +10,7 @@ setup(
     url='https://www.github.com/osmosystems/python-jupyter-tools',
     packages=find_packages(),
     install_requires=[
+        'ipython',
         'intervaltree',
         'numpy',
         'pandas',
