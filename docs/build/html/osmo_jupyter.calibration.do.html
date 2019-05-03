@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>osmo_jupyter.calibration.do package &mdash; osmo-jupyter  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> osmo-jupyter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">osmo_jupyter.calibration.do package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.calibration.do.curve">osmo_jupyter.calibration.do.curve module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.calibration.do.curve_test">osmo_jupyter.calibration.do.curve_test module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.calibration.do.prep">osmo_jupyter.calibration.do.prep module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.calibration.do.prep_test">osmo_jupyter.calibration.do.prep_test module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.calibration.do">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">osmo-jupyter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>osmo_jupyter.calibration.do package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/osmo_jupyter.calibration.do.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="osmo-jupyter-calibration-do-package">
+<h1>osmo_jupyter.calibration.do package<a class="headerlink" href="#osmo-jupyter-calibration-do-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-osmo_jupyter.calibration.do.curve">
+<span id="osmo-jupyter-calibration-do-curve-module"></span><h2>osmo_jupyter.calibration.do.curve module<a class="headerlink" href="#module-osmo_jupyter.calibration.do.curve" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.calibration.do.curve.estimate_do_two_site_model_with_temperature">
+<code class="descclassname">osmo_jupyter.calibration.do.curve.</code><code class="descname">estimate_do_two_site_model_with_temperature</code><span class="sig-paren">(</span><em>optical_reading_and_temp</em>, <em>f</em>, <em>A_i0</em>, <em>E_i0</em>, <em>A_k_sv1</em>, <em>A_k_sv2</em>, <em>E_k_sv</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.curve.estimate_do_two_site_model_with_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formula predicting DO based on optical reading and temperature
+This is the <em>reverse</em> of estimate_optical_reading_two_site_model_with_temperature.</p>
+<dl>
+<dt>Args:</dt><dd><p>optical_reading_and_temp: tuple of optical reading and temeprature (Deg C)
+f: fraction of fluorophores in site 1 vs. site 2</p>
+<blockquote>
+<div><p>should always be less than 1.</p>
+</div></blockquote>
+<p>A_i0: Arrhenius preexponential factor for unquenched fluorescence
+E_i0: Arrhenius activation energy (divided by 10000 for fit friendliness) for unquenched fluorescence
+A_k_sv1: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 1
+A_k_sv2: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 2
+E_k_sv: Arrhenius activation energy (divided by 10000 for fit friendliness) stern-volmer fluorescence</p>
+<blockquote>
+<div><p>quenching model</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>Estimate of dissolved oxygen, in % saturation (assuming parameters are trained on % sat data)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.calibration.do.curve.estimate_optical_reading_two_site_model_with_temperature">
+<code class="descclassname">osmo_jupyter.calibration.do.curve.</code><code class="descname">estimate_optical_reading_two_site_model_with_temperature</code><span class="sig-paren">(</span><em>do_and_temp</em>, <em>f</em>, <em>A_i0</em>, <em>E_i0</em>, <em>A_k_sv1</em>, <em>A_k_sv2</em>, <em>E_k_sv</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.curve.estimate_optical_reading_two_site_model_with_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two-site model fit including arrhenius equations for temperature dependence
+For more on the form of the equation, see:
+<a class="reference external" href="https://docs.google.com/document/d/1VDIn7b9xTZeuvdWRiF6P1HvRzde16HFVGKPHJrQfQGE/edit#heading=h.46ihesi06pxr">https://docs.google.com/document/d/1VDIn7b9xTZeuvdWRiF6P1HvRzde16HFVGKPHJrQfQGE/edit#heading=h.46ihesi06pxr</a></p>
+<p>The form is derived from:
+Lehner Eqn. 1.22 with Arrhenius temperature dependence of i0, k_sv1 and k_sv2
+as described by McNeil p.143 (though they do a more roundabout thing with β, it’s equivalent)
+Note: Lehner and McNeil are predicting tau, we are predicting intensity (i)</p>
+<dl>
+<dt>Args:</dt><dd><p>do_and_temp: tuple of dissolved oxygen (% saturation) and temperature (Deg C)
+f: fraction of fluorophores in site 1 vs. site 2</p>
+<blockquote>
+<div><p>should always be in the range [0, 1]</p>
+</div></blockquote>
+<p>A_i0: Arrhenius preexponential factor for unquenched fluorescence
+E_i0: Arrhenius activation energy (divided by 10000 for fit friendliness) for unquenched fluorescence
+A_k_sv1: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 1
+A_k_sv2: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 2
+E_k_sv: Arrhenius activation energy (divided by 10000 for fit friendliness) stern-volmer fluorescence</p>
+<blockquote>
+<div><p>quenching model</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>estimate of a fluorescence reading</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.calibration.do.curve.get_optimal_DO_fit_params">
+<code class="descclassname">osmo_jupyter.calibration.do.curve.</code><code class="descname">get_optimal_DO_fit_params</code><span class="sig-paren">(</span><em>training_data, estimate_do_fn=&lt;function estimate_do_two_site_model_with_temperature&gt;, initial_fit_params=[0.1861, 0.1103, -0.8832, 0.001683, 0.03752, -0.07202]</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.curve.get_optimal_DO_fit_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimize fit parameters for a DO fit
+Args:</p>
+<blockquote>
+<div><p>training_data: DataFrame of observations with ‘SR reading’, ‘Temperature (C)’, and ‘DO (% sat)’ columns
+estimate_do_fn: function of ((optical reading, temperature), <a href="#id1"><span class="problematic" id="id2">*</span></a>fit params) which returns an estimate of DO % sat
+initial_fit_params: fit parameters to seed the curve fit. Pass None to skip initialization</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>optimized fit parameters</p>
+</dd>
+<dt>Raises:</dt><dd><p>Various errors from scipy.optimize.curve_fit if a fit cannot be found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.calibration.do.curve_test">
+<span id="osmo-jupyter-calibration-do-curve-test-module"></span><h2>osmo_jupyter.calibration.do.curve_test module<a class="headerlink" href="#module-osmo_jupyter.calibration.do.curve_test" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="osmo_jupyter.calibration.do.curve_test.TestDoAndOpticalReadingFunctions">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.calibration.do.curve_test.</code><code class="descname">TestDoAndOpticalReadingFunctions</code><a class="headerlink" href="#osmo_jupyter.calibration.do.curve_test.TestDoAndOpticalReadingFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.calibration.do.curve_test.TestDoAndOpticalReadingFunctions.test_estimate_optical_reading_functions_properly_reversed">
+<code class="descname">test_estimate_optical_reading_functions_properly_reversed</code><span class="sig-paren">(</span><em>do</em>, <em>temperature</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.curve_test.TestDoAndOpticalReadingFunctions.test_estimate_optical_reading_functions_properly_reversed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.calibration.do.curve_test.TestDoAndOpticalReadingFunctions.test_initial_fit_params_match_function_params">
+<code class="descname">test_initial_fit_params_match_function_params</code><span class="sig-paren">(</span><em>curve_fn</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.curve_test.TestDoAndOpticalReadingFunctions.test_initial_fit_params_match_function_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="osmo_jupyter.calibration.do.curve_test.TestGetArrheniusRate">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.calibration.do.curve_test.</code><code class="descname">TestGetArrheniusRate</code><a class="headerlink" href="#osmo_jupyter.calibration.do.curve_test.TestGetArrheniusRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.calibration.do.curve_test.TestGetArrheniusRate.test_get_arrhenius_rate">
+<code class="descname">test_get_arrhenius_rate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.curve_test.TestGetArrheniusRate.test_get_arrhenius_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.calibration.do.prep">
+<span id="osmo-jupyter-calibration-do-prep-module"></span><h2>osmo_jupyter.calibration.do.prep module<a class="headerlink" href="#module-osmo_jupyter.calibration.do.prep" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.calibration.do.prep.prep_calibration_data">
+<code class="descclassname">osmo_jupyter.calibration.do.prep.</code><code class="descname">prep_calibration_data</code><span class="sig-paren">(</span><em>ysi_data_filepath</em>, <em>image_data_filepath</em>, <em>do_patch_roi_name</em>, <em>reference_patch_roi_name</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.prep.prep_calibration_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare data from a calibration experiment for use in curve fitting</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>ysi_data_filepath: file path to a YSI data file
+image_data_filepath: file path to ROI summary statistics file from process_experiment
+do_patch_roi_name: ROI name in camera data file to use as sensing patch
+reference_patch_roi_name: ROI name in camera data file to use as control patch</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>calibration data set with columns:</dt><dd><p>‘timestamp’
+‘Temperature (C)’
+‘DO (% sat)’
+‘DO patch reading’: red MSORM from DO patch
+‘Reference patch reading’: red MSORM from control patch
+‘SR reading’: spatial ratiometric reading</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.calibration.do.prep_test">
+<span id="osmo-jupyter-calibration-do-prep-test-module"></span><h2>osmo_jupyter.calibration.do.prep_test module<a class="headerlink" href="#module-osmo_jupyter.calibration.do.prep_test" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="osmo_jupyter.calibration.do.prep_test.TestPrepCalibrationData">
+<em class="property">class </em><code class="descclassname">osmo_jupyter.calibration.do.prep_test.</code><code class="descname">TestPrepCalibrationData</code><a class="headerlink" href="#osmo_jupyter.calibration.do.prep_test.TestPrepCalibrationData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="osmo_jupyter.calibration.do.prep_test.TestPrepCalibrationData.test_combines_ysi_and_camera_data_appropriately">
+<code class="descname">test_combines_ysi_and_camera_data_appropriately</code><span class="sig-paren">(</span><em>ysi_data_filepath</em>, <em>image_data_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.prep_test.TestPrepCalibrationData.test_combines_ysi_and_camera_data_appropriately" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="osmo_jupyter.calibration.do.prep_test.TestPrepCalibrationData.test_rounds_ysi_temperature_data">
+<code class="descname">test_rounds_ysi_temperature_data</code><span class="sig-paren">(</span><em>ysi_data_filepath</em>, <em>image_data_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.prep_test.TestPrepCalibrationData.test_rounds_ysi_temperature_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.calibration.do.prep_test.image_data_filepath">
+<code class="descclassname">osmo_jupyter.calibration.do.prep_test.</code><code class="descname">image_data_filepath</code><span class="sig-paren">(</span><em>tmpdir</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.prep_test.image_data_filepath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.calibration.do.prep_test.ysi_data_filepath">
+<code class="descclassname">osmo_jupyter.calibration.do.prep_test.</code><code class="descname">ysi_data_filepath</code><span class="sig-paren">(</span><em>tmpdir</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.calibration.do.prep_test.ysi_data_filepath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.calibration.do">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-osmo_jupyter.calibration.do" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-05-03T13:34:30.465924, dev@osmobot.com
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

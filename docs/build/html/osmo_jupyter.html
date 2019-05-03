@@ -164,9 +164,26 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="osmo_jupyter.calibration.html">osmo_jupyter.calibration package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.calibration.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="osmo_jupyter.calibration.do.html">osmo_jupyter.calibration.do package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="osmo_jupyter.calibration.do.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="osmo_jupyter.calibration.do.html#module-osmo_jupyter.calibration.do.curve">osmo_jupyter.calibration.do.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="osmo_jupyter.calibration.do.html#module-osmo_jupyter.calibration.do.curve_test">osmo_jupyter.calibration.do.curve_test module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="osmo_jupyter.calibration.do.html#module-osmo_jupyter.calibration.do.prep">osmo_jupyter.calibration.do.prep module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="osmo_jupyter.calibration.do.html#module-osmo_jupyter.calibration.do.prep_test">osmo_jupyter.calibration.do.prep_test module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="osmo_jupyter.calibration.do.html#module-osmo_jupyter.calibration.do">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.calibration.html#module-osmo_jupyter.calibration">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="osmo_jupyter.plot.html">osmo_jupyter.plot package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot.color_from_temperature">osmo_jupyter.plot.color_from_temperature module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot.do_calibration">osmo_jupyter.plot.do_calibration module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot.heatmap">osmo_jupyter.plot.heatmap module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot.scatter">osmo_jupyter.plot.scatter module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.plot.html#module-osmo_jupyter.plot">Module contents</a></li>
@@ -174,7 +191,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="osmo_jupyter.simulate.html">osmo_jupyter.simulate package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.simulate.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.simulate.html#module-osmo_jupyter.simulate.do_and_temp_plot">osmo_jupyter.simulate.do_and_temp_plot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.simulate.html#module-osmo_jupyter.simulate.do_and_temp_meshgrid">osmo_jupyter.simulate.do_and_temp_meshgrid module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.simulate.html#module-osmo_jupyter.simulate.do_patch">osmo_jupyter.simulate.do_patch module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.simulate.html#module-osmo_jupyter.simulate.do_ratiometric">osmo_jupyter.simulate.do_ratiometric module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="osmo_jupyter.simulate.html#module-osmo_jupyter.simulate">Module contents</a></li>
@@ -197,11 +214,11 @@
 <code class="descclassname">osmo_jupyter.db_access.</code><code class="descname">configure_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access.configure_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Configure a database object for read-only technician access to Osmo data.
 Requires user input to collect database password.</p>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>sqlalchemy Engine object which can be used with other functions in this module.</dd>
-<dt>Raises:</dt>
-<dd>ValueError: if connection can’t be made, usually because password is incorrect</dd>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>sqlalchemy Engine object which can be used with other functions in this module.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: if connection can’t be made, usually because password is incorrect</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -209,17 +226,17 @@ Requires user input to collect database password.</p>
 <dt id="osmo_jupyter.db_access.get_node_temperature_data">
 <code class="descclassname">osmo_jupyter.db_access.</code><code class="descname">get_node_temperature_data</code><span class="sig-paren">(</span><em>start_time_local</em>, <em>end_time_local</em>, <em>node_id</em>, <em>downsample_factor=1</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access.get_node_temperature_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load node temperature data only from the calculation_details table</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">start_time_local: string of ISO-formatted start datetime in local time, inclusive
+<dl>
+<dt>Args:</dt><dd><p>start_time_local: string of ISO-formatted start datetime in local time, inclusive
 end_time_local: string of ISO-formatted end datetime in local time, inclusive
 node_id: node ID to get data from
 downsample_factor: if this is a number, it will be used to select fewer rows.</p>
-<blockquote class="last">
-<div>You should get <em>roughly</em> n / downsample_factor samples.</div></blockquote>
+<blockquote>
+<div><p>You should get <em>roughly</em> n / downsample_factor samples.</p>
+</div></blockquote>
 </dd>
-<dt>Returns:</dt>
-<dd>a pandas.DataFrame of temperature data (°C) in local time from the node IDs provided.</dd>
+<dt>Returns:</dt><dd><p>a pandas.DataFrame of temperature data (°C) in local time from the node IDs provided.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -227,27 +244,26 @@ downsample_factor: if this is a number, it will be used to select fewer rows.</p
 <dt id="osmo_jupyter.db_access.load_calculation_details">
 <code class="descclassname">osmo_jupyter.db_access.</code><code class="descname">load_calculation_details</code><span class="sig-paren">(</span><em>db_engine</em>, <em>node_ids</em>, <em>start_time_local</em>, <em>end_time_local</em>, <em>include_hub_id=False</em>, <em>downsample_factor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.db_access.load_calculation_details" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load node data from the calculation_details table, optionally with hub ID included from the readings table</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">db_engine: database engine created using <cite>connect_to_db</cite>
+<dl>
+<dt>Args:</dt><dd><p>db_engine: database engine created using <cite>connect_to_db</cite>
 node_ids: iterable of node IDs to get data for
 start_time_local: string of ISO-formatted start datetime in local time, inclusive
 end_time_local: string of ISO-formatted end datetime in local time, inclusive
 include_hub_id: if True, the output will include a ‘hub_id’ column.</p>
 <blockquote>
-<div>Default False because the request including hub_id takes extra time.</div></blockquote>
-<dl class="last docutils">
-<dt>downsample_factor: if this is a number, it will be used to select fewer rows.</dt>
-<dd>You should get <em>roughly</em> n / downsample_factor samples.</dd>
+<div><p>Default False because the request including hub_id takes extra time.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>downsample_factor: if this is a number, it will be used to select fewer rows.</dt><dd><p>You should get <em>roughly</em> n / downsample_factor samples.</p>
+</dd>
 </dl>
 </dd>
-<dt>Returns:</dt>
-<dd>a pandas.DataFrame of data from the node IDs provided.</dd>
-<dt>Raises:</dt>
-<dd><dl class="first last docutils">
-<dt>sqlalchemy.OperationalError: database connection is not working</dt>
-<dd>This is often due to a network disconnect.
-In this case, a good debugging step is to reconnect to the database.</dd>
+<dt>Returns:</dt><dd><p>a pandas.DataFrame of data from the node IDs provided.</p>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>sqlalchemy.OperationalError: database connection is not working</dt><dd><p>This is often due to a network disconnect.
+In this case, a good debugging step is to reconnect to the database.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -268,11 +284,11 @@ In this case, a good debugging step is to reconnect to the database.</dd>
 <dt id="osmo_jupyter.normalize.by_rgb_sum">
 <code class="descclassname">osmo_jupyter.normalize.</code><code class="descname">by_rgb_sum</code><span class="sig-paren">(</span><em>rgb_df</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.normalize.by_rgb_sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalize each series in the DataFrame by dividing by the sum of the r, g, and b values in each row</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>rgb_df: pandas.DataFrame instance with ‘r’, ‘g’, and ‘b’ columns</dd>
-<dt>Returns</dt>
-<dd>new DataFrame with all columns normalized by r+g+b</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rgb_df: pandas.DataFrame instance with ‘r’, ‘g’, and ‘b’ columns</p>
+</dd>
+<dt>Returns</dt><dd><p>new DataFrame with all columns normalized by r+g+b</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -288,11 +304,11 @@ In this case, a good debugging step is to reconnect to the database.</dd>
 accordingly.</p>
 <p>Useful for viewing curves on top of one another while also forcing them to have the same zero value (so that
 proportionality of changes is easy to find).</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dataframe: pandas.DataFrame in which each column will be normalized</dd>
-<dt>Returns:</dt>
-<dd>new DataFrame with normalized columns</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dataframe: pandas.DataFrame in which each column will be normalized</p>
+</dd>
+<dt>Returns:</dt><dd><p>new DataFrame with normalized columns</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -309,13 +325,13 @@ proportionality of changes is easy to find).</p>
 &gt;&gt;&gt; add_rgb_columns(main_df, rgb_means_df, ‘<a href="#id1"><span class="problematic" id="id2">*</span></a>_mean’)
 &gt;&gt;&gt; main_df
 &lt;DataFrame with columns [‘Timestamp’, …, ‘r_mean’, ‘g_mean’, ‘b_mean’] &gt;</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>df_to_modify: pandas.DataFrame to have columns added
+<dl class="simple">
+<dt>Args:</dt><dd><p>df_to_modify: pandas.DataFrame to have columns added
 rgb_df: pandas.DataFrame with columns [‘r’, ‘g’, ‘b’] to be added to df_to_modify
-pattern: string with an asterisk (“*”) in place of the color letter, eg. ‘<a href="#id3"><span class="problematic" id="id4">*</span></a>_mean’</dd>
-<dt>Returns:</dt>
-<dd>None. df_to_modify will be altered in place.</dd>
+pattern: string with an asterisk (“*”) in place of the color letter, eg. ‘<a href="#id3"><span class="problematic" id="id4">*</span></a>_mean’</p>
+</dd>
+<dt>Returns:</dt><dd><p>None. df_to_modify will be altered in place.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -327,11 +343,11 @@ pattern: string with an asterisk (“*”) in place of the color letter, eg. ‘
 &gt;&gt;&gt; df = pd.DataFrame(…, columns=[‘r_mean’, ‘g_mean’, ‘b_mean’, ‘Timestamp’, ‘other’, …])
 &gt;&gt;&gt; get_rgb_columns(df, ‘<a href="#id5"><span class="problematic" id="id6">*</span></a>_mean’, [‘Timestamp’])
 &lt;DataFrame with columns [‘r’, ‘g’, ‘b’, ‘Timestamp’] &gt;</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>df: pandas.DataFrame of source data
+<dl class="simple">
+<dt>Args:</dt><dd><p>df: pandas.DataFrame of source data
 pattern: string with an asterisk (“*”) in place of the color letter, eg. ‘<a href="#id7"><span class="problematic" id="id8">*</span></a>_mean’
-other_columns_to_include: list of column names to be included</dd>
+other_columns_to_include: list of column names to be included</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -342,15 +358,14 @@ other_columns_to_include: list of column names to be included</dd>
 <dt id="osmo_jupyter.spectrometer.import_and_format_spectrometer_data">
 <code class="descclassname">osmo_jupyter.spectrometer.</code><code class="descname">import_and_format_spectrometer_data</code><span class="sig-paren">(</span><em>spectrometer_data_file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer.import_and_format_spectrometer_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Imports and reformats a raw spectrometer data file to be useful and efficient for notebooks</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>spectrometer_data_file_path: file path to .txt file produce by oceanview software in the format</dt>
-<dd>‘Time Series (column data)’</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>spectrometer_data_file_path: file path to .txt file produce by oceanview software in the format</dt><dd><p>‘Time Series (column data)’</p>
+</dd>
 </dl>
 </dd>
-<dt>Return:</dt>
-<dd>A pandas df, indexed by timestamp, with 2 columns: wavelength and intensity</dd>
+<dt>Return:</dt><dd><p>A pandas df, indexed by timestamp, with 2 columns: wavelength and intensity</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -358,15 +373,14 @@ other_columns_to_include: list of column names to be included</dd>
 <dt id="osmo_jupyter.spectrometer.spectrometer_intensity_summary">
 <code class="descclassname">osmo_jupyter.spectrometer.</code><code class="descname">spectrometer_intensity_summary</code><span class="sig-paren">(</span><em>reformatted_spectrometer_df</em>, <em>minimum_wavelength=340</em>, <em>maximum_wavelength=1035</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.spectrometer.spectrometer_intensity_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates intensity summary (mean) of spectrometer data over some spectrum of wavelengths.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>reformatted_spectrometer_df: pandas df of spectrometer data formatted by import_and_format_spectrometer_data()
+<dl class="simple">
+<dt>Args:</dt><dd><p>reformatted_spectrometer_df: pandas df of spectrometer data formatted by import_and_format_spectrometer_data()
 minimum_wavelength (optional): sets a lower bound for range over which wavelengths will be summarized
-maximum_wavelength (optional): sets an upper bound for range over which wavelengths will be summarized</dd>
-<dt>Return:</dt>
-<dd><dl class="first last docutils">
-<dt>A pandas df, indexed by timestamp, with 1 intensity column that summarizes (calculates mean) intensity</dt>
-<dd>data over some spectrum</dd>
+maximum_wavelength (optional): sets an upper bound for range over which wavelengths will be summarized</p>
+</dd>
+<dt>Return:</dt><dd><dl class="simple">
+<dt>A pandas df, indexed by timestamp, with 1 intensity column that summarizes (calculates mean) intensity</dt><dd><p>data over some spectrum</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -383,11 +397,11 @@ Useful for converting node data timestamps for use in local-time notebooks.</p>
 <p>eg.
 &gt;&gt;&gt; raw_node_data = osmo_jupyter.db_access.load_calculation_details(…)
 &gt;&gt;&gt; raw_node_data[‘create_date’] = utc_series_to_local(raw_node_data[‘create_date’])</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>pandas_timeseries: pandas Series of timezone-naive datetimes or strings in UTC</dd>
-<dt>Returns:</dt>
-<dd>Pandas timeseries of timezone-naive datetimes corresponding to Osmo HQ local time</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pandas_timeseries: pandas Series of timezone-naive datetimes or strings in UTC</p>
+</dd>
+<dt>Returns:</dt><dd><p>Pandas timeseries of timezone-naive datetimes corresponding to Osmo HQ local time</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -397,24 +411,23 @@ Useful for converting node data timestamps for use in local-time notebooks.</p>
 <dl class="function">
 <dt id="osmo_jupyter.ysi.join_nearest_ysi_data">
 <code class="descclassname">osmo_jupyter.ysi.</code><code class="descname">join_nearest_ysi_data</code><span class="sig-paren">(</span><em>other_data</em>, <em>ysi_data</em>, <em>other_data_timestamp_column='timestamp'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi.join_nearest_ysi_data" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Params:</dt>
-<dd><p class="first">other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column (datetime dtype).
+<dd><dl>
+<dt>Params:</dt><dd><p>other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column (datetime dtype).
 ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps (datetime dtype). Get this with, e.g.:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>pd.read_csv(</dt>
-<dd>&lt;YSI filename&gt;,
-parse_dates=[‘Timestamp’]</dd>
+<div><dl class="simple">
+<dt>pd.read_csv(</dt><dd><p>&lt;YSI filename&gt;,
+parse_dates=[‘Timestamp’]</p>
+</dd>
 </dl>
 <p>).set_index(‘Timestamp’)</p>
 </div></blockquote>
-<p class="last">other_data_timestamp_column: Default: ‘timestamp’. Column name in other_data containing timestamps.</p>
+<p>other_data_timestamp_column: Default: ‘timestamp’. Column name in other_data containing timestamps.</p>
 </dd>
-<dt>Return:</dt>
-<dd>DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
+<dt>Return:</dt><dd><p>DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
 Discards “other_data” that is collected outside of the timerange of the YSI data.
-YSI columns will be prefixed with ‘YSI ‘ (e.g. ‘YSI Dissolved Oxygen (%)’)</dd>
+YSI columns will be prefixed with ‘YSI ‘ (e.g. ‘YSI Dissolved Oxygen (%)’)</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -435,7 +448,7 @@ YSI columns will be prefixed with ‘YSI ‘ (e.g. ‘YSI Dissolved Oxygen (%)�
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019-04-08T18:01:28.338016, dev@osmobot.com
+        &copy; Copyright 2019-05-03T13:34:30.465924, dev@osmobot.com
 
     </p>
   </div>

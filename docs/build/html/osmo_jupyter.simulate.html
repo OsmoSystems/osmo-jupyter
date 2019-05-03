@@ -82,7 +82,7 @@
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">osmo_jupyter.simulate package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_and_temp_plot">osmo_jupyter.simulate.do_and_temp_plot module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_and_temp_meshgrid">osmo_jupyter.simulate.do_and_temp_meshgrid module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_patch">osmo_jupyter.simulate.do_patch module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.simulate.do_ratiometric">osmo_jupyter.simulate.do_ratiometric module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.simulate">Module contents</a></li>
@@ -157,57 +157,55 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-osmo_jupyter.simulate.do_and_temp_plot">
-<span id="osmo-jupyter-simulate-do-and-temp-plot-module"></span><h2>osmo_jupyter.simulate.do_and_temp_plot module<a class="headerlink" href="#module-osmo_jupyter.simulate.do_and_temp_plot" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-osmo_jupyter.simulate.do_and_temp_meshgrid">
+<span id="osmo-jupyter-simulate-do-and-temp-meshgrid-module"></span><h2>osmo_jupyter.simulate.do_and_temp_meshgrid module<a class="headerlink" href="#module-osmo_jupyter.simulate.do_and_temp_meshgrid" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="osmo_jupyter.simulate.do_and_temp_plot.get_meshgrid_of_do_and_temp">
-<code class="descclassname">osmo_jupyter.simulate.do_and_temp_plot.</code><code class="descname">get_meshgrid_of_do_and_temp</code><span class="sig-paren">(</span><em>fn_of_do_and_temp</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_plot.get_meshgrid_of_do_and_temp" title="Permalink to this definition">¶</a></dt>
+<dt id="osmo_jupyter.simulate.do_and_temp_meshgrid.get_meshgrid_of_do_and_temp">
+<code class="descclassname">osmo_jupyter.simulate.do_and_temp_meshgrid.</code><code class="descname">get_meshgrid_of_do_and_temp</code><span class="sig-paren">(</span><em>fn_of_do_and_temp</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_meshgrid.get_meshgrid_of_do_and_temp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get values that correspond to the (global) DO and temperature meshgrids</p>
-<dl class="docutils">
-<dt>Params:</dt>
-<dd>fn_of_do_and_temp: Function which takes DO and temperature positional arguments (in that order)</dd>
-<dt>Returns:</dt>
-<dd><dl class="first docutils">
-<dt>2d np.array of values from fn_of_do_and_temp</dt>
-<dd>dimension 0 will iterate over DO
-dimension 1 will iterate over temperatures</dd>
+<dl>
+<dt>Params:</dt><dd><p>fn_of_do_and_temp: Function which takes DO and temperature positional arguments (in that order)</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>2d np.array of values from fn_of_do_and_temp</dt><dd><p>dimension 0 will iterate over DO
+dimension 1 will iterate over temperatures</p>
+</dd>
 </dl>
-<p class="last">this meshgrid will be appropriate to use on the Z axis of a plotly Surface
+<p>this meshgrid will be appropriate to use on the Z axis of a plotly Surface
 where DO_MESHGRID is on the X axis and TEMPERATURE_MESHGRID is on the Y axis.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="osmo_jupyter.simulate.do_and_temp_plot.plot_fn_of_do_and_temp_as_surface">
-<code class="descclassname">osmo_jupyter.simulate.do_and_temp_plot.</code><code class="descname">plot_fn_of_do_and_temp_as_surface</code><span class="sig-paren">(</span><em>fn_of_do_and_temp</em>, <em>title</em>, <em>z_axis_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_plot.plot_fn_of_do_and_temp_as_surface" title="Permalink to this definition">¶</a></dt>
+<dt id="osmo_jupyter.simulate.do_and_temp_meshgrid.plot_fn_of_do_and_temp_as_surface">
+<code class="descclassname">osmo_jupyter.simulate.do_and_temp_meshgrid.</code><code class="descname">plot_fn_of_do_and_temp_as_surface</code><span class="sig-paren">(</span><em>fn_of_do_and_temp</em>, <em>title</em>, <em>z_axis_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_meshgrid.plot_fn_of_do_and_temp_as_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a surface plot of a DO- and temperature-dependent function.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first docutils">
-<dt>fn_of_do_and_temp: a function which takes DO saturation and temperature as positional arguments (in that order).</dt>
-<dd>This function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to compute values at a standard range
-of temperature and DO values.</dd>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>fn_of_do_and_temp: a function which takes DO saturation and temperature as positional arguments (in that order).</dt><dd><p>This function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to compute values at a standard range
+of temperature and DO values.</p>
+</dd>
 </dl>
-<p class="last">title: title to use on the resulting chart
+<p>title: title to use on the resulting chart
 z_axis_title: label for the Z axis - what does your function describe?</p>
 </dd>
-<dt>Returns:</dt>
-<dd>plotly FigureWidget for your viewing pleasure</dd>
+<dt>Returns:</dt><dd><p>plotly FigureWidget for your viewing pleasure</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="osmo_jupyter.simulate.do_and_temp_plot.plot_meshgrid_of_do_and_temp_as_surface">
-<code class="descclassname">osmo_jupyter.simulate.do_and_temp_plot.</code><code class="descname">plot_meshgrid_of_do_and_temp_as_surface</code><span class="sig-paren">(</span><em>meshgrid_of_do_and_temp</em>, <em>title</em>, <em>z_axis_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_plot.plot_meshgrid_of_do_and_temp_as_surface" title="Permalink to this definition">¶</a></dt>
+<dt id="osmo_jupyter.simulate.do_and_temp_meshgrid.plot_meshgrid_of_do_and_temp_as_surface">
+<code class="descclassname">osmo_jupyter.simulate.do_and_temp_meshgrid.</code><code class="descname">plot_meshgrid_of_do_and_temp_as_surface</code><span class="sig-paren">(</span><em>meshgrid_of_do_and_temp</em>, <em>title</em>, <em>z_axis_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_and_temp_meshgrid.plot_meshgrid_of_do_and_temp_as_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a surface plot of a DO- and temperature-dependent function.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>meshgrid_of_do_and_temp: a meshgrid corresponding to DO_MESHGRID and TEMPERATURE_MESHGRID.
+<dl class="simple">
+<dt>Args:</dt><dd><p>meshgrid_of_do_and_temp: a meshgrid corresponding to DO_MESHGRID and TEMPERATURE_MESHGRID.
 title: title to use on the resulting chart
-z_axis_title: label for the Z axis - what does your function describe?</dd>
-<dt>Returns:</dt>
-<dd>plotly FigureWidget for your viewing pleasure</dd>
+z_axis_title: label for the Z axis - what does your function describe?</p>
+</dd>
+<dt>Returns:</dt><dd><p>plotly FigureWidget for your viewing pleasure</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -217,25 +215,24 @@ z_axis_title: label for the Z axis - what does your function describe?</dd>
 <dl class="function">
 <dt id="osmo_jupyter.simulate.do_patch.get_optical_reading_normalized">
 <code class="descclassname">osmo_jupyter.simulate.do_patch.</code><code class="descname">get_optical_reading_normalized</code><span class="sig-paren">(</span><em>do_pct_sat</em>, <em>temperature</em>, <em>min_value=0</em>, <em>max_value=1</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_patch.get_optical_reading_normalized" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an optical reading between a min and max value, with a DO and temperature relationship closely
-matching that seen in our patches in the past.</p>
-<p>This function also converts DO values to partial pressure to deal with the partial pressure unit used in the
-legacy fit.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>do_pct_sat: Dissolved Oxygen in percent saturation
+<dd><p>Get a normalized optical reading between a min and max value, with DO and temperature relationship from a
+precalculated, hardcoded fit.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>do_pct_sat: Dissolved Oxygen in percent saturation
 temperature: Temperature in degrees Celcius
 min_value: Optional (default=0). Minimum value for the normalized range
-max_value: Optional (default=1). Maximum value for the nomralized range</dd>
-<dt>Returns:</dt>
-<dd>An optical reading normalized to be within (optional) min_value and max_value.</dd>
+max_value: Optional (default=1). Maximum value for the nomralized range</p>
+</dd>
+<dt>Returns:</dt><dd><p>An optical reading normalized to be within (optional) min_value and max_value.</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="osmo_jupyter.simulate.do_patch.get_optical_reading_plot">
 <code class="descclassname">osmo_jupyter.simulate.do_patch.</code><code class="descname">get_optical_reading_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_patch.get_optical_reading_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quick plot of a single-patch optical reading over a range of temperatures and DO values.</p>
+<dd><p>Quick plot of a single-patch optical reading over a range of temperatures and DO values, using
+a precalculated, hardcoded fit.</p>
 </dd></dl>
 
 </div>
@@ -251,15 +248,15 @@ max_value: Optional (default=1). Maximum value for the nomralized range</dd>
 <dt id="osmo_jupyter.simulate.do_ratiometric.simulate_spatial_ratiometric_reading">
 <code class="descclassname">osmo_jupyter.simulate.do_ratiometric.</code><code class="descname">simulate_spatial_ratiometric_reading</code><span class="sig-paren">(</span><em>do</em>, <em>temperature</em>, <em>sealed_patch_do=0</em>, <em>sealed_patch_kwargs={}</em>, <em>unsealed_patch_kwargs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.simulate.do_ratiometric.simulate_spatial_ratiometric_reading" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate a “spatial ratiometric” reading using a sealed DO patch as the ratiometric reference</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>do: Dissolved Oxygen in percent saturation in the unsealed patch
+<dl class="simple">
+<dt>Args:</dt><dd><p>do: Dissolved Oxygen in percent saturation in the unsealed patch
 temperature: Temperature in degrees Celcius
 sealed_patch_do: Optional (default=0). Dissolved Oxygen in percent saturation in the sealed patch
 sealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the sealed patch
-unsealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the unsealed patch</dd>
-<dt>Returns:</dt>
-<dd>An optical reading normalized to be within (optional) min_value and max_value.</dd>
+unsealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the unsealed patch</p>
+</dd>
+<dt>Returns:</dt><dd><p>A spatial ratiometric result: the ratio between normalized optical readings of the unsealed and sealed patches</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -280,7 +277,7 @@ unsealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_n
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019-04-08T18:01:28.338016, dev@osmobot.com
+        &copy; Copyright 2019-05-03T13:34:30.465924, dev@osmobot.com
 
     </p>
   </div>
