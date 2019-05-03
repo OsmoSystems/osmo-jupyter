@@ -21,7 +21,7 @@ def prep_calibration_data(
         calibration data set with columns:
             'timestamp'
             'Temperature (C)'
-            'Dissolved Oxygen (%)'
+            'DO (% sat)'
             'DO patch reading': red MSORM from DO patch
             'Reference patch reading': red MSORM from control patch
             'SR reading': spatial ratiometric reading
@@ -37,8 +37,10 @@ def prep_calibration_data(
     ysi_data['Temperature (C)'] = ysi_data['Temperature (C)'].round()
 
     # Import camera data
-    all_camera_data = pd.read_csv(camera_data_filepath)
-    all_camera_data['timestamp'] = pd.to_datetime(all_camera_data['timestamp'])
+    all_camera_data = pd.read_csv(
+        camera_data_filepath,
+        parse_dates=['timestamp']
+    )
 
     # Pull out some choice MSORMs
     r_msorms = all_camera_data.set_index(['timestamp', 'ROI']).unstack()['r_msorm'].reset_index()
@@ -51,7 +53,7 @@ def prep_calibration_data(
     msorms_and_ysi_data = join_nearest_ysi_data(r_msorms, ysi_data[desired_ysi_columns])
     msorms_and_ysi_data.head()
 
-    # Rename
+    # Let's have a nice clean output DataFrame
     calibration_data_rename = {
         'timestamp': 'timestamp',
         'YSI Temperature (C)': 'Temperature (C)',
