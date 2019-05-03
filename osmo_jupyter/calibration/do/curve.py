@@ -19,7 +19,9 @@ def _get_arrhenius_rate(temperature_c, preexponential_factor, activation_energy)
     ideal_gas_constant = IDEAL_GAS_CONSTANT_J_PER_MOL_K
     temperature_kelvin = temperature_c + DEGREES_CELSIUS_AT_ZERO_KELVIN
 
-    # Kinda silly, but this scales the activation energy to be more friendly to the regression
+    # Kinda silly, but this scales the activation energy to be more friendly to the regression.
+    # Successful fits have had an activation energy around 10000.
+    # Scaling in here allows the activation energy that the curve fitter knows about to be close to 1.
     activation_energy_scaling_factor = 10000
     exponent = -activation_energy * activation_energy_scaling_factor / (ideal_gas_constant * temperature_kelvin)
 
@@ -36,6 +38,9 @@ def estimate_optical_reading_two_site_model_with_temperature(
         E_k_sv
 ):
     ''' Two-site model fit including arrhenius equations for temperature dependence
+    For more on the form of the equation, see:
+    https://docs.google.com/document/d/1VDIn7b9xTZeuvdWRiF6P1HvRzde16HFVGKPHJrQfQGE/edit#heading=h.46ihesi06pxr
+
     The form is derived from:
     Lehner Eqn. 1.22 with Arrhenius temperature dependence of i0, k_sv1 and k_sv2
     as described by McNeil p.143 (though they do a more roundabout thing with β, it's equivalent)
@@ -75,15 +80,11 @@ def estimate_do_two_site_model_with_temperature(
         A_k_sv2,
         E_k_sv
 ):
-    '''Formula predicting DO based on optical reading and temperature
+    ''' Formula predicting DO based on optical reading and temperature
     This is the *reverse* of estimate_optical_reading_two_site_model_with_temperature.
 
-    Source:
-    McNeil equation 7 (p.142) with arrhenius temperature dependence of i0, k_sv1 and k_sv2
-    Note: Lehner and McNeil are predicting tau, we are predicting intensity (i)
-
     Args:
-        do_and_temp: tuple of dissolved oxygen (% saturation) and temeprature (Deg C)
+        optical_reading_and_temp: tuple of optical reading and temeprature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
             should always be less than 1.
         A_i0: Arrhenius preexponential parameter for unquenched fluorescence
