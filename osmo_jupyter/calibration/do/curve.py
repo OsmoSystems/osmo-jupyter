@@ -49,7 +49,7 @@ def estimate_optical_reading_two_site_model_with_temperature(
     Args:
         do_and_temp: tuple of dissolved oxygen (% saturation) and temperature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
-            should always be less than 1.
+            should always be in the range [0, 1]
         A_i0: Arrhenius preexponential parameter for unquenched fluorescence
         E_i0: Arrhenius activation energy (divided by 10000 for fit friendliness) for unquenched fluorescence
         A_k_sv1: Arrhenius preexponential parameter for stern-volmer fluorescence quenching model affected by oxygen
