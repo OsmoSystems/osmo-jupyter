@@ -1,4 +1,5 @@
 import inspect
+from itertools import product
 
 import numpy as np
 import pytest
@@ -6,19 +7,24 @@ import pytest
 import osmo_jupyter.calibration.do.curve as module
 
 
-def test_estimate_optical_reading_functions_properly_reversed():
-    test_do = 40
-    test_temp = 35
+@pytest.mark.parametrize(
+    'do, temperature',
+    list(product(
+        [0, 50, 66.12315315, 100],  # DO values
+        [15, 20, 28.34912378, 35],  # temperatures
+    ))
+)
+def test_estimate_optical_reading_functions_properly_reversed(do, temperature):
     optical_reading = module.estimate_optical_reading_two_site_model_with_temperature(
-        (test_do, test_temp),
+        (do, temperature),
         *module.WORKING_FIT_PARAMS
     )
     round_trip_do = module.estimate_do_two_site_model_with_temperature(
-        (optical_reading, test_temp),
+        (optical_reading, temperature),
         *module.WORKING_FIT_PARAMS
     )
     np.testing.assert_almost_equal(
-        round_trip_do, test_do
+        round_trip_do, do
     )
 
 
