@@ -25,7 +25,7 @@ def _get_arrhenius_rate(temperature_c, preexponential_factor, activation_energy)
     activation_energy_scaling_factor = 10000
     exponent = -activation_energy * activation_energy_scaling_factor / (ideal_gas_constant * temperature_kelvin)
 
-    return preexponential_factor * np.power(np.e, exponent)
+    return preexponential_factor * np.exp(exponent)
 
 
 def estimate_optical_reading_two_site_model_with_temperature(
@@ -50,12 +50,10 @@ def estimate_optical_reading_two_site_model_with_temperature(
         do_and_temp: tuple of dissolved oxygen (% saturation) and temeprature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
             should always be less than 1.
-        A_i0: Arrhenius preexponential parameter for unquenched fluorescence
+        A_i0: Arrhenius preexponential factor for unquenched fluorescence
         E_i0: Arrhenius activation energy (divided by 10000 for fit friendliness) for unquenched fluorescence
-        A_k_sv1: Arrhenius preexponential parameter for stern-volmer fluorescence quenching model affected by oxygen
-            in site 1
-        A_k_sv2: Arrhenius preexponential parameter for stern-volmer fluorescence quenching model affected by oxygen
-            in site 2
+        A_k_sv1: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 1
+        A_k_sv2: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 2
         E_k_sv: Arrhenius activation energy (divided by 10000 for fit friendliness) stern-volmer fluorescence
             quenching model
     Returns:
@@ -87,17 +85,15 @@ def estimate_do_two_site_model_with_temperature(
         optical_reading_and_temp: tuple of optical reading and temeprature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
             should always be less than 1.
-        A_i0: Arrhenius preexponential parameter for unquenched fluorescence
+        A_i0: Arrhenius preexponential factor for unquenched fluorescence
         E_i0: Arrhenius activation energy (divided by 10000 for fit friendliness) for unquenched fluorescence
-        A_k_sv1: Arrhenius preexponential parameter for stern-volmer fluorescence quenching model affected by oxygen
-            in site 1
-        A_k_sv2: Arrhenius preexponential parameter for stern-volmer fluorescence quenching model affected by oxygen
-            in site 2
+        A_k_sv1: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 1
+        A_k_sv2: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 2
         E_k_sv: Arrhenius activation energy (divided by 10000 for fit friendliness) stern-volmer fluorescence
             quenching model
 
     Returns:
-        Estimate of dissolved oxygen
+        Estimate of dissolved oxygen, in % saturation (assuming parameters are trained on % sat data)
     '''
 
     optical_reading, temperature = optical_reading_and_temp
@@ -108,23 +104,23 @@ def estimate_do_two_site_model_with_temperature(
     k_sv2 = _get_arrhenius_rate(temperature, A_k_sv2, E_k_sv)
 
     sqrt_term = (
-        (i0 / i) ** 2 * (
-            -2 * f * k_sv1 ** 2
-            + f ** 2 * k_sv1 ** 2
-            + f ** 2 * k_sv2 ** 2
+        ((i0 / i) ** 2) * (
+            -2 * f * (k_sv1 ** 2)
+            + (f ** 2) * (k_sv1 ** 2)
+            + (f ** 2) * (k_sv2 ** 2)
             + 2 * f * k_sv1 * k_sv2
-            - 2 * f ** 2 * k_sv1 * k_sv2
-            + k_sv1 ** 2
+            - 2 * (f ** 2) * k_sv1 * k_sv2
+            + (k_sv1 ** 2)
         )
         + 2 * (i0 / i) * (
-            f * k_sv1 ** 2
-            - f * k_sv2 ** 2
-            - k_sv1 ** 2
+            f * (k_sv1 ** 2)
+            - f * (k_sv2 ** 2)
+            - (k_sv1 ** 2)
             + k_sv1 * k_sv2
         )
         + (
-            k_sv1 ** 2
-            + k_sv2 ** 2
+            (k_sv1 ** 2)
+            + (k_sv2 ** 2)
             - 2 * k_sv1 * k_sv2
         )
     )
@@ -166,7 +162,7 @@ def get_optimal_DO_fit_params(
     Raises:
         Various errors from scipy.optimize.curve_fit if a fit cannot be found.
     '''
-    fit_params, pcov_dO = curve_fit(
+    fit_params, _ = curve_fit(
         f=estimate_do_fn,
         xdata=np.array([training_data['SR reading'], training_data['Temperature (C)']]),
         ydata=training_data['DO (% sat)'],

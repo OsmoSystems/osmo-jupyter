@@ -46,7 +46,7 @@ def _get_adjusted_r_squared(actual, predicted, p):
     return 1 - (1 - r_squared) * (n - 1) / (n - p - 1)
 
 
-def _get_fit_parameters(fn):
+def _get_fit_parameter_names(fn):
     ''' Get the name of all but the first parameter to the given function '''
     return list(
         inspect.signature(fn).parameters.keys()
@@ -109,7 +109,7 @@ def plot_calibration(
         None. Produces plots and printed data frame
     '''
     optical_reading = sensor_data['SR reading']
-    DO = sensor_data['DO (% sat)']
+    measured_do = sensor_data['DO (% sat)']
     temperature = sensor_data['Temperature (C)']
 
     predicted_do = estimate_do_fn(
@@ -118,9 +118,9 @@ def plot_calibration(
     )
 
     p = len(fit_params)
-    adjusted_r_squared = _get_adjusted_r_squared(predicted_do, DO, p)
+    adjusted_r_squared = _get_adjusted_r_squared(predicted_do, measured_do, p)
 
-    fit_parameter_names = _get_fit_parameters(estimate_do_fn)
+    fit_parameter_names = _get_fit_parameter_names(estimate_do_fn)
     fit_params_dict = dict(zip(fit_parameter_names, fit_params))
     fit_params_formatted = ', '.join(
         f"'{parameter_name}': {parameter_value:.3e}"
@@ -129,11 +129,11 @@ def plot_calibration(
     )
 
     # Estimate error
-    do_error = predicted_do - DO
+    do_error = predicted_do - measured_do
     max_do_error_index = do_error.abs().idxmax()
     max_do_error = do_error[max_do_error_index]
     worst_error_temperature = temperature[max_do_error_index]
-    worst_error_correct_do = DO[max_do_error_index]
+    worst_error_correct_do = measured_do[max_do_error_index]
     worst_error_SR = optical_reading[max_do_error_index]
 
     temperatures_text = [f'T={T}' for T in temperature]
@@ -148,7 +148,7 @@ def plot_calibration(
 
     calibration_and_prediction_traces = [
         go.Scatter(
-            x=DO,
+            x=measured_do,
             y=optical_reading,
             mode='markers',
             name='Actual points',
@@ -180,7 +180,7 @@ def plot_calibration(
             x=[point_do, point_predicted_do],
             y=[point_optical_reading, point_optical_reading],
             line=dict(
-                color='red',  # color_from_temperature(point_temperature),
+                color='red',
                 width=0.5,
                 dash='dash',
             ),
@@ -190,7 +190,7 @@ def plot_calibration(
             opacity=0.5,
         )
         for point_do, point_predicted_do, point_optical_reading, point_temperature
-        in zip(DO, predicted_do, optical_reading, temperature)
+        in zip(measured_do, predicted_do, optical_reading, temperature)
     ]
 
     temperature_lines = [
@@ -226,5 +226,5 @@ def plot_calibration(
     )
 
     display(
-        calibration_error_plot(predicted_do, DO, temperature, title)
+        calibration_error_plot(predicted_do, measured_do, temperature, title)
     )

@@ -28,8 +28,8 @@ def ysi_data_filepath(tmpdir):
 
 
 @pytest.fixture
-def camera_data_filepath(tmpdir):
-    camera_data_filepath = tmpdir / 'roi_summary_data.csv'
+def image_data_filepath(tmpdir):
+    image_data_filepath = tmpdir / 'roi_summary_data.csv'
     pd.DataFrame([
         {
             'timestamp': datetime(2019, 1, 1, 1, 1, 45),
@@ -55,28 +55,28 @@ def camera_data_filepath(tmpdir):
             'r_msorm': 0.09,
             'irrelevant': 'other stuff'
         }
-    ]).to_csv(camera_data_filepath)
-    return camera_data_filepath
+    ]).to_csv(image_data_filepath)
+    return image_data_filepath
 
 
 class TestPrepCalibrationData:
 
-    def test_rounds_ysi_temperature_data(self, ysi_data_filepath, camera_data_filepath):
-        # Note: this test requires the fixture to have non-integer temperatures in the YSI data
+    def test_rounds_ysi_temperature_data(self, ysi_data_filepath, image_data_filepath):
+        # Note: test assumes the YSI data fixture has non-integer temperatures. Otherwise the test does nothing.
 
         calibration_data = module.prep_calibration_data(
             ysi_data_filepath,
-            camera_data_filepath,
+            image_data_filepath,
             'DO patch',
             'Reference patch',
         )
 
         assert not (calibration_data['Temperature (C)'] % 1).any()
 
-    def test_combines_ysi_and_camera_data_appropriately(self, ysi_data_filepath, camera_data_filepath):
+    def test_combines_ysi_and_camera_data_appropriately(self, ysi_data_filepath, image_data_filepath):
         calibration_data = module.prep_calibration_data(
             ysi_data_filepath,
-            camera_data_filepath,
+            image_data_filepath,
             'DO patch',
             'Reference patch',
         )

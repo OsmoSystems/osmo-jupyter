@@ -5,7 +5,7 @@ from osmo_jupyter.ysi import join_nearest_ysi_data
 
 def prep_calibration_data(
     ysi_data_filepath,
-    camera_data_filepath,
+    image_data_filepath,
     do_patch_roi_name,
     reference_patch_roi_name,
 ):
@@ -13,7 +13,7 @@ def prep_calibration_data(
 
     Args:
         ysi_data_filepath: file path to a YSI data file
-        camera_data_filepath: file path to ROI summary statistics file from process_experiment
+        image_data_filepath: file path to ROI summary statistics file from process_experiment
         do_patch_roi_name: ROI name in camera data file to use as sensing patch
         reference_patch_roi_name: ROI name in camera data file to use as control patch
 
@@ -38,7 +38,7 @@ def prep_calibration_data(
 
     # Import camera data
     all_camera_data = pd.read_csv(
-        camera_data_filepath,
+        image_data_filepath,
         parse_dates=['timestamp']
     )
 
@@ -51,7 +51,6 @@ def prep_calibration_data(
         'Dissolved Oxygen (%)'
     ]
     msorms_and_ysi_data = join_nearest_ysi_data(r_msorms, ysi_data[desired_ysi_columns])
-    msorms_and_ysi_data.head()
 
     # Let's have a nice clean output DataFrame
     calibration_data_rename = {
