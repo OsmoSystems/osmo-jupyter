@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    osmo_jupyter.calibration
     osmo_jupyter.plot
     osmo_jupyter.simulate
 

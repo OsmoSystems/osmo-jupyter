@@ -12,6 +12,14 @@ osmo\_jupyter.plot.color\_from\_temperature module
     :undoc-members:
     :show-inheritance:
 
+osmo\_jupyter.plot.do\_calibration module
+-----------------------------------------
+
+.. automodule:: osmo_jupyter.plot.do_calibration
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 osmo\_jupyter.plot.heatmap module
 ---------------------------------
 

@@ -83,6 +83,7 @@
 <li><a class="reference internal" href="#">osmo_jupyter.plot package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.plot.color_from_temperature">osmo_jupyter.plot.color_from_temperature module</a></li>
+<li><a class="reference internal" href="#module-osmo_jupyter.plot.do_calibration">osmo_jupyter.plot.do_calibration module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.plot.heatmap">osmo_jupyter.plot.heatmap module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.plot.scatter">osmo_jupyter.plot.scatter module</a></li>
 <li><a class="reference internal" href="#module-osmo_jupyter.plot">Module contents</a></li>
@@ -165,7 +166,39 @@
 <dd><p>Basic color scale going from blue at the minimum temperature to red at the max temperature.
 Note: this corresponds to the behavior of the Bluered color scale implemented by plotly - when setting marker</p>
 <blockquote>
-<div>color, use that instead. This can be used for line color.</div></blockquote>
+<div><p>color, use that instead. This can be used for line color.</p>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-osmo_jupyter.plot.do_calibration">
+<span id="osmo-jupyter-plot-do-calibration-module"></span><h2>osmo_jupyter.plot.do_calibration module<a class="headerlink" href="#module-osmo_jupyter.plot.do_calibration" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="osmo_jupyter.plot.do_calibration.calibration_error_plot">
+<code class="descclassname">osmo_jupyter.plot.do_calibration.</code><code class="descname">calibration_error_plot</code><span class="sig-paren">(</span><em>predicted_do</em>, <em>actual_do</em>, <em>temperature</em>, <em>fit_title</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.do_calibration.calibration_error_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot showing the error in predicted DO as distributed over DO and temperature</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="osmo_jupyter.plot.do_calibration.plot_calibration">
+<code class="descclassname">osmo_jupyter.plot.do_calibration.</code><code class="descname">plot_calibration</code><span class="sig-paren">(</span><em>sensor_data: pandas.core.frame.DataFrame, fit_params: List[float], title: str, estimate_do_fn: Callable, estimate_optical_reading_fn: Callable</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.do_calibration.plot_calibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize sensor in the context of a curve fit and fit parameters, including numerical measures of fit quality.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>sensor_data: pandas DataFrame of observations. should have the following columns:</dt><dd><p>timestamp, Temperature (C), DO (% sat), SR reading</p>
+</dd>
+</dl>
+<p>fit_params: Fit parameters for the curve function connecting optical reading with DO and temperature
+title: Title of fit, to use in plots
+estimate_do_fn: Function of ((optical reading, temperature), <a href="#id1"><span class="problematic" id="id2">*</span></a>fit_params) which provides a DO estimate in % sat
+estimate_optical_reading_fn:</p>
+<blockquote>
+<div><p>Function of ((DO, temperature), <a href="#id3"><span class="problematic" id="id4">*</span></a>fit_params) which provides an optical reading estimate</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>None. Produces plots and printed data frame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -174,18 +207,17 @@ Note: this corresponds to the behavior of the Bluered color scale implemented by
 <dl class="function">
 <dt id="osmo_jupyter.plot.heatmap.cut_array2d">
 <code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">cut_array2d</code><span class="sig-paren">(</span><em>array</em>, <em>block_shape</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.cut_array2d" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Cuts up an array into blocks of shape <cite>block_shape</cite>. If <cite>block_shape</cite> doesn’t factor perfectly into the</dt>
-<dd>shape of the array, drops data from the right and bottom edges of the input <cite>array</cite>.
-Heavily, heavily adapted from <a class="reference external" href="https://stackoverflow.com/a/17385776/1701416">https://stackoverflow.com/a/17385776/1701416</a></dd>
-<dt>Args:</dt>
-<dd>array: a 2D numpy array
-block_shape: a 2-tuple. The shape of the blocks you want the <cite>array</cite> to be cut into</dd>
-<dt>Return:</dt>
-<dd><dl class="first last docutils">
-<dt>(block_centers, blocks) tuple where</dt>
-<dd>block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
-blocks: a 1D array of blocks of shape <cite>block_shape</cite></dd>
+<dd><dl class="simple">
+<dt>Cuts up an array into blocks of shape <cite>block_shape</cite>. If <cite>block_shape</cite> doesn’t factor perfectly into the</dt><dd><p>shape of the array, drops data from the right and bottom edges of the input <cite>array</cite>.
+Heavily, heavily adapted from <a class="reference external" href="https://stackoverflow.com/a/17385776/1701416">https://stackoverflow.com/a/17385776/1701416</a></p>
+</dd>
+<dt>Args:</dt><dd><p>array: a 2D numpy array
+block_shape: a 2-tuple. The shape of the blocks you want the <cite>array</cite> to be cut into</p>
+</dd>
+<dt>Return:</dt><dd><dl class="simple">
+<dt>(block_centers, blocks) tuple where</dt><dd><p>block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
+blocks: a 1D array of blocks of shape <cite>block_shape</cite></p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -195,14 +227,14 @@ blocks: a 1D array of blocks of shape <cite>block_shape</cite></dd>
 <dt id="osmo_jupyter.plot.heatmap.display_heatmap">
 <code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">display_heatmap</code><span class="sig-paren">(</span><em>array</em>, <em>display_decimals=2</em>, <em>title='Heatmap'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.display_heatmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the heatmap figure from provided array</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>array: A 2D numpy array to render as a heatmap
+<dl class="simple">
+<dt>Args:</dt><dd><p>array: A 2D numpy array to render as a heatmap
 display_decimals: Optional (default=2). the number of decimals to round to in the annotation
-title: Optional (default=’Heatmap’)</dd>
-<dt>Returns:</dt>
-<dd>A heatmap Figure.
-Can be displayed in a jupyter notebook using the display() function.</dd>
+title: Optional (default=’Heatmap’)</p>
+</dd>
+<dt>Returns:</dt><dd><p>A heatmap Figure.
+Can be displayed in a jupyter notebook using the display() function.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -210,35 +242,34 @@ Can be displayed in a jupyter notebook using the display() function.</dd>
 <dt id="osmo_jupyter.plot.heatmap.get_block_means_2d">
 <code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">get_block_means_2d</code><span class="sig-paren">(</span><em>block_centers</em>, <em>blocks</em>, <em>averaging_function=&lt;function mean&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.get_block_means_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given 1D arrays of block_centers and blocks, construct a 2D array of block means.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
+<dl class="simple">
+<dt>Args:</dt><dd><p>block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
 blocks: a 1D array of 2D blocks
-averaging_function: Optional (default=np.mean). Function to use to get the average of each block (a 2D array)</dd>
-<dt>Returns:</dt>
-<dd>a 2D array of block means</dd>
+averaging_function: Optional (default=np.mean). Function to use to get the average of each block (a 2D array)</p>
+</dd>
+<dt>Returns:</dt><dd><p>a 2D array of block means</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="osmo_jupyter.plot.heatmap.heatmapify">
 <code class="descclassname">osmo_jupyter.plot.heatmap.</code><code class="descname">heatmapify</code><span class="sig-paren">(</span><em>array</em>, <em>averaging_function=&lt;function mean&gt;</em>, <em>block_shape=(50</em>, <em>50)</em>, <em>display_decimals=2</em>, <em>title='Heatmap'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.heatmap.heatmapify" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Constructs a heatmap from a 2D array. The heatmap is created by slicing the array into blocks the size of</dt>
-<dd><cite>block_shape</cite>, and then averaging each block.</dd>
-<dt>Args:</dt>
-<dd><dl class="first docutils">
-<dt>array: A 2D numpy array to render as a heatmap. e.g. a single channel of an RGB image:</dt>
-<dd>array = image[:, :, channel]  # channel is 0, 1, or 2, for r, g, b respectively</dd>
+<dd><dl>
+<dt>Constructs a heatmap from a 2D array. The heatmap is created by slicing the array into blocks the size of</dt><dd><p><cite>block_shape</cite>, and then averaging each block.</p>
+</dd>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>array: A 2D numpy array to render as a heatmap. e.g. a single channel of an RGB image:</dt><dd><p>array = image[:, :, channel]  # channel is 0, 1, or 2, for r, g, b respectively</p>
+</dd>
 </dl>
-<p class="last">averaging_function: Optional (default=np.mean). Function to use to get the average of each block (a 2D array)
+<p>averaging_function: Optional (default=np.mean). Function to use to get the average of each block (a 2D array)
 block_shape: Optional (default=(50,50)). The shape of block to group by and average over to create the heatmap
 display_decimals: Optional (default=2). The number of decimals to round to in the annotation
 title: Optional (default=’Heatmap’).</p>
 </dd>
-<dt>Returns:</dt>
-<dd>A heatmap Figure.
-Can be displayed in a jupyter notebook using the display() function.</dd>
+<dt>Returns:</dt><dd><p>A heatmap Figure.
+Can be displayed in a jupyter notebook using the display() function.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -253,18 +284,19 @@ Can be displayed in a jupyter notebook using the display() function.</dd>
 * The primary Y axis (y0) is reserved for annotations. This is done to guarantee that annotations show
 * If colors are on separate axes, they will be on the next consecutive axes, otherwise they will be on yaxis 2
 * You can use additional axes for plotting other things by passing in additional params</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">x_axis_title: title to use for X axis, default ‘Time’
+<dl>
+<dt>Args:</dt><dd><p>x_axis_title: title to use for X axis, default ‘Time’
 y_axis_title: title to use for Y axis where colors are plotted. Required if colors_on_separate_axes is False.</p>
 <blockquote>
-<div>If colors_on_separate_axes is True, it will be used as a suffix for the y axis titles “r”, “g”, and “b”</div></blockquote>
+<div><p>If colors_on_separate_axes is True, it will be used as a suffix for the y axis titles “r”, “g”, and “b”</p>
+</div></blockquote>
 <p>colors_on_separate_axes: whether colors (r,g and b) should be displayed on separate Y axes
 events: dictionary of {“annotation”: x_axis_value} which will be used to annotate the chart
 additional_layout_kwargs: Any additional arguments will be passed to go.Layout. These can, for instance,</p>
-<blockquote class="last">
-<div>be the result of _axis_kwargs() to add support for graphing more items.
-Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#layout">https://plot.ly/python/reference/#layout</a></div></blockquote>
+<blockquote>
+<div><p>be the result of _axis_kwargs() to add support for graphing more items.
+Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#layout">https://plot.ly/python/reference/#layout</a></p>
+</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -279,24 +311,24 @@ Valid options are documented at <a class="reference external" href="https://plot
 &gt;&gt;&gt; rgb_df = pd.DataFrame({‘r’: [1,2,3], ‘g’: [2,3,4], ‘b’: [3,4,5], ‘x_axis’: [0,1,2]})
 &gt;&gt;&gt; go.FigureWidget(rgb_scatters(rgb_df, x_column=’x_axis’))
 [result is a plot with your three channels]</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">rgb_df: pandas.DataFrame instance with ‘r’, ‘g’, and ‘b’ columns, and a column for the X axis value
+<dl>
+<dt>Args:</dt><dd><p>rgb_df: pandas.DataFrame instance with ‘r’, ‘g’, and ‘b’ columns, and a column for the X axis value
 x_column: Optional, name of the column in rgb_df to use for the X axis values. if None, we’ll use the index
 colors_on_separate_axes: Optional, if True, will plot each color series on a separate axis
 dataset_name: Optional, string to use in legend labels
 marker_overrides: Optional, dict of additional arguments for go.Marker.</p>
 <blockquote>
-<div>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter-marker">https://plot.ly/python/reference/#scatter-marker</a></div></blockquote>
-<dl class="last docutils">
-<dt>scatter_overrides: Optional, dict of additional_arguments for go.Scatter.</dt>
-<dd>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter">https://plot.ly/python/reference/#scatter</a></dd>
-<dt>colors_to_include: Optional list of color letters to include - provide if you don’t want all the colors.</dt>
-<dd>Should be a subset of COLOR_CHANNELS.</dd>
+<div><p>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter-marker">https://plot.ly/python/reference/#scatter-marker</a></p>
+</div></blockquote>
+<dl class="simple">
+<dt>scatter_overrides: Optional, dict of additional_arguments for go.Scatter.</dt><dd><p>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter">https://plot.ly/python/reference/#scatter</a></p>
+</dd>
+<dt>colors_to_include: Optional list of color letters to include - provide if you don’t want all the colors.</dt><dd><p>Should be a subset of COLOR_CHANNELS.</p>
+</dd>
 </dl>
 </dd>
-<dt>Returns:</dt>
-<dd>list of go.Scatter objects, one each for r, g, and b or colors_to_include if provided</dd>
+<dt>Returns:</dt><dd><p>list of go.Scatter objects, one each for r, g, and b or colors_to_include if provided</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -304,21 +336,21 @@ marker_overrides: Optional, dict of additional arguments for go.Marker.</p>
 <dt id="osmo_jupyter.plot.scatter.get_scatter">
 <code class="descclassname">osmo_jupyter.plot.scatter.</code><code class="descname">get_scatter</code><span class="sig-paren">(</span><em>y_values</em>, <em>x_values=None</em>, <em>dataset_name=None</em>, <em>y_axis_number=1</em>, <em>marker_overrides=None</em>, <em>scatter_overrides=None</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.plot.scatter.get_scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Quick way to get a go.Scatter to put on your plot with some conveniences.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">y_values: iterable of Y values can be a pandas Series or whatever
+<dl>
+<dt>Args:</dt><dd><p>y_values: iterable of Y values can be a pandas Series or whatever
 x_values: Optional, X values to go along with those. If not provided, y_values is expected to be a Series and</p>
 <blockquote>
-<div>we’ll use the index from it</div></blockquote>
-<dl class="last docutils">
-<dt>dataset_name: Optional, name to put in the chart legend. If not provided, y_values is expected to be a Series</dt>
-<dd>and we’ll use its name</dd>
-<dt>y_axis_number: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for</dt>
-<dd>RGB values.</dd>
-<dt>marker_overrides: Optional, dict of go.Scatter.Marker attributes to override marker style.</dt>
-<dd>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter-marker">https://plot.ly/python/reference/#scatter-marker</a></dd>
-<dt>scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.</dt>
-<dd>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter">https://plot.ly/python/reference/#scatter</a></dd>
+<div><p>we’ll use the index from it</p>
+</div></blockquote>
+<dl class="simple">
+<dt>dataset_name: Optional, name to put in the chart legend. If not provided, y_values is expected to be a Series</dt><dd><p>and we’ll use its name</p>
+</dd>
+<dt>y_axis_number: Optional, Y-axis number. Defaults to the primary (1) Y axis. Note that axes 2-4 are used for</dt><dd><p>RGB values.</p>
+</dd>
+<dt>marker_overrides: Optional, dict of go.Scatter.Marker attributes to override marker style.</dt><dd><p>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter-marker">https://plot.ly/python/reference/#scatter-marker</a></p>
+</dd>
+<dt>scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.</dt><dd><p>Valid options are documented at <a class="reference external" href="https://plot.ly/python/reference/#scatter">https://plot.ly/python/reference/#scatter</a></p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -341,7 +373,7 @@ x_values: Optional, X values to go along with those. If not provided, y_values i
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019-04-08T18:01:28.338016, dev@osmobot.com
+        &copy; Copyright 2019-05-03T13:34:30.465924, dev@osmobot.com
 
     </p>
   </div>

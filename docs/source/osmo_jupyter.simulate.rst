@@ -4,10 +4,10 @@ osmo\_jupyter.simulate package
 Submodules
 ----------
 
-osmo\_jupyter.simulate.do\_and\_temp\_plot module
--------------------------------------------------
+osmo\_jupyter.simulate.do\_and\_temp\_meshgrid module
+-----------------------------------------------------
 
-.. automodule:: osmo_jupyter.simulate.do_and_temp_plot
+.. automodule:: osmo_jupyter.simulate.do_and_temp_meshgrid
     :members:
     :undoc-members:
     :show-inheritance:
