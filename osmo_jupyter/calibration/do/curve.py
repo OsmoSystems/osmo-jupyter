@@ -47,7 +47,7 @@ def estimate_optical_reading_two_site_model_with_temperature(
     Note: Lehner and McNeil are predicting tau, we are predicting intensity (i)
 
     Args:
-        do_and_temp: tuple of dissolved oxygen (% saturation) and temeprature (Deg C)
+        do_and_temp: tuple of dissolved oxygen (% saturation) and temperature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
             should always be less than 1.
         A_i0: Arrhenius preexponential parameter for unquenched fluorescence
