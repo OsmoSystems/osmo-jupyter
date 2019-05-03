@@ -28,7 +28,6 @@ class TestDoAndOpticalReadingFunctions:
             round_trip_do, do
         )
 
-
     @pytest.mark.parametrize('curve_fn', [
         module.estimate_do_two_site_model_with_temperature,
         module.estimate_optical_reading_two_site_model_with_temperature,
