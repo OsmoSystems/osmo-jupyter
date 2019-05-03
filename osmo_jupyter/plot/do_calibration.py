@@ -16,8 +16,8 @@ def _get_r_squared(predicted, actual):
     ''' Coefficient of determination (r-squared)
 
     Args:
-        predicted: Y data points provided by a model
-        actual: Y data points actually observed
+        predicted: numpy array of Y data points provided by a model
+        actual: numpy array of Y data points actually observed
 
     Returns:
         Coefficient of determination - a measure of how much of the variation in actual data
@@ -41,8 +41,14 @@ def _get_adjusted_r_squared(actual, predicted, p):
     Returns:
         adjusted r-squared value
     '''
-    r_squared = _get_r_squared(actual, predicted)
     n = len(actual)
+    if n <= p + 1:
+        raise ValueError(
+            f'Number of data points {n} must be greater than the number of explanatory variables (p={p}) plus 1'
+        )
+
+    r_squared = _get_r_squared(actual, predicted)
+
     return 1 - (1 - r_squared) * (n - 1) / (n - p - 1)
 
 
