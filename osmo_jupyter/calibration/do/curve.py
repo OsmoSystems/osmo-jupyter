@@ -47,9 +47,9 @@ def estimate_optical_reading_two_site_model_with_temperature(
     Note: Lehner and McNeil are predicting tau, we are predicting intensity (i)
 
     Args:
-        do_and_temp: tuple of dissolved oxygen (% saturation) and temeprature (Deg C)
+        do_and_temp: tuple of dissolved oxygen (% saturation) and temperature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
-            should always be less than 1.
+            should always be in the range [0, 1]
         A_i0: Arrhenius preexponential factor for unquenched fluorescence
         E_i0: Arrhenius activation energy (divided by 10000 for fit friendliness) for unquenched fluorescence
         A_k_sv1: Arrhenius preexponential factor for stern-volmer fluorescence quenching effected by O2 in site 1
@@ -152,7 +152,7 @@ def get_optimal_DO_fit_params(
 ):
     ''' Optimize fit parameters for a DO fit
     Args:
-        training_data: DataFrame of observations with 'SR reading' and 'Temperature (C)' columns
+        training_data: DataFrame of observations with 'SR reading', 'Temperature (C)', and 'DO (% sat)' columns
         estimate_do_fn: function of ((optical reading, temperature), *fit params) which returns an estimate of DO % sat
         initial_fit_params: fit parameters to seed the curve fit. Pass None to skip initialization
 
