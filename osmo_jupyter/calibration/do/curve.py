@@ -156,7 +156,7 @@ def get_optimal_DO_fit_params(
 ):
     ''' Optimize fit parameters for a DO fit
     Args:
-        training_data: DataFrame of observations with 'SR reading' and 'Temperature (C)' columns
+        training_data: DataFrame of observations with 'SR reading', 'Temperature (C)', and 'DO (% sat)' columns
         estimate_do_fn: function of ((optical reading, temperature), *fit params) which returns an estimate of DO % sat
         initial_fit_params: fit parameters to seed the curve fit. Pass None to skip initialization
 
