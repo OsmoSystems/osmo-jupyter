@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
 
+from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
 from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN
 
@@ -64,7 +65,11 @@ def calibration_error_plot(predicted_do, actual_do, temperature, fit_title):
                 marker=dict(
                     color=temperature,
                     symbol='circle-open',
-                    colorscale='Bluered'
+                    colorscale='Bluered',
+                    range=(
+                        TEMPERATURE_STANDARD_OPERATING_MIN,
+                        TEMPERATURE_STANDARD_OPERATING_MAX
+                    )
                 )
             )
         ],
