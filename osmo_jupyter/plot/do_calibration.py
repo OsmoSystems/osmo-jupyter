@@ -72,10 +72,8 @@ def calibration_error_plot(predicted_do, actual_do, temperature, fit_title):
                     color=temperature,
                     symbol='circle-open',
                     colorscale='Bluered',
-                    range=(
-                        TEMPERATURE_STANDARD_OPERATING_MIN,
-                        TEMPERATURE_STANDARD_OPERATING_MAX
-                    )
+                    cmin=TEMPERATURE_STANDARD_OPERATING_MIN,
+                    cmax=TEMPERATURE_STANDARD_OPERATING_MAX
                 )
             )
         ],
