@@ -15,7 +15,7 @@ class TestDoAndOpticalReadingFunctions:
             [15, 20, 28.34912378, 35],  # temperatures
         ))
     )
-    def test_estimate_optical_reading_functions_properly_reversed(do, temperature):
+    def test_estimate_optical_reading_functions_properly_reversed(self, do, temperature):
         optical_reading = module.estimate_optical_reading_two_site_model_with_temperature(
             (do, temperature),
             *module.WORKING_FIT_PARAMS
@@ -33,7 +33,7 @@ class TestDoAndOpticalReadingFunctions:
         module.estimate_do_two_site_model_with_temperature,
         module.estimate_optical_reading_two_site_model_with_temperature,
     ])
-    def test_initial_fit_params_match_function_params(curve_fn):
+    def test_initial_fit_params_match_function_params(self, curve_fn):
         function_params = list(
             inspect.signature(curve_fn).parameters.keys()
         )
