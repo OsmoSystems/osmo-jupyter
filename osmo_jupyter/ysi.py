@@ -42,7 +42,8 @@ def _guard_no_fractional_seconds(datetime_series, series_name):
 def join_nearest_ysi_data(
     other_data,
     ysi_data,
-    other_data_timestamp_column='timestamp'
+    other_data_timestamp_column='timestamp',
+    interpolation_method='slinear',
 ):
     '''
     Params:
@@ -53,6 +54,9 @@ def join_nearest_ysi_data(
                 parse_dates=['Timestamp']
             ).set_index('Timestamp')
         other_data_timestamp_column: Default: 'timestamp'. Column name in other_data containing timestamps.
+        interpolation_method: Default: 'slinear' method used when interpolating YSI data.
+            Passed to DataFrame.interpolate. 'slinear' is a 1st-order spline, conceptually equivalent to a linear
+            interpolation.
     Return:
         DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
         Discards "other_data" that is collected outside of the timerange of the YSI data.
@@ -75,7 +79,7 @@ def join_nearest_ysi_data(
         ysi_data
         .add_prefix('YSI ')
         .resample('s')
-        .interpolate(method='nearest')
+        .interpolate(method=interpolation_method)
     )
     return other_data.join(
         resampled_ysi_data,
