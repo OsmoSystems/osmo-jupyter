@@ -93,7 +93,7 @@ class TestJoinInterpolatedYsiData:
                 [3, 5, 7]
             ),
             (
-                'interpolates to match data with default method',
+                'interpolates to match data with default (slinear) method',
                 None,
                 [3, 5, 7],
                 [2, 4, 8],
@@ -135,7 +135,7 @@ class TestJoinInterpolatedYsiData:
         expected_other_seconds,
         expected_ysi_seconds
     ):
-        # Only override the "method" kwarg if provided
+        # Only override the "interpolation_method" kwarg if provided
         method_kwargs = {} if interpolation_method is None else {'interpolation_method': interpolation_method}
 
         actual = module.join_interpolated_ysi_data(
