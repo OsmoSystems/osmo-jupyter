@@ -39,7 +39,7 @@ def _guard_no_fractional_seconds(datetime_series, series_name):
         )
 
 
-def join_nearest_ysi_data(
+def join_interpolated_ysi_data(
     other_data,
     ysi_data,
     other_data_timestamp_column='timestamp',
