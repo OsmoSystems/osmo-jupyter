@@ -57,9 +57,9 @@ class TestGuardNoFractionalSeconds:
         )
 
 
-class TestJoinNearestYsiData:
+class TestJoinInterpolatedYsiData:
     def test_prefixes_with_YSI(self):
-        actual = module.join_nearest_ysi_data(
+        actual = module.join_interpolated_ysi_data(
             other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
             ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('Timestamp')
         )
@@ -68,37 +68,77 @@ class TestJoinNearestYsiData:
 
     def test_raises_if_YSI_index_not_datetime(self):
         with pytest.raises(ValueError):
-            module.join_nearest_ysi_data(
+            module.join_interpolated_ysi_data(
                 other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
                 ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('temperature')
             )
 
     def test_raises_if_other_data_timestamp_column_not_datetime(self):
         with pytest.raises(ValueError):
-            module.join_nearest_ysi_data(
+            module.join_interpolated_ysi_data(
                 other_data=pd.DataFrame([SINGLE_OTHER_DATAPOINT]),
                 ysi_data=pd.DataFrame([SINGLE_YSI_DATAPOINT]).set_index('Timestamp'),
                 other_data_timestamp_column='other'
             )
 
     @pytest.mark.parametrize(
-        'name,other_seconds,ysi_seconds,expected_other_seconds,expected_ysi_seconds',
+        'name,interpolation_method,other_seconds,ysi_seconds,expected_other_seconds,expected_ysi_seconds',
         [
-            ['ysi seconds match other seconds', [3, 5, 7], [3, 5, 7], [3, 5, 7], [3.0, 5.0, 7.0]],
-            ['interpolates to nearest second', [3, 5, 7], [2, 4, 8], [3, 5, 7], [2.0, 4.0, 8.0]],
-            ['discards extra YSI data', [3, 5, 7], [0, 2, 4, 6, 8], [3, 5, 7], [2.0, 4.0, 6.0]],
-            ['discards "other" data outside of ysi timerange', [3, 5, 7], [4, 5, 6], [5], [5]],
+            (
+                'ysi seconds match other seconds',
+                None,
+                [3, 5, 7],
+                [3, 5, 7],
+                [3, 5, 7],
+                [3, 5, 7]
+            ),
+            (
+                'interpolates to match data with default (slinear) method',
+                None,
+                [3, 5, 7],
+                [2, 4, 8],
+                [3, 5, 7],
+                [3, 5, 7],
+            ),
+            (
+                'snaps to nearest second with "nearest" method',
+                'nearest',
+                [3, 5, 7],
+                [2, 4, 8],
+                [3, 5, 7],
+                [2, 4, 8],
+            ),
+            (
+                'discards extra YSI data',
+                None,
+                [3, 5, 7],
+                [0, 2, 4, 6, 8],
+                [3, 5, 7],
+                [3, 5, 7]
+            ),
+            (
+                'discards "other" data outside of ysi timerange',
+                None,
+                [3, 5, 7],
+                [4, 5, 6],
+                [5],
+                [5]
+            ),
         ]
     )
     def test_interpolates_to_nearest_second(
         self,
         name,
+        interpolation_method,
         other_seconds,
         ysi_seconds,
         expected_other_seconds,
         expected_ysi_seconds
     ):
-        actual = module.join_nearest_ysi_data(
+        # Only override the "interpolation_method" kwarg if provided
+        method_kwargs = {} if interpolation_method is None else {'interpolation_method': interpolation_method}
+
+        actual = module.join_interpolated_ysi_data(
             other_data=pd.DataFrame({
                 'timestamp': [ONE_MINUTE.replace(second=s) for s in other_seconds],
                 'other_data': other_seconds,
@@ -106,7 +146,8 @@ class TestJoinNearestYsiData:
             ysi_data=pd.DataFrame({
                 'Timestamp': [ONE_MINUTE.replace(second=s) for s in ysi_seconds],
                 'ysi_data': ysi_seconds,
-            }).set_index('Timestamp')
+            }).set_index('Timestamp'),
+            **method_kwargs
         )
 
         expected = pd.DataFrame({
@@ -115,11 +156,15 @@ class TestJoinNearestYsiData:
             'YSI ysi_data': expected_ysi_seconds,
         })
 
-        # check_like=True ignores column order, which we don't care about
-        pd.testing.assert_frame_equal(actual, expected, check_like=True)
+        pd.testing.assert_frame_equal(
+            actual,
+            expected,
+            check_like=True,  # Ignore column order
+            check_dtype=False  # Allow different dtypes (int vs float)
+        )
 
     def test_accepts_custom_timestamp_column_name(self):
-        actual = module.join_nearest_ysi_data(
+        actual = module.join_interpolated_ysi_data(
             other_data=pd.DataFrame([{'custom_timestamp': ONE_MINUTE, 'other': 5.0}]),
             ysi_data=pd.DataFrame([{'Timestamp': ONE_MINUTE, 'temperature': 20.0}]).set_index('Timestamp'),
             other_data_timestamp_column='custom_timestamp'

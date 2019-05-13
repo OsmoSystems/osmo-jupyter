@@ -1,6 +1,6 @@
 import pandas as pd
 
-from osmo_jupyter.ysi import join_nearest_ysi_data
+from osmo_jupyter.ysi import join_interpolated_ysi_data
 
 
 def prep_calibration_data(
@@ -50,7 +50,7 @@ def prep_calibration_data(
         'Temperature (C)',
         'Dissolved Oxygen (%)'
     ]
-    msorms_and_ysi_data = join_nearest_ysi_data(r_msorms, ysi_data[desired_ysi_columns])
+    msorms_and_ysi_data = join_interpolated_ysi_data(r_msorms, ysi_data[desired_ysi_columns])
 
     # Let's have a nice clean output DataFrame
     calibration_data_rename = {
