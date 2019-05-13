@@ -409,8 +409,8 @@ Useful for converting node data timestamps for use in local-time notebooks.</p>
 <div class="section" id="module-osmo_jupyter.ysi">
 <span id="osmo-jupyter-ysi-module"></span><h2>osmo_jupyter.ysi module<a class="headerlink" href="#module-osmo_jupyter.ysi" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="osmo_jupyter.ysi.join_nearest_ysi_data">
-<code class="descclassname">osmo_jupyter.ysi.</code><code class="descname">join_nearest_ysi_data</code><span class="sig-paren">(</span><em>other_data</em>, <em>ysi_data</em>, <em>other_data_timestamp_column='timestamp'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi.join_nearest_ysi_data" title="Permalink to this definition">¶</a></dt>
+<dt id="osmo_jupyter.ysi.join_interpolated_ysi_data">
+<code class="descclassname">osmo_jupyter.ysi.</code><code class="descname">join_interpolated_ysi_data</code><span class="sig-paren">(</span><em>other_data</em>, <em>ysi_data</em>, <em>other_data_timestamp_column='timestamp'</em>, <em>interpolation_method='slinear'</em><span class="sig-paren">)</span><a class="headerlink" href="#osmo_jupyter.ysi.join_interpolated_ysi_data" title="Permalink to this definition">¶</a></dt>
 <dd><dl>
 <dt>Params:</dt><dd><p>other_data: DataFrame to be augmented with YSI data. Must have a pre-parsed timestamp column (datetime dtype).
 ysi_data: DataFrame from YSI. Should be indexed by pre-parsed timestamps (datetime dtype). Get this with, e.g.:</p>
@@ -422,7 +422,12 @@ parse_dates=[‘Timestamp’]</p>
 </dl>
 <p>).set_index(‘Timestamp’)</p>
 </div></blockquote>
-<p>other_data_timestamp_column: Default: ‘timestamp’. Column name in other_data containing timestamps.</p>
+<p>other_data_timestamp_column: Default: ‘timestamp’. Column name in other_data containing timestamps.
+interpolation_method: Default: ‘slinear’ method used when interpolating YSI data.</p>
+<blockquote>
+<div><p>Passed to DataFrame.interpolate. ‘slinear’ is a 1st-order spline, conceptually equivalent to a linear
+interpolation.</p>
+</div></blockquote>
 </dd>
 <dt>Return:</dt><dd><p>DataFrame with each row in other_data augmented with the closest-timestamp data from the YSI.
 Discards “other_data” that is collected outside of the timerange of the YSI data.
@@ -448,7 +453,7 @@ YSI columns will be prefixed with ‘YSI ‘ (e.g. ‘YSI Dissolved Oxygen (%)�
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019-05-03T13:34:30.465924, dev@osmobot.com
+        &copy; Copyright 2019-05-13T16:40:14.366248, dev@osmobot.com
 
     </p>
   </div>
