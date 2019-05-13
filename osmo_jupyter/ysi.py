@@ -54,7 +54,7 @@ def join_interpolated_ysi_data(
                 parse_dates=['Timestamp']
             ).set_index('Timestamp')
         other_data_timestamp_column: Default: 'timestamp'. Column name in other_data containing timestamps.
-        interpolation_method: Default: 'slinear' method used when interpolating YSI data.
+        interpolation_method: Default: 'slinear'. Method used when interpolating YSI data.
             Passed to DataFrame.interpolate. 'slinear' is a 1st-order spline, conceptually equivalent to a linear
             interpolation.
     Return:
