@@ -7,42 +7,50 @@ import osmo_jupyter.sample as module
 class TestSampleUniform(object):
     small_test_dataframe = pd.DataFrame(
         [
+            # Add some balanced data
             (1, 1), (1, 2), (1, 3), (1, 4),
             (2, 1), (2, 2), (2, 3), (2, 4),
             (3, 1), (3, 2), (3, 3), (3, 4),
             (4, 1), (4, 2), (4, 3), (4, 4),
-
+            # Unbalance with some extra values
             (1, 1), (1, 1), (1, 2), (1, 2),
         ],
         columns=['one', 'two']
     )
 
-    def test_uniform_in_one_dimension(self):
+    def test_sampling_on_one_dimension(self):
         num_bins = 4
 
         output_dataframe = module.uniform(
             self.small_test_dataframe,
-            columns=['one'],
-            bin_counts=[num_bins]
+            columns_and_bin_counts={
+                'one': num_bins
+            },
         )
 
-        col_1_distribution = output_dataframe['one'].value_counts(normalize=True).values
-        np.testing.assert_almost_equal(col_1_distribution, np.full(num_bins, 1 / num_bins))
+        expected_distribution = np.full(num_bins, 1 / num_bins)
+        actual_distribution = output_dataframe['one'].value_counts(normalize=True).values
 
-    def test_uniform_with_extra_bins(self):
+        np.testing.assert_almost_equal(actual_distribution, expected_distribution)
+
+    def test_bin_count_saturates_at_unique_value_count(self):
         num_bins = 4000
 
         output_dataframe = module.uniform(
             self.small_test_dataframe,
-            columns=['one'],
-            bin_counts=[num_bins]
+            columns_and_bin_counts={
+                'one': num_bins
+            },
         )
 
-        num_unique = len(self.small_test_dataframe['one'].unique())
-        col_1_distribution = output_dataframe['one'].value_counts(normalize=True).values
-        np.testing.assert_almost_equal(col_1_distribution, np.full(num_unique, 1 / num_unique))
+        unique_values_count = len(self.small_test_dataframe['one'].unique())
+        expected_distribution = np.full(unique_values_count, 1 / unique_values_count)
 
-    def test_uniform_in_multiple_dimensions(self):
+        actual_distribution = output_dataframe['one'].value_counts(normalize=True).values
+
+        np.testing.assert_almost_equal(actual_distribution, expected_distribution)
+
+    def test_sampling_on_multiple_dimensions(self):
         num_bins = 7
         num_columns = 10
         columns = [f'column_{n}' for n in range(0, num_columns)]
@@ -54,18 +62,42 @@ class TestSampleUniform(object):
 
         output_dataframe = module.uniform(
             input_dataframe,
-            columns=columns_to_balance,
-            bin_counts=[num_bins] * len(columns_to_balance)
+            columns_and_bin_counts={
+                column: num_bins for column in columns_to_balance
+            }
         )
 
+        expected_distribution = np.full(num_bins, 1 / num_bins)
+
         for column in columns_to_balance:
-            distribution = pd.cut(
+            actual_distribution = pd.cut(
                 output_dataframe[column],
                 num_bins
             ).value_counts(normalize=True).values
 
             np.testing.assert_almost_equal(
-                distribution,
-                np.full(num_bins, 1 / num_bins),
+                actual_distribution,
+                expected_distribution,
                 decimal=2
             )
+
+    def test_sampled_rows_match_input_rows(self):
+        num_columns = 4
+        columns = [f'column_{n}' for n in range(0, num_columns)]
+        input_dataframe = pd.DataFrame(
+            np.random.rand(1000, num_columns),
+            columns=columns
+        )
+
+        output_dataframe = module.uniform(
+            input_dataframe,
+            columns_and_bin_counts={
+                'column_1': 10,
+                'column_2': 10
+            }
+        )
+
+        pd.testing.assert_frame_equal(
+            input_dataframe.loc[output_dataframe.index],
+            output_dataframe
+        )
