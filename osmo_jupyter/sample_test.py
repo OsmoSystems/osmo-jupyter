@@ -28,8 +28,10 @@ class TestSampleUniform(object):
             },
         )
 
-        expected_distribution = np.full(num_bins, 1 / num_bins)
+        # Use normalized value_counts to get the distribution of values in column 'one'
         actual_distribution = output_dataframe['one'].value_counts(normalize=True).values
+        # Create an array of expected value count distribution in column 'one'
+        expected_distribution = np.full(num_bins, 1 / num_bins)
 
         np.testing.assert_almost_equal(actual_distribution, expected_distribution)
 
@@ -43,10 +45,12 @@ class TestSampleUniform(object):
             },
         )
 
+        # Use normalized value_counts to get the distribution of values in column 'one'
+        actual_distribution = output_dataframe['one'].value_counts(normalize=True).values
+        # Expect the number of bins to saturate to the number of unique values instead of
+        # creating a large number of empty bins between max and min values in the column
         unique_values_count = len(self.small_test_dataframe['one'].unique())
         expected_distribution = np.full(unique_values_count, 1 / unique_values_count)
-
-        actual_distribution = output_dataframe['one'].value_counts(normalize=True).values
 
         np.testing.assert_almost_equal(actual_distribution, expected_distribution)
 
@@ -55,6 +59,7 @@ class TestSampleUniform(object):
         num_columns = 10
         columns = [f'column_{n}' for n in range(0, num_columns)]
         columns_to_balance = columns[0:4]
+
         input_dataframe = pd.DataFrame(
             np.random.rand(10000, num_columns),
             columns=columns
@@ -70,6 +75,7 @@ class TestSampleUniform(object):
         expected_distribution = np.full(num_bins, 1 / num_bins)
 
         for column in columns_to_balance:
+            # Use pd.cut to bin the given column, then get normalized bin counts
             actual_distribution = pd.cut(
                 output_dataframe[column],
                 num_bins
@@ -97,6 +103,7 @@ class TestSampleUniform(object):
             }
         )
 
+        # Ensure the output rows are still assigned to the correct index value
         pd.testing.assert_frame_equal(
             input_dataframe.loc[output_dataframe.index],
             output_dataframe
