@@ -23,13 +23,16 @@ def uniform(dataframe, columns_and_bin_counts):
     )
 
     # Combine all bins for each row into one series of n-dimensional bins
-    bins = binned.apply(tuple, 1)
+    combined_bins = binned.apply(tuple, axis=1)
 
     # Take samples from each bin
-    samples_per_bin = bins.value_counts().min()
-    samples_index = bins.groupby(bins).apply(
+    samples_per_bin = combined_bins.value_counts().min()
+    samples_index = combined_bins.groupby(
+        combined_bins,
+        group_keys=False
+    ).apply(
         lambda bin_group:
             bin_group.sample(samples_per_bin)
-    ).index.levels[1].values
+    ).index
 
     return dataframe.loc[samples_index]
