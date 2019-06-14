@@ -108,3 +108,38 @@ class TestSampleUniform(object):
             input_dataframe.loc[output_dataframe.index],
             output_dataframe
         )
+
+    def test_outliers_ignored_with_quantile(self):
+        num_columns = 2
+        bin_count = 100
+        columns = [f'column_{n}' for n in range(0, num_columns)]
+        input_dataframe = pd.DataFrame(
+            np.vstack((
+                # Generate random array with values between 0-98
+                np.random.randint(0, 98 + 1, (10000, num_columns)),
+                # Add one outlier row with values = 99
+                np.ones(num_columns) * 99
+            )),
+            columns=columns
+        )
+
+        unadjusted_samples = module.uniform(
+            input_dataframe,
+            columns_and_bin_counts={
+                'column_1': bin_count
+            }
+        )
+
+        # Expect the outlier to force max sample size to 1 sample per bin
+        assert len(unadjusted_samples) == bin_count
+
+        outlier_adjusted_samples = module.uniform(
+            input_dataframe,
+            columns_and_bin_counts={
+                'column_1': bin_count
+            },
+            bin_quantile=0.1
+        )
+
+        # Expect the bin_quantile param to ignore the outlier data
+        assert len(outlier_adjusted_samples) > bin_count
