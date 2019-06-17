@@ -5,14 +5,15 @@ import numpy as np
 import pytest
 
 import osmo_jupyter.calibration.do.curve as module
+from osmo_jupyter.constants import DO_MAX_MMHG, TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX
 
 
 class TestDoAndOpticalReadingFunctions:
     @pytest.mark.parametrize(
         'do, temperature',
         list(product(
-            [0, 50, 66.12315315, 100],  # DO values
-            [15, 20, 28.34912378, 35],  # temperatures
+            [0, 50, 66.12315315, DO_MAX_MMHG],  # DO values
+            [TEMPERATURE_STANDARD_OPERATING_MIN, 20, 28.34912378, TEMPERATURE_STANDARD_OPERATING_MAX],  # temperatures
         ))
     )
     def test_estimate_optical_reading_functions_properly_reversed(self, do, temperature):
