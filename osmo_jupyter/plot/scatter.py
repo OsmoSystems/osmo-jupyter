@@ -4,19 +4,11 @@ from osmo_jupyter.constants import COLOR_CHANNELS, COLORS_BY_LETTER
 
 
 # Axis # to use for each color when colors are being plotted on separate axes
-AXES_BY_COLOR = {
-    'r': 2,
-    'g': 3,
-    'b': 4,
-}
+AXES_BY_COLOR = {"r": 2, "g": 3, "b": 4}
 ANNOTATION_AXIS = 1
 SHARED_COLOR_AXIS = 2
 
-AXIS_SIDES_BY_COLOR = {
-    'r': 'left',
-    'g': 'right',
-    'b': 'right',
-}
+AXIS_SIDES_BY_COLOR = {"r": "left", "g": "right", "b": "right"}
 
 
 def get_scatter(
@@ -27,7 +19,7 @@ def get_scatter(
     marker_overrides=None,
     scatter_overrides=None,
 ):
-    ''' Quick way to get a go.Scatter to put on your plot with some conveniences.
+    """ Quick way to get a go.Scatter to put on your plot with some conveniences.
 
     Args:
         y_values: iterable of Y values can be a pandas Series or whatever
@@ -41,7 +33,7 @@ def get_scatter(
             Valid options are documented at https://plot.ly/python/reference/#scatter-marker
         scatter_overrides: Optional, dict of go.Scatter attributes to override the Scatter.
             Valid options are documented at https://plot.ly/python/reference/#scatter
-    '''
+    """
     x_column_values = x_values if x_values is not None else y_values.index
     name = dataset_name or y_values.name
     marker_overrides = marker_overrides or {}
@@ -51,19 +43,13 @@ def get_scatter(
         x=x_column_values,
         y=y_values,
         name=name,
-        mode='markers',
-        marker={
-            'symbol': 'square',
-            'size': 5,
-            **marker_overrides
-        },
+        mode="markers",
+        marker={"symbol": "square", "size": 5, **marker_overrides},
         opacity=0.8,
-        yaxis=f'y{y_axis_number}',
+        yaxis=f"y{y_axis_number}",
     )
     scatter_kwargs.update(scatter_overrides)
-    return go.Scatter(
-        **scatter_kwargs
-    )
+    return go.Scatter(**scatter_kwargs)
 
 
 def get_rgb_scatters(
@@ -75,7 +61,7 @@ def get_rgb_scatters(
     scatter_overrides=None,
     colors_to_include=COLOR_CHANNELS,
 ):
-    ''' get go.Scatter instances for each 'rgb' color in the input DataFrame
+    """ get go.Scatter instances for each 'rgb' color in the input DataFrame
 
     example usage:
     >>> import pandas as  pd
@@ -97,21 +83,25 @@ def get_rgb_scatters(
             Should be a subset of COLOR_CHANNELS.
     Returns:
         list of go.Scatter objects, one each for r, g, and b or colors_to_include if provided
-    '''
+    """
     marker_overrides = marker_overrides or {}
     x_column_values = rgb_df[x_column] if x_column else rgb_df.index
     return [
         get_scatter(
             x_values=x_column_values,
             y_values=rgb_df[color],
-            dataset_name=f'{dataset_name} - {color}' if dataset_name is not None else color,
+            dataset_name=f"{dataset_name} - {color}"
+            if dataset_name is not None
+            else color,
             marker_overrides={
-                'color': COLORS_BY_LETTER[color],
-                'symbol': 'circle-open',
-                'size': 5,
-                **marker_overrides
+                "color": COLORS_BY_LETTER[color],
+                "symbol": "circle-open",
+                "size": 5,
+                **marker_overrides,
             },
-            y_axis_number=AXES_BY_COLOR[color] if colors_on_separate_axes else SHARED_COLOR_AXIS,
+            y_axis_number=AXES_BY_COLOR[color]
+            if colors_on_separate_axes
+            else SHARED_COLOR_AXIS,
             scatter_overrides=scatter_overrides,
         )
         for color in colors_to_include
@@ -119,18 +109,16 @@ def get_rgb_scatters(
 
 
 def _axis_kwargs(axis_number, title, color=None, **y_axis_params):
-    color_kwargs = {
-        'titlefont': {'color': color},
-        'tickfont': {'color': color},
-        'tickcolor': color,
-    } if color else {}
-    return {
-        f'yaxis{axis_number}': {
-            'title': title,
-            **color_kwargs,
-            **y_axis_params
+    color_kwargs = (
+        {
+            "titlefont": {"color": color},
+            "tickfont": {"color": color},
+            "tickcolor": color,
         }
-    }
+        if color
+        else {}
+    )
+    return {f"yaxis{axis_number}": {"title": title, **color_kwargs, **y_axis_params}}
 
 
 def _add_dicts(dicts):
@@ -141,13 +129,13 @@ def _add_dicts(dicts):
 
 
 def get_layout_with_annotations(
-    x_axis_title='Time',
-    y_axis_title='',
+    x_axis_title="Time",
+    y_axis_title="",
     colors_on_separate_axes=False,
     events=None,
-    **additional_layout_kwargs
+    **additional_layout_kwargs,
 ):
-    ''' Get a go.Layout instance prepared for our standard graphing needs
+    """ Get a go.Layout instance prepared for our standard graphing needs
 
     Notes re. our standard layout:
     * The primary Y axis (y0) is reserved for annotations. This is done to guarantee that annotations show
@@ -163,7 +151,7 @@ def get_layout_with_annotations(
         additional_layout_kwargs: Any additional arguments will be passed to go.Layout. These can, for instance,
             be the result of _axis_kwargs() to add support for graphing more items.
             Valid options are documented at https://plot.ly/python/reference/#layout
-    '''
+    """
     events = events or {}
 
     def get_color_y_axis_title(color):
@@ -172,71 +160,63 @@ def get_layout_with_annotations(
 
         # blue and green are both on the right side, and applying a line break to blue lets them both be there
         # without overlapping
-        line_break = '<br>' if color == 'b' else ''
+        line_break = "<br>" if color == "b" else ""
 
         # If colors are on separate axes and a Y axis title is provided, use it as a suffix
-        suffix = f' {y_axis_title}' if y_axis_title else ''
-        return f'{line_break}{color}{suffix}'
+        suffix = f" {y_axis_title}" if y_axis_title else ""
+        return f"{line_break}{color}{suffix}"
 
     colors_on_separate_axes_kwargs = _add_dicts(
         _axis_kwargs(
             axis_number=AXES_BY_COLOR[color],
             color=COLORS_BY_LETTER[color],
             title=get_color_y_axis_title(color),
-            overlaying='y',
+            overlaying="y",
             side=AXIS_SIDES_BY_COLOR[color],
         )
         for color in COLOR_CHANNELS
     )
     colors_on_same_axes_kwargs = _axis_kwargs(
-        axis_number=SHARED_COLOR_AXIS,
-        title=y_axis_title,
-        overlaying='y',
-        side='left',
+        axis_number=SHARED_COLOR_AXIS, title=y_axis_title, overlaying="y", side="left"
     )
-    color_y_axes = colors_on_separate_axes_kwargs if colors_on_separate_axes else colors_on_same_axes_kwargs
+    color_y_axes = (
+        colors_on_separate_axes_kwargs
+        if colors_on_separate_axes
+        else colors_on_same_axes_kwargs
+    )
 
     # Prepare annotations & annotation axis
 
     # By default, the primary Y axis is invisible and used for annotations only,
     # but note that it can be overridden using additional_layout_kwargs
-    primary_y_axis = {
-        'yaxis': {
-            'title': '',
-            'visible': False,
-        }
-    }
+    primary_y_axis = {"yaxis": {"title": "", "visible": False}}
     # We need to have at least 1 visible annotation on axis 1 or else plotted values will disappear
     # Note that this annotation is "visible" but doesn't have text or an arrow so it will not really be visible
     # https://github.com/plotly/plotly.py/issues/1200
-    dummy_annotation = [{
-        'yref': 'y',
-        'xref': 'paper',
-        'text': '',
-        'showarrow': False,
-        'visible': True,
-    }]
+    dummy_annotation = [
+        {"yref": "y", "xref": "paper", "text": "", "showarrow": False, "visible": True}
+    ]
 
     event_annotations = [
         {
-            'x': x_value,
-            'y': 0.95,
-            'xref': 'x',
-            'yref': 'paper',
-            'text': title,
-            'showarrow': True,
-            'textangle': -55,
-            'ax': 1
+            "x": x_value,
+            "y": 0.95,
+            "xref": "x",
+            "yref": "paper",
+            "text": title,
+            "showarrow": True,
+            "textangle": -55,
+            "ax": 1,
         }
         for title, x_value in events.items()
     ]
 
     # Combine these in dictionary form before passing them in to go.Layout so that conflicting keys can be resolved
     layout_kwargs = {
-        'xaxis': {'title': x_axis_title},
-        'annotations': event_annotations + dummy_annotation,
+        "xaxis": {"title": x_axis_title},
+        "annotations": event_annotations + dummy_annotation,
         **primary_y_axis,
         **color_y_axes,
-        **additional_layout_kwargs
+        **additional_layout_kwargs,
     }
     return go.Layout(**layout_kwargs)

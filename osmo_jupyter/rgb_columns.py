@@ -2,7 +2,7 @@ from .constants import COLOR_CHANNELS
 
 
 def _get_colors_with_pattern(pattern):
-    ''' Insert 'r', 'g', and 'b' into a given pattern, replacing the "*" in the pattern
+    """ Insert 'r', 'g', and 'b' into a given pattern, replacing the "*" in the pattern
 
     Args:
         pattern: string with an asterisk ("*") in place of the color letter, eg. '*_mean'
@@ -11,18 +11,15 @@ def _get_colors_with_pattern(pattern):
 
     >>> _get_colors_with_pattern('*_mean')
     ['r_mean', 'g_mean', 'b_mean']
-    '''
-    if '*' not in pattern:
+    """
+    if "*" not in pattern:
         raise ValueError(f'Pattern "{pattern}" does not contain an asterisk ("*")')
 
-    return [
-        pattern.replace('*', color)
-        for color in COLOR_CHANNELS
-    ]
+    return [pattern.replace("*", color) for color in COLOR_CHANNELS]
 
 
 def get_rgb_columns(df, pattern, other_columns_to_include=None):
-    ''' Get columns from the input DataFrame corresponding to colors, removing a shared prefix or suffix
+    """ Get columns from the input DataFrame corresponding to colors, removing a shared prefix or suffix
 
     eg.
     >>> df = pd.DataFrame(..., columns=['r_mean', 'g_mean', 'b_mean', 'Timestamp', 'other', ...])
@@ -33,7 +30,7 @@ def get_rgb_columns(df, pattern, other_columns_to_include=None):
         df: pandas.DataFrame of source data
         pattern: string with an asterisk ("*") in place of the color letter, eg. '*_mean'
         other_columns_to_include: list of column names to be included
-    '''
+    """
     other_columns_to_include = other_columns_to_include or []
 
     colors_with_pattern = _get_colors_with_pattern(pattern)
@@ -47,7 +44,7 @@ def get_rgb_columns(df, pattern, other_columns_to_include=None):
 
 
 def add_rgb_columns(df_to_modify, rgb_df, pattern):
-    ''' Add rgb columns to a DataFrame (IN PLACE!) with a provided prefix or suffix pattern
+    """ Add rgb columns to a DataFrame (IN PLACE!) with a provided prefix or suffix pattern
 
     eg.
     >>> main_df = pd.DataFrame(..., columns=['Timestamp', ...])
@@ -62,7 +59,7 @@ def add_rgb_columns(df_to_modify, rgb_df, pattern):
         pattern: string with an asterisk ("*") in place of the color letter, eg. '*_mean'
     Returns:
         None. df_to_modify will be altered in place.
-    '''
+    """
     colors_with_pattern = _get_colors_with_pattern(pattern)
 
     for color, color_in_pattern in zip(COLOR_CHANNELS, colors_with_pattern):

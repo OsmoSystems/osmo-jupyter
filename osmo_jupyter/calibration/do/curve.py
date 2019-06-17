@@ -1,11 +1,14 @@
 import numpy as np
 from scipy.optimize import curve_fit
 
-from osmo_jupyter.constants import IDEAL_GAS_CONSTANT_J_PER_MOL_K, DEGREES_CELSIUS_AT_ZERO_KELVIN
+from osmo_jupyter.constants import (
+    IDEAL_GAS_CONSTANT_J_PER_MOL_K,
+    DEGREES_CELSIUS_AT_ZERO_KELVIN,
+)
 
 
 def _get_arrhenius_rate(temperature_c, preexponential_factor, activation_energy):
-    ''' Estimate the temperature-dependent rate of a reaction using an Arrhenius equation
+    """ Estimate the temperature-dependent rate of a reaction using an Arrhenius equation
     https://en.wikipedia.org/wiki/Arrhenius_equation#Equation
 
     General form:
@@ -15,7 +18,7 @@ def _get_arrhenius_rate(temperature_c, preexponential_factor, activation_energy)
     A is preexponential factor (a constant)
     Ea is the activation energy
     R is the universal gas constant
-    '''
+    """
     ideal_gas_constant = IDEAL_GAS_CONSTANT_J_PER_MOL_K
     temperature_kelvin = temperature_c + DEGREES_CELSIUS_AT_ZERO_KELVIN
 
@@ -23,21 +26,19 @@ def _get_arrhenius_rate(temperature_c, preexponential_factor, activation_energy)
     # Successful fits have had an activation energy around 10000.
     # Scaling in here allows the activation energy that the curve fitter knows about to be close to 1.
     activation_energy_scaling_factor = 10000
-    exponent = -activation_energy * activation_energy_scaling_factor / (ideal_gas_constant * temperature_kelvin)
+    exponent = (
+        -activation_energy
+        * activation_energy_scaling_factor
+        / (ideal_gas_constant * temperature_kelvin)
+    )
 
     return preexponential_factor * np.exp(exponent)
 
 
 def estimate_optical_reading_two_site_model_with_temperature(
-        do_and_temp,
-        f,
-        A_i0,
-        E_i0,
-        A_k_sv1,
-        A_k_sv2,
-        E_k_sv
+    do_and_temp, f, A_i0, E_i0, A_k_sv1, A_k_sv2, E_k_sv
 ):
-    ''' Two-site model fit including arrhenius equations for temperature dependence
+    """ Two-site model fit including arrhenius equations for temperature dependence
     For more on the form of the equation, see:
     https://docs.google.com/document/d/1VDIn7b9xTZeuvdWRiF6P1HvRzde16HFVGKPHJrQfQGE/edit#heading=h.46ihesi06pxr
 
@@ -58,7 +59,7 @@ def estimate_optical_reading_two_site_model_with_temperature(
             quenching model
     Returns:
         estimate of a fluorescence reading
-    '''
+    """
 
     do, temperature = do_and_temp
 
@@ -70,15 +71,9 @@ def estimate_optical_reading_two_site_model_with_temperature(
 
 
 def estimate_do_two_site_model_with_temperature(
-        optical_reading_and_temp,
-        f,
-        A_i0,
-        E_i0,
-        A_k_sv1,
-        A_k_sv2,
-        E_k_sv
+    optical_reading_and_temp, f, A_i0, E_i0, A_k_sv1, A_k_sv2, E_k_sv
 ):
-    ''' Formula predicting DO based on optical reading and temperature
+    """ Formula predicting DO based on optical reading and temperature
     This is the *reverse* of estimate_optical_reading_two_site_model_with_temperature.
 
     Args:
@@ -94,7 +89,7 @@ def estimate_do_two_site_model_with_temperature(
 
     Returns:
         Estimate of dissolved oxygen, in % saturation (assuming parameters are trained on % sat data)
-    '''
+    """
 
     optical_reading, temperature = optical_reading_and_temp
     i = optical_reading
@@ -104,7 +99,8 @@ def estimate_do_two_site_model_with_temperature(
     k_sv2 = _get_arrhenius_rate(temperature, A_k_sv2, E_k_sv)
 
     sqrt_term = (
-        ((i0 / i) ** 2) * (
+        ((i0 / i) ** 2)
+        * (
             -2 * f * (k_sv1 ** 2)
             + (f ** 2) * (k_sv1 ** 2)
             + (f ** 2) * (k_sv2 ** 2)
@@ -112,17 +108,10 @@ def estimate_do_two_site_model_with_temperature(
             - 2 * (f ** 2) * k_sv1 * k_sv2
             + (k_sv1 ** 2)
         )
-        + 2 * (i0 / i) * (
-            f * (k_sv1 ** 2)
-            - f * (k_sv2 ** 2)
-            - (k_sv1 ** 2)
-            + k_sv1 * k_sv2
-        )
-        + (
-            (k_sv1 ** 2)
-            + (k_sv2 ** 2)
-            - 2 * k_sv1 * k_sv2
-        )
+        + 2
+        * (i0 / i)
+        * (f * (k_sv1 ** 2) - f * (k_sv2 ** 2) - (k_sv1 ** 2) + k_sv1 * k_sv2)
+        + ((k_sv1 ** 2) + (k_sv2 ** 2) - 2 * k_sv1 * k_sv2)
     )
     # To prevent the regression falling into NaN-holes, prevent the square root term from going negative
     guarded_sqrt_term = np.abs(sqrt_term)
@@ -134,23 +123,23 @@ def estimate_do_two_site_model_with_temperature(
 
 # Fit parameters that have worked with various 2019-04 through 2019-05-02 calibration data sets
 WORKING_FIT_PARAMS_DICT = {
-    'f': 1.861e-01,
-    'A_i0': 1.103e-01,
-    'E_i0': -8.832e-01,
-    'A_k_sv1': 1.683e-03,
-    'A_k_sv2': 3.752e-02,
-    'E_k_sv': -7.202e-02
+    "f": 1.861e-01,
+    "A_i0": 1.103e-01,
+    "E_i0": -8.832e-01,
+    "A_k_sv1": 1.683e-03,
+    "A_k_sv2": 3.752e-02,
+    "E_k_sv": -7.202e-02,
 }
 
 WORKING_FIT_PARAMS = list(WORKING_FIT_PARAMS_DICT.values())
 
 
 def get_optimal_DO_fit_params(
-        training_data,
-        estimate_do_fn=estimate_do_two_site_model_with_temperature,
-        initial_fit_params=WORKING_FIT_PARAMS
+    training_data,
+    estimate_do_fn=estimate_do_two_site_model_with_temperature,
+    initial_fit_params=WORKING_FIT_PARAMS,
 ):
-    ''' Optimize fit parameters for a DO fit
+    """ Optimize fit parameters for a DO fit
     Args:
         training_data: DataFrame of observations with 'SR reading', 'Temperature (C)', and 'DO (% sat)' columns
         estimate_do_fn: function of ((optical reading, temperature), *fit params) which returns an estimate of DO % sat
@@ -161,11 +150,11 @@ def get_optimal_DO_fit_params(
 
     Raises:
         Various errors from scipy.optimize.curve_fit if a fit cannot be found.
-    '''
+    """
     fit_params, _ = curve_fit(
         f=estimate_do_fn,
-        xdata=np.array([training_data['SR reading'], training_data['Temperature (C)']]),
-        ydata=training_data['DO (% sat)'],
+        xdata=np.array([training_data["SR reading"], training_data["Temperature (C)"]]),
+        ydata=training_data["DO (% sat)"],
         maxfev=10000,
         p0=initial_fit_params,
     )

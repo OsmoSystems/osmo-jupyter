@@ -4,7 +4,7 @@ import plotly.figure_factory as ff
 
 
 def cut_array2d(array, block_shape):
-    ''' Cuts up an array into blocks of shape `block_shape`. If `block_shape` doesn't factor perfectly into the
+    """ Cuts up an array into blocks of shape `block_shape`. If `block_shape` doesn't factor perfectly into the
         shape of the array, drops data from the right and bottom edges of the input `array`.
         Heavily, heavily adapted from https://stackoverflow.com/a/17385776/1701416
 
@@ -16,7 +16,7 @@ def cut_array2d(array, block_shape):
         (block_centers, blocks) tuple where
             block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
             blocks: a 1D array of blocks of shape `block_shape`
-    '''
+    """
     array_height, array_width = array.shape
     block_height, block_width = block_shape
 
@@ -25,16 +25,13 @@ def cut_array2d(array, block_shape):
     xcut = np.arange(0, array_width + 1, block_width)
 
     block_centers = [
-        (
-            (ycut[i] + ycut[i+1] - 1) / 2,
-            (xcut[j] + xcut[j+1] - 1) / 2
-        )
+        ((ycut[i] + ycut[i + 1] - 1) / 2, (xcut[j] + xcut[j + 1] - 1) / 2)
         for i, _ in enumerate(ycut[:-1])
         for j, _ in enumerate(xcut[:-1])
     ]
 
     blocks = [
-        array[ycut[i]:ycut[i+1], xcut[j]:xcut[j+1]]
+        array[ycut[i] : ycut[i + 1], xcut[j] : xcut[j + 1]]
         for i, _ in enumerate(ycut[:-1])
         for j, _ in enumerate(xcut[:-1])
     ]
@@ -43,7 +40,7 @@ def cut_array2d(array, block_shape):
 
 
 def get_block_means_2d(block_centers, blocks, averaging_function=np.mean):
-    ''' Given 1D arrays of block_centers and blocks, construct a 2D array of block means.
+    """ Given 1D arrays of block_centers and blocks, construct a 2D array of block means.
 
     Args:
         block_centers: a 1D array of 2-tuple coordinates for the centers of the sliced blocks
@@ -52,7 +49,7 @@ def get_block_means_2d(block_centers, blocks, averaging_function=np.mean):
 
     Returns:
         a 2D array of block means
-    '''
+    """
     block_means = [averaging_function(block) for block in blocks]
 
     # block_centers is a list of (x,y) tuples: pixel coordinates of the blocks within the image
@@ -62,16 +59,13 @@ def get_block_means_2d(block_centers, blocks, averaging_function=np.mean):
     blocks_width = len(set(block_centers_y))
 
     # Construct a new 2D array that just contains the mean value of each block
-    block_means_2d = np.reshape(
-        block_means,
-        newshape=(blocks_height, blocks_width)
-    )
+    block_means_2d = np.reshape(block_means, newshape=(blocks_height, blocks_width))
 
     return block_means_2d
 
 
-def display_heatmap(array, display_decimals=2, title='Heatmap'):
-    ''' Builds the heatmap figure from provided array
+def display_heatmap(array, display_decimals=2, title="Heatmap"):
+    """ Builds the heatmap figure from provided array
 
     Args:
         array: A 2D numpy array to render as a heatmap
@@ -81,20 +75,25 @@ def display_heatmap(array, display_decimals=2, title='Heatmap'):
     Returns:
         A heatmap Figure.
         Can be displayed in a jupyter notebook using the display() function.
-    '''
+    """
     heatmap = ff.create_annotated_heatmap(
-        array,
-        annotation_text=np.round(array, display_decimals),
+        array, annotation_text=np.round(array, display_decimals)
     )
 
-    heatmap.layout.yaxis.autorange = 'reversed'
+    heatmap.layout.yaxis.autorange = "reversed"
     heatmap.layout.title = title
 
     return go.FigureWidget(heatmap)
 
 
-def heatmapify(array, averaging_function=np.mean, block_shape=(50, 50), display_decimals=2, title='Heatmap'):
-    ''' Constructs a heatmap from a 2D array. The heatmap is created by slicing the array into blocks the size of
+def heatmapify(
+    array,
+    averaging_function=np.mean,
+    block_shape=(50, 50),
+    display_decimals=2,
+    title="Heatmap",
+):
+    """ Constructs a heatmap from a 2D array. The heatmap is created by slicing the array into blocks the size of
         `block_shape`, and then averaging each block.
 
     Args:
@@ -108,7 +107,7 @@ def heatmapify(array, averaging_function=np.mean, block_shape=(50, 50), display_
     Returns:
         A heatmap Figure.
         Can be displayed in a jupyter notebook using the display() function.
-    '''
+    """
     block_centers, blocks = cut_array2d(array, block_shape)
     block_means_2d = get_block_means_2d(block_centers, blocks, averaging_function)
 
