@@ -9,6 +9,8 @@ def uniform(dataframe, columns_and_bin_counts, bin_quantile=0):
         dataframe: A pandas DataFrame
         columns_and_bin_counts: A dictionary of columns names and the number of bins
             over which to distribute each column
+        bin_quantile: The lowest quantile of the combined bin sizes to use to determine
+            the number of samples to take from each bin. Defaults to 0.
 
     Returns:
         A pandas DataFrame with a uniform distribution across the specified columns
