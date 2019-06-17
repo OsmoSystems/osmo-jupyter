@@ -47,7 +47,7 @@ def estimate_optical_reading_two_site_model_with_temperature(
     Note: Lehner and McNeil are predicting tau, we are predicting intensity (i)
 
     Args:
-        do_and_temp: tuple of dissolved oxygen (mmHg) and temperature (Deg C)
+        do_and_temp: tuple of dissolved oxygen (% saturation) and temperature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
             should always be in the range [0, 1]
         A_i0: Arrhenius preexponential factor for unquenched fluorescence
@@ -82,7 +82,7 @@ def estimate_do_two_site_model_with_temperature(
     This is the *reverse* of estimate_optical_reading_two_site_model_with_temperature.
 
     Args:
-        optical_reading_and_temp: tuple of optical reading and temperature (Deg C)
+        optical_reading_and_temp: tuple of optical reading and temeprature (Deg C)
         f: fraction of fluorophores in site 1 vs. site 2
             should always be less than 1.
         A_i0: Arrhenius preexponential factor for unquenched fluorescence
@@ -93,7 +93,7 @@ def estimate_do_two_site_model_with_temperature(
             quenching model
 
     Returns:
-        Estimate of dissolved oxygen partial pressure in mmHg (assuming parameters are trained on partial pressure data)
+        Estimate of dissolved oxygen, in % saturation (assuming parameters are trained on % sat data)
     '''
 
     optical_reading, temperature = optical_reading_and_temp
@@ -137,8 +137,8 @@ WORKING_FIT_PARAMS_DICT = {
     'f': 1.861e-01,
     'A_i0': 1.103e-01,
     'E_i0': -8.832e-01,
-    'A_k_sv1': 1.0519e-03,
-    'A_k_sv2': 2.345e-02,
+    'A_k_sv1': 1.683e-03,
+    'A_k_sv2': 3.752e-02,
     'E_k_sv': -7.202e-02
 }
 
@@ -152,9 +152,8 @@ def get_optimal_DO_fit_params(
 ):
     ''' Optimize fit parameters for a DO fit
     Args:
-        training_data: DataFrame of observations with 'SR reading', 'Temperature (C)', and 'DO (mmHg)' columns
-        estimate_do_fn: function of ((optical reading, temperature), *fit params) which returns an estimate of
-            DO partial pressure
+        training_data: DataFrame of observations with 'SR reading', 'Temperature (C)', and 'DO (% sat)' columns
+        estimate_do_fn: function of ((optical reading, temperature), *fit params) which returns an estimate of DO % sat
         initial_fit_params: fit parameters to seed the curve fit. Pass None to skip initialization
 
     Returns:
@@ -166,7 +165,7 @@ def get_optimal_DO_fit_params(
     fit_params, _ = curve_fit(
         f=estimate_do_fn,
         xdata=np.array([training_data['SR reading'], training_data['Temperature (C)']]),
-        ydata=training_data['DO (mmHg)'],
+        ydata=training_data['DO (% sat)'],
         maxfev=10000,
         p0=initial_fit_params,
     )

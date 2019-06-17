@@ -12,16 +12,14 @@ def ysi_data_filepath(tmpdir):
     pd.DataFrame([
         {
             'Timestamp': datetime(2019, 1, 1, 1, 1, 45),
-            'Dissolved Oxygen (%)': 100,
-            'Barometer (mmHg)': 760,
+            'Dissolved Oxygen (%)': 1,
             # Note: test_rounds_ysi_temperature_data expects this to not be an integer
             'Temperature (C)': 34.7,
             'irrelevant': 'other stuff'
         },
         {
             'Timestamp': datetime(2019, 1, 1, 1, 2, 11),
-            'Dissolved Oxygen (%)': 100,
-            'Barometer (mmHg)': 760,
+            'Dissolved Oxygen (%)': 1,
             'Temperature (C)': 34.7,
             'irrelevant': 'other stuff'
         },
@@ -62,6 +60,19 @@ def image_data_filepath(tmpdir):
 
 
 class TestPrepCalibrationData:
+
+    def test_rounds_ysi_temperature_data(self, ysi_data_filepath, image_data_filepath):
+        # Note: test assumes the YSI data fixture has non-integer temperatures. Otherwise the test does nothing.
+
+        calibration_data = module.prep_calibration_data(
+            ysi_data_filepath,
+            image_data_filepath,
+            'DO patch',
+            'Reference patch',
+        )
+
+        assert not (calibration_data['Temperature (C)'] % 1).any()
+
     def test_combines_ysi_and_camera_data_appropriately(self, ysi_data_filepath, image_data_filepath):
         calibration_data = module.prep_calibration_data(
             ysi_data_filepath,
@@ -73,7 +84,7 @@ class TestPrepCalibrationData:
         expected_columns = [
             'timestamp',
             'Temperature (C)',
-            'DO (mmHg)',
+            'DO (% sat)',
             'DO patch reading',
             'Reference patch reading',
             'SR reading',
@@ -83,16 +94,16 @@ class TestPrepCalibrationData:
             [
                 {
                     'timestamp': pd.Timestamp('2019-01-01 01:01:45'),
-                    'Temperature (C)': 34.7,
-                    'DO (mmHg)': 159.2048,
+                    'Temperature (C)': 35.0,
+                    'DO (% sat)': 1.0,
                     'DO patch reading': 0.5,
                     'Reference patch reading': 0.1,
                     'SR reading': 5.0
                 },
                 {
                     'timestamp': pd.Timestamp('2019-01-01 01:02:11'),
-                    'Temperature (C)': 34.7,
-                    'DO (mmHg)': 159.2048,
+                    'Temperature (C)': 35.0,
+                    'DO (% sat)': 1.0,
                     'DO patch reading': 0.6,
                     'Reference patch reading': 0.09,
                     'SR reading': 6.666666666666667

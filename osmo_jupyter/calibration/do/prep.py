@@ -1,12 +1,6 @@
 import pandas as pd
 
-from osmo_jupyter.constants import FRACTION_O2_IN_ATMOSPHERE
 from osmo_jupyter.ysi import join_interpolated_ysi_data
-
-
-def _get_o2_partial_pressure(atmospheric_pressure_mmhg, percent_saturation):
-    saturation_fraction = percent_saturation * 0.01
-    return saturation_fraction * FRACTION_O2_IN_ATMOSPHERE * atmospheric_pressure_mmhg
 
 
 def prep_calibration_data(
@@ -18,7 +12,7 @@ def prep_calibration_data(
     ''' Prepare data from a calibration experiment for use in curve fitting
 
     Args:
-        ysi_data_filepath: file path to a YSI data file. Must include dissolved oxygen, barometer and temperature data.
+        ysi_data_filepath: file path to a YSI data file
         image_data_filepath: file path to ROI summary statistics file from process_experiment
         do_patch_roi_name: ROI name in camera data file to use as sensing patch
         reference_patch_roi_name: ROI name in camera data file to use as control patch
@@ -27,7 +21,7 @@ def prep_calibration_data(
         calibration data set with columns:
             'timestamp'
             'Temperature (C)'
-            'DO (mmHg)'
+            'DO (% sat)'
             'DO patch reading': red MSORM from DO patch
             'Reference patch reading': red MSORM from control patch
             'SR reading': spatial ratiometric reading
@@ -38,11 +32,9 @@ def prep_calibration_data(
         parse_dates=['Timestamp']
     ).set_index('Timestamp')
 
-    # add DO partial pressure
-    ysi_data['Dissolved Oxygen (mmHg)'] = _get_o2_partial_pressure(
-        atmospheric_pressure_mmhg=ysi_data['Barometer (mmHg)'],
-        percent_saturation=ysi_data['Dissolved Oxygen (%)'],
-    )
+    # We don't trust the decimal points on YSI data
+    # - water bath is always set to an integer number of degrees and we trust that.
+    ysi_data['Temperature (C)'] = ysi_data['Temperature (C)'].round()
 
     # Import camera data
     all_camera_data = pd.read_csv(
@@ -56,7 +48,7 @@ def prep_calibration_data(
     # Join with YSI data and prep for calibration
     desired_ysi_columns = [
         'Temperature (C)',
-        'Dissolved Oxygen (mmHg)'
+        'Dissolved Oxygen (%)'
     ]
     msorms_and_ysi_data = join_interpolated_ysi_data(r_msorms, ysi_data[desired_ysi_columns])
 
@@ -64,7 +56,7 @@ def prep_calibration_data(
     calibration_data_rename = {
         'timestamp': 'timestamp',
         'YSI Temperature (C)': 'Temperature (C)',
-        'YSI Dissolved Oxygen (mmHg)': 'DO (mmHg)',
+        'YSI Dissolved Oxygen (%)': 'DO (% sat)',
         do_patch_roi_name: 'DO patch reading',
         reference_patch_roi_name: 'Reference patch reading',
     }

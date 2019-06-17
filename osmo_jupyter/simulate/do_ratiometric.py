@@ -15,9 +15,9 @@ def simulate_spatial_ratiometric_reading(
     ''' Simulate a "spatial ratiometric" reading using a sealed DO patch as the ratiometric reference
 
     Args:
-        do: Dissolved Oxygen partial pressure in mmHg in the unsealed patch
+        do: Dissolved Oxygen in percent saturation in the unsealed patch
         temperature: Temperature in degrees Celcius
-        sealed_patch_do: Optional (default=0). Dissolved Oxygen partial pressure in mmHg in the sealed patch
+        sealed_patch_do: Optional (default=0). Dissolved Oxygen in percent saturation in the sealed patch
         sealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the sealed patch
         unsealed_patch_kwargs: Optional. Additional args passed to get_optical_reading_normalized for the unsealed patch
 
@@ -58,7 +58,7 @@ def get_ratiometric_reading_plot():
         ],
         layout={
             'title': 'spatial ratiometric reading over DO and temperature',
-            'xaxis': {'title': 'DO (mmHg)'},
+            'xaxis': {'title': 'DO (% saturation)'},
             'yaxis': {'title': 'Spatial Ratiometric Reading (unitless)'}
         }
     )

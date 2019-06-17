@@ -2,7 +2,7 @@ import numpy as np
 from plotly import graph_objs as go
 
 from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MAX, TEMPERATURE_STANDARD_OPERATING_MIN, \
-    DO_MAX_MMHG, DO_MIN_MMHG
+    DO_MIN, DO_MAX
 
 
 # These are surfaces of DO, temperature, and optical reading
@@ -14,10 +14,9 @@ TEMPERATURE_DOMAIN = np.linspace(
     TEMPERATURE_STANDARD_OPERATING_MAX,
     (TEMPERATURE_STANDARD_OPERATING_MAX-TEMPERATURE_STANDARD_OPERATING_MIN)+1
 )
-n_do_domain_steps = np.int(np.round((DO_MAX_MMHG - DO_MIN_MMHG) + 1))
-DO_DOMAIN = np.linspace(DO_MIN_MMHG, DO_MAX_MMHG, n_do_domain_steps)
+DO_DOMAIN = np.linspace(DO_MIN, DO_MAX, (DO_MAX - DO_MIN) + 1)
 
-# In this file, we'll use a standard meshgrid of temperature and DO defined based on the domains above.
+# In this notebook, we'll use a standard meshgrid of temperature and DO defined based on the domains above.
 # Whenever you see a "meshgrid" passed around, it corresponds to these temperature and DO values.
 # Use "indexing='ij'" to orient the meshgrids correctly so that dimension 0 iterates over DO
 DO_MESHGRID, TEMPERATURE_MESHGRID = np.meshgrid(DO_DOMAIN, TEMPERATURE_DOMAIN, indexing='ij')
@@ -83,7 +82,7 @@ def plot_meshgrid_of_do_and_temp_as_surface(meshgrid_of_do_and_temp, title, z_ax
         layout={
             'title': title,
             'scene': {
-                'xaxis': {'title': 'DO (mmHg)'},
+                'xaxis': {'title': 'DO (% saturation)'},
                 'yaxis': {'title': 'temperature (°C)'},
                 'zaxis': {'title': z_axis_title},
             },
@@ -97,9 +96,9 @@ def plot_fn_of_do_and_temp_as_surface(fn_of_do_and_temp, title, z_axis_title):
     ''' Create a surface plot of a DO- and temperature-dependent function.
 
     Args:
-        fn_of_do_and_temp: a function which takes DO partial pressure and temperature as positional arguments (in that
-            order). This function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to compute values at a standard
-            range of temperature and DO values.
+        fn_of_do_and_temp: a function which takes DO saturation and temperature as positional arguments (in that order).
+            This function will be used with DO_MESHGRID and TEMPERATURE_MESHGRID to compute values at a standard range
+            of temperature and DO values.
         title: title to use on the resulting chart
         z_axis_title: label for the Z axis - what does your function describe?
     Returns:
