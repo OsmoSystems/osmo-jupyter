@@ -7,7 +7,12 @@ import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
 
-from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX
+from osmo_jupyter.constants import (
+    TEMPERATURE_STANDARD_OPERATING_MIN,
+    TEMPERATURE_STANDARD_OPERATING_MAX,
+    DO_MAX_MMHG,
+    ERROR_BOUNDS_MMHG
+)
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
 from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN
 
@@ -59,6 +64,24 @@ def _get_fit_parameter_names(fn):
     )[1:]
 
 
+# Horizontal lines at min and max allowable error
+DO_AXIS_ERROR_BOUNDS_LINES = [
+    dict(
+        type='line',
+        xref='paper',
+        x0=0,
+        x1=1,
+        y0=y,
+        y1=y,
+        line=dict(
+            color='red',
+            width=1
+        )
+    )
+    for y in [ERROR_BOUNDS_MMHG, -ERROR_BOUNDS_MMHG]
+]
+
+
 def calibration_error_plot(predicted_do, actual_do, temperature, fit_title):
     ''' Plot showing the error in predicted DO as distributed over DO and temperature '''
     return go.FigureWidget(
@@ -80,13 +103,14 @@ def calibration_error_plot(predicted_do, actual_do, temperature, fit_title):
         layout=go.Layout(
             title=f'DO error in {fit_title}',
             xaxis={
-                'title': 'Dissolved Oxygen (% saturation)',
-                'range': [0, 100]
+                'title': 'Dissolved Oxygen (mmHg)',
+                'range': [0, DO_MAX_MMHG]
             },
             yaxis={
-                'title': 'DO error (predicted - actual)<br>(% saturation)',
+                'title': 'DO error (predicted - actual)<br>(mmHg)',
             },
             hovermode='closest',
+            shapes=DO_AXIS_ERROR_BOUNDS_LINES,
         )
     )
 
@@ -102,10 +126,10 @@ def plot_calibration(
 
     Args:
         sensor_data: pandas DataFrame of observations. should have the following columns:
-            timestamp, Temperature (C), DO (% sat), SR reading
+            timestamp, Temperature (C), DO (mmHg), SR reading
         fit_params: Fit parameters for the curve function connecting optical reading with DO and temperature
         title: Title of fit, to use in plots
-        estimate_do_fn: Function of ((optical reading, temperature), *fit_params) which provides a DO estimate in % sat
+        estimate_do_fn: Function of ((optical reading, temperature), *fit_params) which provides a DO estimate in mmHg
         estimate_optical_reading_fn:
             Function of ((DO, temperature), *fit_params) which provides an optical reading estimate
 
@@ -113,7 +137,7 @@ def plot_calibration(
         None. Produces plots and printed data frame
     '''
     optical_reading = sensor_data['SR reading']
-    measured_do = sensor_data['DO (% sat)']
+    measured_do = sensor_data['DO (mmHg)']
     temperature = sensor_data['Temperature (C)']
 
     predicted_do = estimate_do_fn(
@@ -144,8 +168,8 @@ def plot_calibration(
     print(dedent(f'''
     Fit params: {{ {fit_params_formatted} }}
     max DO prediction error:
-        {max_do_error:.1f}% @ T={worst_error_temperature}, SR={worst_error_SR:.3f}, actual DO={worst_error_correct_do}
-    standard deviation of DO error: {do_error.std():.1f}%
+       {max_do_error:.1f}mmHg @ T={worst_error_temperature}, SR={worst_error_SR:.3f}, actual DO={worst_error_correct_do}
+    standard deviation of DO error: {do_error.std():.1f}mmHg
     DO error sum of squares: {(do_error ** 2).sum():.1f}
     adjusted r-squared (p={p}): {adjusted_r_squared:.4f}
     '''))
@@ -179,24 +203,6 @@ def plot_calibration(
         ),
     ]
 
-    error_lines = [
-        go.Scatter(
-            x=[point_do, point_predicted_do],
-            y=[point_optical_reading, point_optical_reading],
-            line=dict(
-                color='red',
-                width=0.5,
-                dash='dash',
-            ),
-            text=[f'error: {point_predicted_do - point_do}'],
-            mode='lines',
-            showlegend=False,
-            opacity=0.5,
-        )
-        for point_do, point_predicted_do, point_optical_reading, point_temperature
-        in zip(measured_do, predicted_do, optical_reading, temperature)
-    ]
-
     temperature_lines = [
         go.Scatter(
             x=DO_DOMAIN,
@@ -215,16 +221,17 @@ def plot_calibration(
 
     display(
         go.FigureWidget(
-            data=calibration_and_prediction_traces + error_lines + temperature_lines,
+            data=calibration_and_prediction_traces + temperature_lines,
             layout=go.Layout(
                 title=f'{title}',
                 xaxis={
-                    'title': 'Dissolved Oxygen (% saturation)',
+                    'title': 'Dissolved Oxygen (mmHg)',
                 },
                 yaxis={
                     'title': 'Spatial ratiometric reading',
                 },
                 hovermode='closest',
+
             )
         )
     )
