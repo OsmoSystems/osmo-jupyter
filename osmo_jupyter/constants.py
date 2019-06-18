@@ -5,8 +5,8 @@ IDEAL_GAS_CONSTANT_L_ATM_PER_MOL_K = 0.08205  # (L * atm) / (mol * K)
 
 DEGREES_CELSIUS_AT_ZERO_KELVIN = 273.15
 
-# https://en.wikipedia.org/wiki/Atmosphere_(unit)
-ONE_ATM_MMHG = 760.001
+# https://www.wolframalpha.com/input/?i=%5B1atm%5D+in+mmhg
+ONE_ATM_MMHG = 760
 
 # https://www.wolframalpha.com/input/?i=fraction+of+oxygen+in+atmosphere
 FRACTION_O2_IN_ATMOSPHERE = 0.20948
