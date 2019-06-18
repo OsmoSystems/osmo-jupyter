@@ -17,11 +17,13 @@ class TestNormalizedReading:
     def test_normalized_reading_bounds(self, name, do, temperature, expected_normalized_reading):
         assert module.get_optical_reading_normalized(do, temperature) == expected_normalized_reading
 
+    middle_do = (DO_MIN_MMHG + DO_MAX_MMHG) / 2
+
     @pytest.mark.parametrize(
         'name, do, temperature',
         [
-            ('middlin DO at min temp', 50, TEMPERATURE_STANDARD_OPERATING_MIN),
-            ('middlin DO at max temp', 50, TEMPERATURE_STANDARD_OPERATING_MAX),
+            ('middlin DO at min temp', middle_do, TEMPERATURE_STANDARD_OPERATING_MIN),
+            ('middlin DO at max temp', middle_do, TEMPERATURE_STANDARD_OPERATING_MAX),
             ('max temp at low DO', DO_MIN_MMHG, TEMPERATURE_STANDARD_OPERATING_MAX),
             ('min temp at max DO', DO_MAX_MMHG, TEMPERATURE_STANDARD_OPERATING_MIN),
         ]
