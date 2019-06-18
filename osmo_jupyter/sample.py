@@ -10,7 +10,7 @@ def uniform(dataframe, columns_and_bin_counts, bin_quantile=0):
         columns_and_bin_counts: A dictionary of columns names and the number of bins
             over which to distribute each column
         bin_quantile: The lowest quantile of the combined bin sizes to use to determine
-            the number of samples to take from each bin. Defaults to 0.
+            the number of samples to take from each bin. Defaults to 0. Empty bins are ignored.
 
     Returns:
         A pandas DataFrame with a uniform distribution across the specified columns
@@ -34,6 +34,8 @@ def uniform(dataframe, columns_and_bin_counts, bin_quantile=0):
         group_keys=False
     ).apply(
         lambda bin_group:
+            # Use min() to ensure sample doesn't throw in the event
+            # samples_per_bin is larger than the number of samples possible
             bin_group.sample(min(samples_per_bin, len(bin_group)))
     ).index
 

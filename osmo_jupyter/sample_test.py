@@ -4,6 +4,18 @@ import pandas as pd
 import osmo_jupyter.sample as module
 
 
+def create_dataframe_with_one_outlier():
+    '''
+    Generates a large 1-column dataframe of random values with a single outlier
+    '''
+    np.random.seed(0)
+    # Generate an array of 10000 values between 0-98
+    random_data = np.random.randint(0, 99, (10000, 1))
+    # Add one value of 99
+    data_with_outlier = np.append(random_data, [99])
+    return pd.DataFrame(data_with_outlier, columns=['one'])
+
+
 class TestSampleUniform(object):
     small_test_dataframe = pd.DataFrame(
         [
@@ -109,37 +121,34 @@ class TestSampleUniform(object):
             output_dataframe
         )
 
-    def test_outliers_ignored_with_quantile(self):
-        num_columns = 2
+    def test_outliers_included_by_default(self):
         bin_count = 100
-        columns = [f'column_{n}' for n in range(0, num_columns)]
-        input_dataframe = pd.DataFrame(
-            np.vstack((
-                # Generate random array with values between 0-98
-                np.random.randint(0, 98 + 1, (10000, num_columns)),
-                # Add one outlier row with values = 99
-                np.ones(num_columns) * 99
-            )),
-            columns=columns
-        )
+        test_dataframe_with_outlier = create_dataframe_with_one_outlier()
 
         unadjusted_samples = module.uniform(
-            input_dataframe,
+            test_dataframe_with_outlier,
             columns_and_bin_counts={
-                'column_1': bin_count
+                'one': bin_count
             }
         )
 
         # Expect the outlier to force max sample size to 1 sample per bin
-        assert len(unadjusted_samples) == bin_count
+        actual_samples_per_bin = len(unadjusted_samples) / bin_count
+        assert actual_samples_per_bin == 1
 
+    def test_outliers_ignored_with_quantile(self):
+        bin_count = 100
+        test_dataframe_with_outlier = create_dataframe_with_one_outlier()
+
+        # Use bin_quantile parameter to ignore smallest sample bins
         outlier_adjusted_samples = module.uniform(
-            input_dataframe,
+            test_dataframe_with_outlier,
             columns_and_bin_counts={
-                'column_1': bin_count
+                'one': bin_count
             },
             bin_quantile=0.1
         )
 
-        # Expect the bin_quantile param to ignore the outlier data
-        assert len(outlier_adjusted_samples) > bin_count
+        # Expect more than 1 sample / bin in the output
+        actual_samples_per_bin = len(outlier_adjusted_samples) / bin_count
+        assert actual_samples_per_bin > 1
