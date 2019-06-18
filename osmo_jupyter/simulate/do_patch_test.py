@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX, DO_MAX_MMHG, \
+from osmo_jupyter.constants import TEMPERATURE_STANDARD_OPERATING_MIN, TEMPERATURE_STANDARD_OPERATING_MAX, DO_MAX_MMHG,\
     DO_MIN_MMHG
 import osmo_jupyter.simulate.do_patch as module
 
