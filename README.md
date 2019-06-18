@@ -1,4 +1,7 @@
 # Jupyter Notebook Tools
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+
 This is a set of tools that is designed to facilitate science in the context of Osmo Systems.
 The code herein generally expects to be run in the context of a jupyter notebook.
 
