@@ -5,8 +5,8 @@ from osmo_jupyter.ysi import join_interpolated_ysi_data
 
 
 def _get_o2_partial_pressure(atmospheric_pressure_mmhg, percent_saturation):
-    saturation_fraction = percent_saturation * 0.01
-    return saturation_fraction * FRACTION_O2_IN_ATMOSPHERE * atmospheric_pressure_mmhg
+    fraction_saturation = percent_saturation / 100
+    return fraction_saturation * FRACTION_O2_IN_ATMOSPHERE * atmospheric_pressure_mmhg
 
 
 def prep_calibration_data(
