@@ -36,7 +36,15 @@ def _get_arrhenius_rate(temperature_c, preexponential_factor, activation_energy)
 
 
 def estimate_optical_reading_two_site_model_with_temperature(
-    do_and_temp, f, A_i0, E_i0, A_k_sv1, A_k_sv2, E_k_sv
+    # fmt: off
+    do_and_temp,
+    f,
+    A_i0,
+    E_i0,
+    A_k_sv1,
+    A_k_sv2,
+    E_k_sv
+    # fmt: on
 ):
     """ Two-site model fit including arrhenius equations for temperature dependence
     For more on the form of the equation, see:

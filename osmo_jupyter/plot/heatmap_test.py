@@ -33,7 +33,6 @@ class TestCutArray2D:
         np.testing.assert_array_equal(actual_blocks, expected_blocks)
 
     def test_cut_even_shape(self):
-        # Disable autoformatting to maintain logical shape
         # fmt: off
         even_array = np.array([
             [1, 1, 2, 2],
@@ -44,7 +43,6 @@ class TestCutArray2D:
         # fmt: on
 
         expected_block_centers = [(0.5, 0.5), (0.5, 2.5), (2.5, 0.5), (2.5, 2.5)]
-        # Disable autoformatting to maintain logical shape
         # fmt: off
         expected_blocks = np.array([
             [
@@ -74,33 +72,77 @@ class TestCutArray2D:
         np.testing.assert_array_equal(actual_blocks, expected_blocks)
 
     def test_mismatch_shape_drops_edges(self):
-        mismatch_shaped_array = np.array([[1, 1, 2], [1, 1, 2], [2, 2, 2]])
+        # fmt: off
+        mismatch_shaped_array = np.array(
+            [
+                [1, 1, 2],
+                [1, 1, 2],
+                [2, 2, 2]
+            ]
+        )
+        # fmt: on
 
         actual_block_centers, actual_blocks = module.cut_array2d(
             mismatch_shaped_array, block_shape=(2, 2)
         )
 
         expected_block_centers = [(0.5, 0.5)]
-        expected_blocks = np.array([[[1, 1], [1, 1]]])
+        # fmt: off
+        expected_blocks = np.array(
+            [
+                [
+                    [1, 1],
+                    [1, 1]
+                ]
+            ]
+        )
+        # fmt: on
 
         np.testing.assert_array_equal(actual_block_centers, expected_block_centers)
         np.testing.assert_array_equal(actual_blocks, expected_blocks)
 
     def test_maintains_order_within_block(self):
-        mismatch_shaped_array = np.array([[1, 2, 5, 6], [3, 4, 7, 8]])
+        # fmt: off
+        mismatch_shaped_array = np.array(
+            [
+                [1, 2, 5, 6],
+                [3, 4, 7, 8]
+            ]
+        )
+        # fmt: on
 
         actual_block_centers, actual_blocks = module.cut_array2d(
             mismatch_shaped_array, block_shape=(2, 2)
         )
 
         expected_block_centers = [(0.5, 0.5), (0.5, 2.5)]
-        expected_blocks = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+        # fmt: off
+        expected_blocks = np.array(
+            [
+                [
+                    [1, 2],
+                    [3, 4]
+                ],
+                [
+                    [5, 6],
+                    [7, 8]
+                ]
+            ]
+        )
+        # fmt: on
 
         np.testing.assert_array_equal(actual_block_centers, expected_block_centers)
         np.testing.assert_array_equal(actual_blocks, expected_blocks)
 
     def test_returns_nothing_if_block_size_larger_than_array(self):
-        small_array = np.array([[1, 1, 1], [1, 1, 1]])
+        # fmt: off
+        small_array = np.array(
+            [
+                [1, 1, 1],
+                [1, 1, 1]
+            ]
+        )
+        # fmt: on
 
         actual_block_centers, actual_blocks = module.cut_array2d(
             small_array, block_shape=(3, 3)
@@ -114,7 +156,19 @@ class TestGetBlockMeans2D:
     def test_gets_block_means(self):
         actual = module.get_block_means_2d(
             block_centers=[(0.5, 0.5), (0.5, 2.5)],
-            blocks=np.array([[[1, 2], [3, 4]], [[10, 20], [30, 40]]]),
+            # fmt: off
+            blocks=np.array(
+                [
+                    [
+                        [1, 2],
+                        [3, 4]],
+                    [
+                        [10, 20],
+                        [30, 40]
+                    ]
+                ]
+            ),
+            # fmt: on
         )
 
         expected = np.array([[2.5, 25.0]])
