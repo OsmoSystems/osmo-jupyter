@@ -61,6 +61,8 @@ The "bar" for including code in this library is higher than that seen in our jup
 
 ### Code Style
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+
 This repo follows the Osmo [Code Style Manifesto](https://docs.google.com/document/d/1W1Ipug8IACL4PfZAq5bQKlmfcJGmHGKNH95_FwJcjaI) as applies to Python code.
 
 

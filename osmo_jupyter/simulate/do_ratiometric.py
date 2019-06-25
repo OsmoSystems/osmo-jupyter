@@ -6,13 +6,9 @@ from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN, TEMPERATURE_DO
 
 
 def simulate_spatial_ratiometric_reading(
-    do,
-    temperature,
-    sealed_patch_do=0,
-    sealed_patch_kwargs={},
-    unsealed_patch_kwargs={}
+    do, temperature, sealed_patch_do=0, sealed_patch_kwargs={}, unsealed_patch_kwargs={}
 ):
-    ''' Simulate a "spatial ratiometric" reading using a sealed DO patch as the ratiometric reference
+    """ Simulate a "spatial ratiometric" reading using a sealed DO patch as the ratiometric reference
 
     Args:
         do: Dissolved Oxygen partial pressure in mmHg in the unsealed patch
@@ -23,23 +19,19 @@ def simulate_spatial_ratiometric_reading(
 
     Returns:
         A spatial ratiometric result: the ratio between normalized optical readings of the unsealed and sealed patches
-    '''
+    """
 
     unsealed_patch_reading = get_optical_reading_normalized(
-        do,
-        temperature,
-        **unsealed_patch_kwargs,
+        do, temperature, **unsealed_patch_kwargs
     )
     sealed_patch_reading = get_optical_reading_normalized(
-        sealed_patch_do,
-        temperature,
-        **sealed_patch_kwargs
+        sealed_patch_do, temperature, **sealed_patch_kwargs
     )
     return unsealed_patch_reading / sealed_patch_reading
 
 
 def get_ratiometric_reading_plot():
-    ''' Quick plot of a spatial ratiometric optical reading over a range of temperatures and DO values. '''
+    """ Quick plot of a spatial ratiometric optical reading over a range of temperatures and DO values. """
     temperatures_to_plot = TEMPERATURE_DOMAIN[::5]
 
     return go.FigureWidget(
@@ -47,18 +39,15 @@ def get_ratiometric_reading_plot():
             go.Scatter(
                 x=DO_DOMAIN,
                 y=simulate_spatial_ratiometric_reading(DO_DOMAIN, temperature),
-                mode='lines',
-                line={
-                    'color': color_from_temperature(temperature),
-                    'width': 1,
-                },
-                name=f'T={temperature}',
+                mode="lines",
+                line={"color": color_from_temperature(temperature), "width": 1},
+                name=f"T={temperature}",
             )
             for temperature in temperatures_to_plot
         ],
         layout={
-            'title': 'spatial ratiometric reading over DO and temperature',
-            'xaxis': {'title': 'DO (mmHg)'},
-            'yaxis': {'title': 'Spatial Ratiometric Reading (unitless)'}
-        }
+            "title": "spatial ratiometric reading over DO and temperature",
+            "xaxis": {"title": "DO (mmHg)"},
+            "yaxis": {"title": "Spatial Ratiometric Reading (unitless)"},
+        },
     )

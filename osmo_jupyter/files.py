@@ -12,10 +12,7 @@ def pick_file(directory):
     root.lift()
     root.attributes("-topmost", True)
 
-    filepath = askopenfilename(
-        parent=root,
-        initialdir=directory
-    )
+    filepath = askopenfilename(parent=root, initialdir=directory)
 
     root.destroy()  # Make sure the hidden "root" window is closed
 
