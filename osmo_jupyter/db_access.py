@@ -19,29 +19,31 @@ def configure_database():
     Raises:
         ValueError: if connection can't be made, usually because password is incorrect
     """
-    print('Enter database password: (if you don\'t know it, ask someone who does)')
+    print("Enter database password: (if you don't know it, ask someone who does)")
     db_engine = sqlalchemy.create_engine(
-        'mysql+pymysql://{user}:{password}@{host}/{dbname}'.format(
-            user='technician',
+        "mysql+pymysql://{user}:{password}@{host}/{dbname}".format(
+            user="technician",
             password=getpass(),  # Ask user for the password to avoid checking it in.
-            dbname='osmobot',
-            host='osmobot-db2.cxvkrr48hefm.us-west-2.rds.amazonaws.com'
+            dbname="osmobot",
+            host="osmobot-db2.cxvkrr48hefm.us-west-2.rds.amazonaws.com",
         )
     )
     try:
         connection = db_engine.connect()
     except sqlalchemy.exc.OperationalError as e:
-        raise ValueError(textwrap.dedent(
-            f'''Couldn't connect to the database - most likely you typed the password incorrectly.
+        raise ValueError(
+            textwrap.dedent(
+                f"""Couldn't connect to the database - most likely you typed the password incorrectly.
                 Please try again.\n Original error: {e}
-            '''
-        ))
+            """
+            )
+        )
     else:
         connection.close()
     return db_engine
 
 
-SQL_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'  # Time format favored by mysql
+SQL_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"  # Time format favored by mysql
 
 
 def _to_aware(local_time):
@@ -60,7 +62,7 @@ def _to_aware(local_time):
 
 
 def _to_utc_string(local_time):
-    ''' Convert a local time string to a string in UTC that can be passed to the database
+    """ Convert a local time string to a string in UTC that can be passed to the database
     Internal function, used only in DB access.
 
     Args:
@@ -69,7 +71,7 @@ def _to_utc_string(local_time):
             eg. ('2012-01-01 12:00:00', '2012-01-01 12:00', '2012-01-01')
     Returns:
         UTC time string that can be used, for instance, for database queries
-    '''
+    """
     aware_datetime = _to_aware(local_time)
     return aware_datetime.astimezone(pytz.utc).strftime(SQL_TIME_FORMAT)
 
@@ -79,7 +81,7 @@ def _get_calculation_details_query(
     start_time_local,
     end_time_local,
     include_hub_id=False,
-    downsample_factor=None
+    downsample_factor=None,
 ):
     """ Provide a SQL query to download calculation details. Internal function
 
@@ -98,31 +100,31 @@ def _get_calculation_details_query(
     start_utc_string = _to_utc_string(start_time_local)
     end_utc_string = _to_utc_string(end_time_local)
     downsample_clause = (
-        f'AND MOD(calculation_detail.reading_id, {downsample_factor}) = 0'
+        f"AND MOD(calculation_detail.reading_id, {downsample_factor}) = 0"
         if downsample_factor is not None
-        else ''
+        else ""
     )
 
     select_clause = (
-        'calculation_detail.*, reading.hub_id'
+        "calculation_detail.*, reading.hub_id"
         if include_hub_id
-        else 'calculation_detail.*'
+        else "calculation_detail.*"
     )
     source_table = (
-        'calculation_detail join reading on reading.reading_id = calculation_detail.reading_id'
+        "calculation_detail join reading on reading.reading_id = calculation_detail.reading_id"
         if include_hub_id
-        else 'calculation_detail'
+        else "calculation_detail"
     )
-    nodes_selector = '({})'.format(', '.join(str(n) for n in node_ids))
+    nodes_selector = "({})".format(", ".join(str(n) for n in node_ids))
 
-    return f'''
+    return f"""
         SELECT {select_clause}
         FROM ({source_table})
         WHERE calculation_detail.node_id IN {nodes_selector}
         AND calculation_detail.create_date BETWEEN "{start_utc_string}" AND "{end_utc_string}"
         {downsample_clause}
         ORDER BY calculation_detail.create_date
-    '''
+    """
 
 
 def load_calculation_details(
@@ -131,7 +133,7 @@ def load_calculation_details(
     start_time_local,
     end_time_local,
     include_hub_id=False,
-    downsample_factor=None
+    downsample_factor=None,
 ):
     """ Load node data from the calculation_details table, optionally with hub ID included from the readings table
 
@@ -155,15 +157,23 @@ def load_calculation_details(
     connection = db_engine.connect()
 
     calculation_details = pd.read_sql(
-        _get_calculation_details_query(node_ids, start_time_local, end_time_local, include_hub_id, downsample_factor),
-        db_engine
+        _get_calculation_details_query(
+            node_ids,
+            start_time_local,
+            end_time_local,
+            include_hub_id,
+            downsample_factor,
+        ),
+        db_engine,
     )
     connection.close()
     return calculation_details
 
 
-def get_node_temperature_data(start_time_local, end_time_local, node_id, downsample_factor=1):
-    ''' Load node temperature data only from the calculation_details table
+def get_node_temperature_data(
+    start_time_local, end_time_local, node_id, downsample_factor=1
+):
+    """ Load node temperature data only from the calculation_details table
 
     Args:
         start_time_local: string of ISO-formatted start datetime in local time, inclusive
@@ -173,27 +183,25 @@ def get_node_temperature_data(start_time_local, end_time_local, node_id, downsam
             You should get *roughly* n / downsample_factor samples.
     Returns:
         a pandas.DataFrame of temperature data (°C) in local time from the node IDs provided.
-    '''
+    """
 
     db_engine = configure_database()
 
     raw_node_data = load_calculation_details(
-        db_engine,
-        [node_id],
-        start_time_local,
-        end_time_local,
-        downsample_factor
+        db_engine, [node_id], start_time_local, end_time_local, downsample_factor
     )
 
-    print(f'{len(raw_node_data)} rows retrieved.')
+    print(f"{len(raw_node_data)} rows retrieved.")
 
-    temperature_data = raw_node_data[raw_node_data['calculation_dimension'] == 'temperature']
+    temperature_data = raw_node_data[
+        raw_node_data["calculation_dimension"] == "temperature"
+    ]
 
-    temperature_data_only = pd.DataFrame({
-        'timestamp': timezone.utc_series_to_local(
-            temperature_data['create_date']
-        ),
-        'temperature': temperature_data['calculated_value'],
-    }).reset_index(drop=True)
+    temperature_data_only = pd.DataFrame(
+        {
+            "timestamp": timezone.utc_series_to_local(temperature_data["create_date"]),
+            "temperature": temperature_data["calculated_value"],
+        }
+    ).reset_index(drop=True)
 
     return temperature_data_only

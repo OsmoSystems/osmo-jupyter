@@ -12,4 +12,8 @@ class TestGetMeshgridOfDoAndTemp:
         actual = module.get_meshgrid_of_do_and_temp(_mock_fn_of_do_and_temp)
 
         assert actual.shape == (len(module.DO_DOMAIN), len(module.TEMPERATURE_DOMAIN))
-        assert actual.shape == module.DO_MESHGRID.shape == module.TEMPERATURE_MESHGRID.shape
+        assert (
+            actual.shape
+            == module.DO_MESHGRID.shape
+            == module.TEMPERATURE_MESHGRID.shape
+        )

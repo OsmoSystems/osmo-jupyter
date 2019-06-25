@@ -11,14 +11,14 @@ from osmo_jupyter.constants import (
     TEMPERATURE_STANDARD_OPERATING_MIN,
     TEMPERATURE_STANDARD_OPERATING_MAX,
     DO_MAX_MMHG,
-    ERROR_BOUNDS_MMHG
+    ERROR_BOUNDS_MMHG,
 )
 from osmo_jupyter.plot.color_from_temperature import color_from_temperature
 from osmo_jupyter.simulate.do_and_temp_meshgrid import DO_DOMAIN
 
 
 def _get_r_squared(predicted, actual):
-    ''' Coefficient of determination (r-squared)
+    """ Coefficient of determination (r-squared)
 
     Args:
         predicted: numpy array of Y data points provided by a model
@@ -27,7 +27,7 @@ def _get_r_squared(predicted, actual):
     Returns:
         Coefficient of determination - a measure of how much of the variation in actual data
         is accounted for in the model
-    '''
+    """
 
     sum_of_squares_of_residuals = ((actual - predicted) ** 2).sum()
     total_sum_of_squares = ((actual - np.mean(actual)) ** 2).sum()
@@ -36,7 +36,7 @@ def _get_r_squared(predicted, actual):
 
 
 def _get_adjusted_r_squared(actual, predicted, p):
-    ''' Adjusted r-squared: Coefficient of determination adjusted for the number of explanatory variables in a model
+    """ Adjusted r-squared: Coefficient of determination adjusted for the number of explanatory variables in a model
     https://en.wikipedia.org/wiki/Coefficient_of_determination#Adjusted_R2
 
     Params:
@@ -45,11 +45,11 @@ def _get_adjusted_r_squared(actual, predicted, p):
         p: number of explanatory variables in the model
     Returns:
         adjusted r-squared value
-    '''
+    """
     n = len(actual)
     if n <= p + 1:
         raise ValueError(
-            f'Number of data points {n} must be greater than the number of explanatory variables (p={p}) plus 1'
+            f"Number of data points {n} must be greater than the number of explanatory variables (p={p}) plus 1"
         )
 
     r_squared = _get_r_squared(actual, predicted)
@@ -58,60 +58,50 @@ def _get_adjusted_r_squared(actual, predicted, p):
 
 
 def _get_fit_parameter_names(fn):
-    ''' Get the name of all but the first parameter to the given function '''
-    return list(
-        inspect.signature(fn).parameters.keys()
-    )[1:]
+    """ Get the name of all but the first parameter to the given function """
+    return list(inspect.signature(fn).parameters.keys())[1:]
 
 
 # Horizontal lines at min and max allowable error
 DO_AXIS_ERROR_BOUNDS_LINES = [
     dict(
-        type='line',
-        xref='paper',
+        type="line",
+        xref="paper",
         x0=0,
         x1=1,
         y0=y,
         y1=y,
-        line=dict(
-            color='red',
-            width=1
-        )
+        line=dict(color="red", width=1),
     )
     for y in [ERROR_BOUNDS_MMHG, -ERROR_BOUNDS_MMHG]
 ]
 
 
 def calibration_error_plot(predicted_do, actual_do, temperature, fit_title):
-    ''' Plot showing the error in predicted DO as distributed over DO and temperature '''
+    """ Plot showing the error in predicted DO as distributed over DO and temperature """
     return go.FigureWidget(
         data=[
             go.Scatter(
                 x=actual_do,
                 y=predicted_do - actual_do,
-                mode='markers',
-                text=[f'T={T}' for T in temperature],
+                mode="markers",
+                text=[f"T={T}" for T in temperature],
                 marker=dict(
                     color=temperature,
-                    symbol='circle-open',
-                    colorscale='Bluered',
+                    symbol="circle-open",
+                    colorscale="Bluered",
                     cmin=TEMPERATURE_STANDARD_OPERATING_MIN,
-                    cmax=TEMPERATURE_STANDARD_OPERATING_MAX
-                )
+                    cmax=TEMPERATURE_STANDARD_OPERATING_MAX,
+                ),
             )
         ],
         layout=go.Layout(
-            title=f'DO error in {fit_title}',
-            xaxis={
-                'title': 'Dissolved Oxygen (mmHg)',
-                'range': [0, DO_MAX_MMHG]
-            },
-            yaxis={
-                'title': 'DO error (predicted - actual)<br>(mmHg)',
-            },
-            hovermode='closest',
+            title=f"DO error in {fit_title}",
+            xaxis={"title": "Dissolved Oxygen (mmHg)", "range": [0, DO_MAX_MMHG]},
+            yaxis={"title": "DO error (predicted - actual)<br>(mmHg)"},
+            hovermode="closest",
             shapes=DO_AXIS_ERROR_BOUNDS_LINES,
-        )
+        ),
     )
 
 
@@ -122,7 +112,7 @@ def plot_calibration(
     estimate_do_fn: Callable,
     estimate_optical_reading_fn: Callable,
 ):
-    ''' Visualize sensor in the context of a curve fit and fit parameters, including numerical measures of fit quality.
+    """ Visualize sensor in the context of a curve fit and fit parameters, including numerical measures of fit quality.
 
     Args:
         sensor_data: pandas DataFrame of observations. should have the following columns:
@@ -135,25 +125,21 @@ def plot_calibration(
 
     Returns:
         None. Produces plots and printed data frame
-    '''
-    optical_reading = sensor_data['SR reading']
-    measured_do = sensor_data['DO (mmHg)']
-    temperature = sensor_data['Temperature (C)']
+    """
+    optical_reading = sensor_data["SR reading"]
+    measured_do = sensor_data["DO (mmHg)"]
+    temperature = sensor_data["Temperature (C)"]
 
-    predicted_do = estimate_do_fn(
-        (optical_reading, temperature),
-        *fit_params
-    )
+    predicted_do = estimate_do_fn((optical_reading, temperature), *fit_params)
 
     p = len(fit_params)
     adjusted_r_squared = _get_adjusted_r_squared(predicted_do, measured_do, p)
 
     fit_parameter_names = _get_fit_parameter_names(estimate_do_fn)
     fit_params_dict = dict(zip(fit_parameter_names, fit_params))
-    fit_params_formatted = ', '.join(
+    fit_params_formatted = ", ".join(
         f"'{parameter_name}': {parameter_value:.3e}"
-        for parameter_name, parameter_value
-        in fit_params_dict.items()
+        for parameter_name, parameter_value in fit_params_dict.items()
     )
 
     # Estimate error
@@ -164,40 +150,44 @@ def plot_calibration(
     worst_error_correct_do = measured_do[max_do_error_index]
     worst_error_SR = optical_reading[max_do_error_index]
 
-    temperatures_text = [f'T={T}' for T in temperature]
-    print(dedent(f'''
+    temperatures_text = [f"T={T}" for T in temperature]
+    print(
+        dedent(
+            f"""
     Fit params: {{ {fit_params_formatted} }}
     max DO prediction error:
        {max_do_error:.1f}mmHg @ T={worst_error_temperature}, SR={worst_error_SR:.3f}, actual DO={worst_error_correct_do}
     standard deviation of DO error: {do_error.std():.1f}mmHg
     DO error sum of squares: {(do_error ** 2).sum():.1f}
     adjusted r-squared (p={p}): {adjusted_r_squared:.4f}
-    '''))
+    """
+        )
+    )
 
     calibration_and_prediction_traces = [
         go.Scatter(
             x=measured_do,
             y=optical_reading,
-            mode='markers',
-            name='Actual points',
+            mode="markers",
+            name="Actual points",
             marker={
-                'symbol': 'circle-open',
-                'size': 7,
-                'color': sensor_data['Temperature (C)'],
-                'colorscale': 'Bluered',
+                "symbol": "circle-open",
+                "size": 7,
+                "color": sensor_data["Temperature (C)"],
+                "colorscale": "Bluered",
             },
             text=temperatures_text,
-            opacity=0.5
+            opacity=0.5,
         ),
         go.Scatter(
             x=predicted_do,
             y=optical_reading,
-            mode='markers',
-            name='Fit',
+            mode="markers",
+            name="Fit",
             marker={
-                'symbol': 'x',
-                'color': sensor_data['Temperature (C)'],
-                'colorscale': 'Bluered',
+                "symbol": "x",
+                "color": sensor_data["Temperature (C)"],
+                "colorscale": "Bluered",
             },
             text=temperatures_text,
         ),
@@ -206,15 +196,10 @@ def plot_calibration(
     temperature_lines = [
         go.Scatter(
             x=DO_DOMAIN,
-            y=estimate_optical_reading_fn(
-                (DO_DOMAIN, temperature), *fit_params
-            ),
-            line=dict(
-                color=color_from_temperature(temperature),
-                width=0.5,
-            ),
-            name=f'fit @ T={temperature}',
-            mode='lines',
+            y=estimate_optical_reading_fn((DO_DOMAIN, temperature), *fit_params),
+            line=dict(color=color_from_temperature(temperature), width=0.5),
+            name=f"fit @ T={temperature}",
+            mode="lines",
         )
         for temperature in [15, 20, 25, 30, 35]
     ]
@@ -223,19 +208,12 @@ def plot_calibration(
         go.FigureWidget(
             data=calibration_and_prediction_traces + temperature_lines,
             layout=go.Layout(
-                title=f'{title}',
-                xaxis={
-                    'title': 'Dissolved Oxygen (mmHg)',
-                },
-                yaxis={
-                    'title': 'Spatial ratiometric reading',
-                },
-                hovermode='closest',
-
-            )
+                title=f"{title}",
+                xaxis={"title": "Dissolved Oxygen (mmHg)"},
+                yaxis={"title": "Spatial ratiometric reading"},
+                hovermode="closest",
+            ),
         )
     )
 
-    display(
-        calibration_error_plot(predicted_do, measured_do, temperature, title)
-    )
+    display(calibration_error_plot(predicted_do, measured_do, temperature, title))
