@@ -143,8 +143,8 @@ class TestGetEquilibrationBoundaries:
         expected_equilibration_boundaries = pd.DataFrame(
             [
                 {
-                    "leading_edge": pd.to_datetime("2019-01-01 00:00:01"),
-                    "trailing_edge": pd.to_datetime("2019-01-01 00:00:03"),
+                    "start_time": pd.to_datetime("2019-01-01 00:00:01"),
+                    "end_time": pd.to_datetime("2019-01-01 00:00:03"),
                 }
             ]
         )
@@ -179,8 +179,8 @@ class TestGetEquilibrationBoundaries:
         expected_equilibration_boundaries = pd.DataFrame(
             [
                 {
-                    "leading_edge": pd.to_datetime("2019-01-01 00:00:01"),
-                    "trailing_edge": pd.to_datetime("2019-01-01 00:00:03"),
+                    "start_time": pd.to_datetime("2019-01-01 00:00:01"),
+                    "end_time": pd.to_datetime("2019-01-01 00:00:03"),
                 }
             ]
         )
@@ -256,14 +256,14 @@ class TestFilterEquilibratedImages:
         test_equilibration_boundaries = pd.DataFrame(
             [
                 {
-                    "leading_edge": pd.to_datetime("2019-01-02"),
-                    "trailing_edge": pd.to_datetime("2019-01-04"),
+                    "start_time": pd.to_datetime("2019-01-02"),
+                    "end_time": pd.to_datetime("2019-01-04"),
                 }
             ]
         )
 
         equilibrated_image_data = module.filter_equilibrated_images(
-            test_equilibration_boundaries.iloc[0], test_roi_data
+            equilibration_range=test_equilibration_boundaries.iloc[0], df=test_roi_data
         )
 
         expected_equilibrated_image_data = test_roi_data[1:]
@@ -292,12 +292,12 @@ class TestOpenAndCombineSourceData:
 
         experiment_name = "test"
 
-        equilibrated_experiment_data = module.open_and_combine_source_data(
+        equilibrated_experiment_data = module.open_and_combine_and_filter_source_data(
             local_sync_directory="",
             experiment_names=[experiment_name],
             calibration_log_filepaths=[mock_calibration_file_obj],
             picolog_log_filepaths=[mock_picolog_file_obj],
-            results_filepaths=[],
+            process_experiment_result_filepaths=[],
         )
 
         expected_experiment_data = (

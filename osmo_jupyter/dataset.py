@@ -5,16 +5,16 @@ import numpy as np
 import pandas as pd
 
 
-def _interpolate_and_join_data(df_1: pd.DataFrame, df_2: pd.DataFrame) -> pd.DataFrame:
-    # Upsample df_1 to every second to allow any timestamp to be joined on a strict match
-    resampled_df_1 = df_1.resample("s").interpolate(method="slinear")
+def open_picolog_file(picolog_filepath: str) -> pd.DataFrame:
+    """
+        Open and parse a PicoLog data file such that the timestamps can be joined with calibration environment data.
 
-    return df_2.join(  # By default join happens on index values
-        resampled_df_1, how="inner"  # Drop any rows without a match in both DataFrames
-    )
-
-
-def open_picolog_file(picolog_filepath):
+        Args:
+            picolog_filepath: A filepath to a PicoLog csv data file
+        Returns:
+            DataFrame of PicoLog file contents, with timestamp indexes and PicoLog prefix on all other columns,
+            upsampled and linearly interpolated to each intermediate second.
+    """
     return (
         pd.read_csv(
             picolog_filepath,
@@ -26,10 +26,20 @@ def open_picolog_file(picolog_filepath):
         )
         .rename_axis("timestamp")
         .add_prefix("PicoLog ")
+        .resample("s")
+        .interpolate(method="slinear")
     )
 
 
-def open_calibration_log_file(calibration_log_filepath):
+def open_calibration_log_file(calibration_log_filepath: str) -> pd.DataFrame:
+    """
+        Open and parse a calibration environment data file such that the timestamps can be joined with PicoLog data.
+
+        Args:
+            calibration_log_filepath: A filepath to a calibration environment csv data log file.
+        Returns:
+            DataFrame of calibration data file contents, with timestamp indexes.
+    """
     return pd.read_csv(
         calibration_log_filepath,
         index_col="timestamp",
@@ -43,6 +53,16 @@ def open_calibration_log_file(calibration_log_filepath):
 def open_and_combine_picolog_and_calibration_data(
     calibration_log_filepaths: List[str], picolog_log_filepaths: List[str]
 ) -> pd.DataFrame:
+    """
+        Open and join a collection of PicoLog and calibration environment data files.
+
+        Args:
+            calibration_log_filepaths: A list of filepaths to calibration environment csv data log files.
+            picolog_log_filepaths: A list of filepaths to PicoLog csv data files.
+        Returns:
+            DataFrame of PicoLog data joined with matching calibration environment data.
+            PicoLog data is upsampled to 1 second increments and linearly interpolated
+    """
     picolog_data = pd.concat(
         [
             open_picolog_file(picolog_filepath)
@@ -59,10 +79,21 @@ def open_and_combine_picolog_and_calibration_data(
         sort=True,
     )
 
-    return _interpolate_and_join_data(picolog_data, calibration_data)
+    return calibration_data.join(  # By default join happens on index values
+        picolog_data, how="inner"  # Drop any rows without a match in both DataFrames
+    )
 
 
 def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFrame:
+    """
+        Parse a list of timestamped equilibration statuses into a DataFrame of start
+        and end times of equilibrated states.
+
+        Args:
+            equilibration_status: A Series of equilibration status strings.
+        Returns:
+            DataFrame of start and end times of equilibrated states.
+    """
     # Get a boolean series with timestamped index of equilbrated data points
     equilibrated_mask = equilibration_status == "equilibrated"
 
@@ -90,9 +121,7 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
     if len(trailing_edges) > len(leading_edges):
         trailing_edges = trailing_edges[1:]
 
-    return pd.DataFrame(
-        {"leading_edge": leading_edges, "trailing_edge": trailing_edges}
-    )
+    return pd.DataFrame({"start_time": leading_edges, "end_time": trailing_edges})
 
 
 def pivot_process_experiment_results_on_ROI(
@@ -101,8 +130,14 @@ def pivot_process_experiment_results_on_ROI(
     msorm_types: List[str] = ["r_msorm", "g_msorm", "b_msorm"],
 ) -> pd.DataFrame:
     """
-    Uses a pivot table to flatten multiple ROIs for the same image into one row.
-    Returns a DataFrame with one row per image, and msorm values for a subset of ROIs.
+        Flatten a DataFrame of process experiment results down to one row per image.
+
+        Args:
+            experiment_df: A DataFrame of process experiment summary statistics.
+            ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
+            msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
+        Returns:
+            DataFrame with one row per image, and msorm values for a subset of ROIs.
     """
     if ROI_names:
         experiment_df = experiment_df[experiment_df["ROI"].isin(ROI_names)]
@@ -123,14 +158,24 @@ def pivot_process_experiment_results_on_ROI(
 
 
 def open_and_combine_process_experiment_results(
-    results_filepaths: List[str],
+    process_experiment_result_filepaths: List[str],
     ROI_names: List[str] = None,
     msorm_types: List[str] = ["r_msorm", "g_msorm", "b_msorm"],
 ) -> pd.DataFrame:
+    """
+        Open multiple process experiment result files and combine into a single DataFrame with one row per image.
+
+        Args:
+            process_experiment_result_filepaths: A list of filepaths to process experiment summary statistics files.
+            ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
+            msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
+        Returns:
+            DataFrame of all summary statistics flattened to one row per image with all selected ROIs.
+    """
     all_roi_data = pd.concat(
         [
             pd.read_csv(results_filepath, parse_dates=["timestamp"])
-            for results_filepath in results_filepaths
+            for results_filepath in process_experiment_result_filepaths
         ]
     )
 
@@ -140,6 +185,15 @@ def open_and_combine_process_experiment_results(
 def get_all_experiment_images(
     local_sync_directory: str, experiment_names: List[str]
 ) -> pd.DataFrame:
+    """
+        Get a DataFrame of all image files across multiple experiment data directories.
+
+        Args:
+            local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
+            experiment_names: A list of experiment directory names in the local sync directory.
+        Returns:
+            DataFrame of all image file names and the corresponding experiment name.
+    """
     all_images = pd.concat(
         [
             pd.DataFrame(
@@ -159,21 +213,46 @@ def get_all_experiment_images(
     return all_images.drop(all_images[~all_images["image"].str.contains("jpeg")].index)
 
 
-def filter_equilibrated_images(equilibration_range, image_ROI_data):
-    leading_edge_mask = image_ROI_data.index > equilibration_range["leading_edge"]
-    trailing_edge_mask = image_ROI_data.index < equilibration_range["trailing_edge"]
-    return image_ROI_data[leading_edge_mask & trailing_edge_mask]
+def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame):
+    """
+        Filter a datetime indexed DataFrame to a given equilibration range
+
+        Args:
+            equilibration_range: A Series with indexed start_time and end_time values
+            df: A datetime indexed DataFrame
+        Returns:
+            A fitlered df containing only values whose index is between the given start_time and end_tim.
+    """
+    leading_edge_mask = df.index > equilibration_range["start_time"]
+    trailing_edge_mask = df.index < equilibration_range["end_time"]
+    return df[leading_edge_mask & trailing_edge_mask]
 
 
-def open_and_combine_source_data(
+def open_and_combine_and_filter_source_data(
     local_sync_directory: str,
     experiment_names: List[str],
     calibration_log_filepaths: List[str],
     picolog_log_filepaths: List[str],
-    results_filepaths: List[str],
+    process_experiment_result_filepaths: List[str],
     ROI_names: List[str] = None,
     msorm_types: List[str] = ["r_msorm", "g_msorm", "b_msorm"],
 ) -> pd.DataFrame:
+    """
+        Combine and filter a collection of calibration environment, PicoLog, process experiment and image data
+        into a neat DataFrame of all images taken during periods of equilibrated temperature and dissolved oxygen.
+
+        Args:
+            local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
+            experiment_names: A list of experiment directory names in the local sync directory.
+            calibration_log_filepaths: A list of filepaths to calibration environment csv data log files.
+            picolog_log_filepaths: A list of filepaths to PicoLog csv data files.
+            process_experiment_result_filepaths: A list of filepaths to process experiment summary statistics files.
+            ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
+            msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
+
+        Returns:
+            DataFrame of image and sensor data collected during equilibrated states.
+    """
 
     all_sensor_data = open_and_combine_picolog_and_calibration_data(
         calibration_log_filepaths, picolog_log_filepaths
@@ -184,12 +263,12 @@ def open_and_combine_source_data(
     )
 
     all_roi_data = open_and_combine_process_experiment_results(
-        results_filepaths, ROI_names, msorm_types
+        process_experiment_result_filepaths, ROI_names, msorm_types
     )
 
     equilibrated_data = pd.concat(
         equilibration_boundaries.apply(
-            filter_equilibrated_images, axis=1, image_ROI_data=all_roi_data
+            filter_equilibrated_images, axis=1, df=all_roi_data
         ).values
     ).sort_index()
 
