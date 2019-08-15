@@ -253,17 +253,15 @@ class TestFilterEquilibratedImages:
             ]
         ).set_index("timestamp")
 
-        test_equilibration_boundaries = pd.DataFrame(
-            [
-                {
-                    "start_time": pd.to_datetime("2019-01-02"),
-                    "end_time": pd.to_datetime("2019-01-04"),
-                }
-            ]
+        test_equilibration_boundaries = pd.Series(
+            {
+                "start_time": pd.to_datetime("2019-01-02"),
+                "end_time": pd.to_datetime("2019-01-04"),
+            }
         )
 
         equilibrated_image_data = module.filter_equilibrated_images(
-            equilibration_range=test_equilibration_boundaries.iloc[0], df=test_roi_data
+            equilibration_range=test_equilibration_boundaries, df=test_roi_data
         )
 
         expected_equilibrated_image_data = test_roi_data[1:]

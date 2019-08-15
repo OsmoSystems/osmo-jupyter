@@ -1,7 +1,6 @@
 import os
 from typing import List
 
-import numpy as np
 import pandas as pd
 
 
@@ -87,7 +86,8 @@ def open_and_combine_picolog_and_calibration_data(
 def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFrame:
     """
         Parse a list of timestamped equilibration statuses into a DataFrame of start
-        and end times of equilibrated states.
+        and end times of equilibrated states. Assumes all time between unequilibrated
+        and equilibrated input points are unequilibrated.
 
         Args:
             equilibration_status: A Series of equilibration status strings.
@@ -96,23 +96,9 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
     """
     # Get a boolean series with timestamped index of equilbrated data points
     equilibrated_mask = equilibration_status == "equilibrated"
-
-    # Upsample to every second
-    equilibration_status_sampler = equilibrated_mask.astype(int).resample("s")
-
-    # In order to not interpolate any gaps around equilibrated states as also equilibrated, interpolate
-    # state as an integer (True == 1) and truncate any decimals (e.g. 0.2 -> 0, or False)
-    interpolated_equilbration_status = equilibration_status_sampler.interpolate().apply(
-        np.floor
-    )
-
-    # rolling difference from previous row
-    leading_edges = interpolated_equilbration_status[
-        interpolated_equilbration_status.astype(int).diff() == 1
-    ].index
-    # rolling difference with next row
-    trailing_edges = interpolated_equilbration_status[
-        interpolated_equilbration_status.astype(int).diff(periods=-1) == 1
+    leading_edges = equilibrated_mask[equilibrated_mask.astype(int).diff() == 1].index
+    trailing_edges = equilibrated_mask[
+        equilibrated_mask.astype(int).diff(periods=-1) == 1
     ].index
 
     # Trim edges to align
