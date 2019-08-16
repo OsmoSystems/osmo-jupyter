@@ -101,11 +101,17 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
         equilibrated_mask.astype(int).diff(periods=-1) == 1
     ].index
 
-    # Trim edges to align
-    if len(leading_edges) > len(trailing_edges):
-        leading_edges = leading_edges[:-1]
+    if (
+        len(trailing_edges)
+        and len(leading_edges)
+        and trailing_edges[0] < leading_edges[0]
+    ):
+        trailing_edges = trailing_edges[1:]
+
     if len(trailing_edges) > len(leading_edges):
         trailing_edges = trailing_edges[1:]
+    if len(leading_edges) > len(trailing_edges):
+        leading_edges = leading_edges[:-1]
 
     return pd.DataFrame({"start_time": leading_edges, "end_time": trailing_edges})
 
@@ -123,22 +129,41 @@ def pivot_process_experiment_results_on_ROI(
             ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
             msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
         Returns:
-            DataFrame with one row per image, and msorm values for a subset of ROIs.
+            DataFrame with one row per image, and msorm values for a subset of ROIs. Creates one column
+            for every unique ROI in the dataset. NaN values are used when an image is missing an ROI.
     """
     if ROI_names:
         experiment_df = experiment_df[experiment_df["ROI"].isin(ROI_names)]
+
+    # Before pivot
+    # image     ROI             r_msorm     timestamp
+    #     1     DO patch             .4     2019-01-01
+    #     1     Reference Patch      .5     2019-01-01
 
     # Pivot creates a heirachical multiindex data frame with an index for each 'values' column
     pivot = experiment_df.pivot(
         index="timestamp", columns="ROI", values=msorm_types + ["image"]
     )
 
+    # After pivot -> Multi-level index
+    #              DO Patch                 Reference Patch
+    # timestamp    image     r_msorm...     image   r_msorm...
+    # 2019-01-01       1          .4            1        .5
+
     # There's one copy of the image name for each ROI due to the pivot, so pull out the top level index
     images = pivot["image"][experiment_df["ROI"].values[0]]
     pivot.drop("image", axis=1, inplace=True)
     # Flatten the pivot table index, and add images back in
-    pivot.columns = [" ".join(col[::-1]).strip() for col in pivot.columns.values]
+    pivot.columns = [
+        # ("r_msorm", "some ROI name") -> "some ROI name r_msorm"
+        " ".join(col[::-1]).strip()
+        for col in pivot.columns.values
+    ]
     pivot["image"] = images
+
+    # After flattening
+    # timestamp    image     DO Patch r_msorm   Reference Patch r_msorm...
+    # 2019-01-01       1                   .4                        .5
 
     return pivot
 
@@ -180,19 +205,15 @@ def get_all_experiment_images(
         Returns:
             DataFrame of all image file names and the corresponding experiment name.
     """
-    all_images = pd.concat(
+    all_images = pd.DataFrame(
         [
-            pd.DataFrame(
-                {
-                    "experiment": experiment_name,
-                    "image": os.listdir(
-                        os.path.join(local_sync_directory, experiment_name)
-                    ),
-                },
-                dtype="object",  # Ensure correct dtype when no images are found
-            )
+            {"experiment": experiment_name, "image": image}
             for experiment_name in experiment_names
-        ]
+            for image in os.listdir(os.path.join(local_sync_directory, experiment_name))
+        ],
+        # Ensure correct dtype and column names when no images are found
+        columns=["experiment", "image"],
+        dtype="object",
     )
 
     # Filter out experiment log files
@@ -207,7 +228,7 @@ def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame)
             equilibration_range: A Series with indexed start_time and end_time values
             df: A datetime indexed DataFrame
         Returns:
-            A fitlered df containing only values whose index is between the given start_time and end_tim.
+            A filtered df containing only values whose index is between the given start_time and end_tim.
     """
     leading_edge_mask = df.index > equilibration_range["start_time"]
     trailing_edge_mask = df.index < equilibration_range["end_time"]

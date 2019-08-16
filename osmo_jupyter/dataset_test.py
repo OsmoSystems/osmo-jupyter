@@ -131,59 +131,120 @@ class TestOpenAndCombineSensorData:
 
 
 class TestGetEquilibrationBoundaries:
-    def test_finds_correct_edges(self, mock_calibration_file_obj):
-        calibration_log_data = module.open_calibration_log_file(
-            mock_calibration_file_obj
-        )
+    @pytest.mark.parametrize(
+        "input_equilibration_status, expected_boundaries",
+        [
+            (
+                {  # Use full timestamps to show that it works at second resolution
+                    pd.to_datetime("2019-01-01 00:00:00"): "waiting",
+                    pd.to_datetime("2019-01-01 00:00:01"): "equilibrated",
+                    pd.to_datetime("2019-01-01 00:00:02"): "equilibrated",
+                    pd.to_datetime("2019-01-01 00:00:03"): "waiting",
+                },
+                [
+                    {
+                        "start_time": pd.to_datetime("2019-01-01 00:00:01"),
+                        "end_time": pd.to_datetime("2019-01-01 00:00:02"),
+                    }
+                ],
+            ),
+            (
+                {  # Switch to using only years as the timestamp for terseness and readability
+                    pd.to_datetime("2019"): "waiting",
+                    pd.to_datetime("2020"): "equilibrated",
+                    pd.to_datetime("2021"): "waiting",
+                },
+                [
+                    {
+                        "start_time": pd.to_datetime("2020"),
+                        "end_time": pd.to_datetime("2020"),
+                    }
+                ],
+            ),
+            (
+                {
+                    pd.to_datetime("2020"): "equilibrated",
+                    pd.to_datetime("2021"): "waiting",
+                    pd.to_datetime("2022"): "equilibrated",
+                    pd.to_datetime("2023"): "waiting",
+                },
+                [
+                    {
+                        "start_time": pd.to_datetime("2022"),
+                        "end_time": pd.to_datetime("2022"),
+                    }
+                ],
+            ),
+            (
+                {
+                    pd.to_datetime("2019"): "waiting",
+                    pd.to_datetime("2020"): "equilibrated",
+                    pd.to_datetime("2021"): "waiting",
+                    pd.to_datetime("2022"): "equilibrated",
+                },
+                [
+                    {
+                        "start_time": pd.to_datetime("2020"),
+                        "end_time": pd.to_datetime("2020"),
+                    }
+                ],
+            ),
+            (
+                {
+                    pd.to_datetime("2019"): "waiting",
+                    pd.to_datetime("2020"): "equilibrated",
+                    pd.to_datetime("2021"): "waiting",
+                    pd.to_datetime("2022"): "equilibrated",
+                    pd.to_datetime("2023"): "waiting",
+                },
+                [
+                    {
+                        "start_time": pd.to_datetime("2020"),
+                        "end_time": pd.to_datetime("2020"),
+                    },
+                    {
+                        "start_time": pd.to_datetime("2022"),
+                        "end_time": pd.to_datetime("2022"),
+                    },
+                ],
+            ),
+            (
+                {
+                    pd.to_datetime("2019"): "equilibrated",
+                    pd.to_datetime("2020"): "waiting",
+                },
+                [],
+            ),
+            (
+                {
+                    pd.to_datetime("2019"): "waiting",
+                    pd.to_datetime("2020"): "equilibrated",
+                },
+                [],
+            ),
+            (
+                {
+                    pd.to_datetime("2019"): "equilibrated",
+                    pd.to_datetime("2020"): "waiting",
+                    pd.to_datetime("2021"): "equilibrated",
+                },
+                [],
+            ),
+        ],
+    )
+    def test_finds_correct_edges(self, input_equilibration_status, expected_boundaries):
 
         parsed_equilibration_boundaries = module.get_equilibration_boundaries(
-            equilibration_status=calibration_log_data["equilibration status"]
+            equilibration_status=pd.Series(input_equilibration_status)
         )
 
         expected_equilibration_boundaries = pd.DataFrame(
-            [
-                {
-                    "start_time": pd.to_datetime("2019-01-01 00:00:01"),
-                    "end_time": pd.to_datetime("2019-01-01 00:00:03"),
-                }
-            ]
-        )
-
-        pd.testing.assert_frame_equal(
-            parsed_equilibration_boundaries, expected_equilibration_boundaries
-        )
-
-    def test_corrects_for_extra_rising_edge(self, mock_calibration_file_obj):
-        calibration_log_with_hanging_equilibrated_point = pd.concat(
-            [
-                module.open_calibration_log_file(mock_calibration_file_obj),
-                pd.DataFrame(
-                    [
-                        {
-                            "timestamp": pd.to_datetime("2019-01-01 00:05"),
-                            "setpoint O2 fraction": 0.2,
-                            "equilibration status": "equilibrated",
-                        }
-                    ]
-                ).set_index("timestamp"),
-            ],
-            sort=False,
-        )
-
-        parsed_equilibration_boundaries = module.get_equilibration_boundaries(
-            equilibration_status=calibration_log_with_hanging_equilibrated_point[
-                "equilibration status"
-            ]
-        )
-
-        expected_equilibration_boundaries = pd.DataFrame(
-            [
-                {
-                    "start_time": pd.to_datetime("2019-01-01 00:00:01"),
-                    "end_time": pd.to_datetime("2019-01-01 00:00:03"),
-                }
-            ]
-        )
+            expected_boundaries,
+            columns=["start_time", "end_time"],
+            dtype="datetime64[ns]",
+        ).reset_index(
+            drop=True
+        )  # Coerce to a RangeIndex when creating empty DataFrame
 
         pd.testing.assert_frame_equal(
             parsed_equilibration_boundaries, expected_equilibration_boundaries
@@ -242,6 +303,18 @@ class TestGetAllExperimentImages:
         )
 
         pd.testing.assert_frame_equal(experiment_images, expected_images)
+
+    def test_has_correct_dtype_when_no_images_found(self, mocker):
+        mocker.patch("os.listdir", return_value=[])
+
+        experiment_images = module.get_all_experiment_images(
+            local_sync_directory="", experiment_names=["test"]
+        )
+
+        pd.testing.assert_frame_equal(
+            experiment_images,
+            pd.DataFrame(columns=["experiment", "image"], dtype="object"),
+        )
 
 
 class TestFilterEquilibratedImages:
