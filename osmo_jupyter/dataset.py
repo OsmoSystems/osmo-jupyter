@@ -101,18 +101,20 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
         equilibrated_mask.astype(int).diff(periods=-1) == 1
     ].index
 
+    # Correct single point ranges to have leading and falling edges
     if (
         len(trailing_edges)
         and len(leading_edges)
         and trailing_edges[0] < leading_edges[0]
     ):
-        trailing_edges = trailing_edges[1:]
+        # Prepend a trailing edge at the start of the dataset as its own leading edge
+        leading_edges = trailing_edges[:1].append(leading_edges)
 
     if len(trailing_edges) > len(leading_edges):
-        trailing_edges = trailing_edges[1:]
+        # use the first trailing edge as its own leading edge
+        leading_edges = leading_edges.append(trailing_edges[:1])
     if len(leading_edges) > len(trailing_edges):
         # use the final leading edge as its own trailing edge
-        # to treat the single point as an equilibrated range
         trailing_edges = trailing_edges.append(leading_edges[-1:])
 
     return pd.DataFrame({"start_time": leading_edges, "end_time": trailing_edges})
