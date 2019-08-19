@@ -119,7 +119,7 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
 def pivot_process_experiment_results_on_ROI(
     experiment_df: pd.DataFrame,
     ROI_names: List[str] = None,
-    msorm_types: List[str] = ["r_msorm", "g_msorm", "b_msorm"],
+    msorm_types: List[str] = None,
 ) -> pd.DataFrame:
     """
         Flatten a DataFrame of process experiment results down to one row per image.
@@ -132,6 +132,9 @@ def pivot_process_experiment_results_on_ROI(
             DataFrame with one row per image, and msorm values for a subset of ROIs. Creates one column
             for every unique ROI in the dataset. NaN values are used when an image is missing an ROI.
     """
+    if msorm_types is None:
+        msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
+
     if ROI_names:
         experiment_df = experiment_df[experiment_df["ROI"].isin(ROI_names)]
 
@@ -171,7 +174,7 @@ def pivot_process_experiment_results_on_ROI(
 def open_and_combine_process_experiment_results(
     process_experiment_result_filepaths: List[str],
     ROI_names: List[str] = None,
-    msorm_types: List[str] = ["r_msorm", "g_msorm", "b_msorm"],
+    msorm_types: List[str] = None,
 ) -> pd.DataFrame:
     """
         Open multiple process experiment result files and combine into a single DataFrame with one row per image.
@@ -183,6 +186,9 @@ def open_and_combine_process_experiment_results(
         Returns:
             DataFrame of all summary statistics flattened to one row per image with all selected ROIs.
     """
+    if msorm_types is None:
+        msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
+
     all_roi_data = pd.concat(
         [
             pd.read_csv(results_filepath, parse_dates=["timestamp"])
@@ -242,7 +248,7 @@ def open_and_combine_and_filter_source_data(
     picolog_log_filepaths: List[str],
     process_experiment_result_filepaths: List[str],
     ROI_names: List[str] = None,
-    msorm_types: List[str] = ["r_msorm", "g_msorm", "b_msorm"],
+    msorm_types: List[str] = None,
 ) -> pd.DataFrame:
     """
         Combine and filter a collection of calibration environment, PicoLog, process experiment and image data
@@ -260,6 +266,8 @@ def open_and_combine_and_filter_source_data(
         Returns:
             DataFrame of image and sensor data collected during equilibrated states.
     """
+    if msorm_types is None:
+        msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
 
     all_sensor_data = open_and_combine_picolog_and_calibration_data(
         calibration_log_filepaths, picolog_log_filepaths
