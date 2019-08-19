@@ -111,7 +111,9 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
     if len(trailing_edges) > len(leading_edges):
         trailing_edges = trailing_edges[1:]
     if len(leading_edges) > len(trailing_edges):
-        leading_edges = leading_edges[:-1]
+        # use the final leading edge as its own trailing edge
+        # to treat the single point as an equilibrated range
+        trailing_edges = trailing_edges.append(leading_edges[-1:])
 
     return pd.DataFrame({"start_time": leading_edges, "end_time": trailing_edges})
 

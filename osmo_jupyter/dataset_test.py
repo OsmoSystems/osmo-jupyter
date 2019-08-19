@@ -186,7 +186,11 @@ class TestGetEquilibrationBoundaries:
                     {
                         "start_time": pd.to_datetime("2020"),
                         "end_time": pd.to_datetime("2020"),
-                    }
+                    },
+                    {
+                        "start_time": pd.to_datetime("2022"),
+                        "end_time": pd.to_datetime("2022"),
+                    },
                 ],
             ),
             (
@@ -220,7 +224,12 @@ class TestGetEquilibrationBoundaries:
                     pd.to_datetime("2019"): "waiting",
                     pd.to_datetime("2020"): "equilibrated",
                 },
-                [],
+                [
+                    {
+                        "start_time": pd.to_datetime("2020"),
+                        "end_time": pd.to_datetime("2020"),
+                    }
+                ],
             ),
             (
                 {
@@ -228,7 +237,12 @@ class TestGetEquilibrationBoundaries:
                     pd.to_datetime("2020"): "waiting",
                     pd.to_datetime("2021"): "equilibrated",
                 },
-                [],
+                [
+                    {
+                        "start_time": pd.to_datetime("2021"),
+                        "end_time": pd.to_datetime("2021"),
+                    }
+                ],
             ),
         ],
     )
