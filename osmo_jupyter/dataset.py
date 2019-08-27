@@ -285,9 +285,16 @@ def open_and_combine_and_filter_source_data(
         process_experiment_result_filepaths, ROI_names, msorm_types
     )
 
+    all_roi_and_sensor_data = all_roi_data.join(
+        # interpolate sensor data to line up with ROI data,
+        # and drop columns which don't interpolate (equilibration status)
+        all_sensor_data.resample("s").interpolate(method="slinear").dropna(axis=1),
+        how="inner",
+    )
+
     equilibrated_data = pd.concat(
         equilibration_boundaries.apply(
-            filter_equilibrated_images, axis=1, df=all_roi_data
+            filter_equilibrated_images, axis=1, df=all_roi_and_sensor_data
         ).values
     ).sort_index()
 

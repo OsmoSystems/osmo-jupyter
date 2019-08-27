@@ -408,6 +408,7 @@ class TestOpenAndCombineSourceData:
                         "ROI 0 g_msorm": 0.6,
                         "ROI 1 g_msorm": 0.3,
                         "image": "image-1.jpeg",
+                        "PicoLog Temperature Ave. (C)": 39.75,
                         "experiment": experiment_name,
                     }
                 ]
