@@ -257,6 +257,7 @@ def open_and_combine_and_filter_source_data(
     """
         Combine and filter a collection of calibration environment, PicoLog, process experiment and image data
         into a neat DataFrame of all images taken during periods of equilibrated temperature and dissolved oxygen.
+        PicoLog and calibration sensor data are linearly interpolated to the second to line up with image timestamps.
 
         Args:
             local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
