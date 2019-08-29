@@ -15,10 +15,26 @@ TEST_PICOLOG_DATA = pd.DataFrame(
 
 TEST_CALIBRATION_DATA = pd.DataFrame(
     [
-        {"timestamp": "2019-01-01 00:00:00.1", "equilibration status": "waiting"},
-        {"timestamp": "2019-01-01 00:00:01.1", "equilibration status": "equilibrated"},
-        {"timestamp": "2019-01-01 00:00:03.1", "equilibration status": "equilibrated"},
-        {"timestamp": "2019-01-01 00:00:04.1", "equilibration status": "waiting"},
+        {
+            "timestamp": "2019-01-01 00:00:00.1",
+            "equilibration status": "waiting",
+            "setpoint temperature": 40,
+        },
+        {
+            "timestamp": "2019-01-01 00:00:01.1",
+            "equilibration status": "equilibrated",
+            "setpoint temperature": 40,
+        },
+        {
+            "timestamp": "2019-01-01 00:00:03.1",
+            "equilibration status": "equilibrated",
+            "setpoint temperature": 40,
+        },
+        {
+            "timestamp": "2019-01-01 00:00:04.1",
+            "equilibration status": "waiting",
+            "setpoint temperature": 40,
+        },
     ]
 )
 
@@ -105,21 +121,25 @@ class TestOpenAndCombineSensorData:
                 {
                     "timestamp": "2019-01-01 00:00:00",
                     "equilibration status": "waiting",
+                    "setpoint temperature": 40,
                     "PicoLog Temperature Ave. (C)": 39,
                 },
                 {
                     "timestamp": "2019-01-01 00:00:01",
                     "equilibration status": "equilibrated",
+                    "setpoint temperature": 40,
                     "PicoLog Temperature Ave. (C)": 39.5,
                 },
                 {
                     "timestamp": "2019-01-01 00:00:03",
                     "equilibration status": "equilibrated",
+                    "setpoint temperature": 40,
                     "PicoLog Temperature Ave. (C)": 40,
                 },
                 {
                     "timestamp": "2019-01-01 00:00:04",
                     "equilibration status": "waiting",
+                    "setpoint temperature": 40,
                     "PicoLog Temperature Ave. (C)": 40,
                 },
             ]
@@ -408,6 +428,8 @@ class TestOpenAndCombineSourceData:
                         "ROI 0 g_msorm": 0.6,
                         "ROI 1 g_msorm": 0.3,
                         "image": "image-1.jpeg",
+                        "PicoLog Temperature Ave. (C)": 40,
+                        "setpoint temperature": 40,
                         "experiment": experiment_name,
                     }
                 ]

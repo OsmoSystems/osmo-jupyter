@@ -257,6 +257,7 @@ def open_and_combine_and_filter_source_data(
     """
         Combine and filter a collection of calibration environment, PicoLog, process experiment and image data
         into a neat DataFrame of all images taken during periods of equilibrated temperature and dissolved oxygen.
+        PicoLog and calibration sensor data are linearly interpolated to the second to line up with image timestamps.
 
         Args:
             local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
@@ -273,22 +274,41 @@ def open_and_combine_and_filter_source_data(
     if msorm_types is None:
         msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
 
-    all_sensor_data = open_and_combine_picolog_and_calibration_data(
-        calibration_log_filepaths, picolog_log_filepaths
+    picolog_data = pd.concat(
+        [
+            open_picolog_file(picolog_filepath)
+            for picolog_filepath in picolog_log_filepaths
+        ],
+        sort=True,
+    )
+
+    calibration_data = pd.concat(
+        [
+            open_calibration_log_file(calibration_log_filepath)
+            for calibration_log_filepath in calibration_log_filepaths
+        ],
+        sort=True,
     )
 
     equilibration_boundaries = get_equilibration_boundaries(
-        all_sensor_data["equilibration status"]
+        calibration_data["equilibration status"]
     )
 
     all_roi_data = open_and_combine_process_experiment_results(
         process_experiment_result_filepaths, ROI_names, msorm_types
     )
 
-    equilibrated_data = pd.concat(
+    all_roi_and_picolog_data = all_roi_data.join(picolog_data, how="inner")
+
+    equilibrated_sensor_data = pd.concat(
         equilibration_boundaries.apply(
-            filter_equilibrated_images, axis=1, df=all_roi_data
+            filter_equilibrated_images, axis=1, df=all_roi_and_picolog_data
         ).values
+    )
+
+    equilibrated_data = equilibrated_sensor_data.join(
+        calibration_data.resample("s").interpolate(method="slinear").dropna(axis=1),
+        how="inner",
     ).sort_index()
 
     all_images = get_all_experiment_images(local_sync_directory, experiment_names)
