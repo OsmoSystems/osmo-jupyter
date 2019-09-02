@@ -200,6 +200,8 @@ def open_and_combine_process_experiment_results(
         ]
     )
 
+    all_roi_data = all_roi_data.drop_duplicates(subset="timestamp", keep="last")
+
     return pivot_process_experiment_results_on_ROI(all_roi_data, ROI_names, msorm_types)
 
 
