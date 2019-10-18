@@ -1,7 +1,175 @@
 import os
-from typing import List
+from typing import List, Dict
+from enum import Enum
 
 import pandas as pd
+
+
+# Standard column names to align various data formats on
+TIMESTAMP = "timestamp"
+TEMPERATURE_C = "temperature (C)"
+BAROMETRIC_PRESSURE_MMHG = "barometric pressure (mmHg)"
+DO_PCT = "DO (%)"
+DO_MGL = "DO (mg/L)"
+
+
+class DataFileType(Enum):
+    UNKNOWN = 0
+    YSI_CSV = 1
+    YSI_KORDSS = 2
+    PICOLOG = 3
+    CALIBRATION_LOG = 4
+
+
+def read_ysi_kordss_file(filepath: str) -> pd.DataFrame:
+    """ Open a YSI KorDSS formatted csv file, with standardized datetime column parsing.
+
+        Args:
+            filepath: Filepath to a YSI KorDSS csv file.
+        Returns:
+            Pandas DataFrame of the raw data, with DATE and TIME columns
+            parsed together into a DATE_TIME column with a datetime dtype.
+    """
+    return pd.read_csv(
+        filepath, skiprows=5, encoding="latin-1", parse_dates=[["DATE", "TIME"]]
+    )
+
+
+def read_ysi_csv_file(filepath: str) -> pd.DataFrame:
+    """ Open a YSI "classic" csv file, with standardized datetime column parsing.
+
+        Args:
+            filepath: Filepath to a YSI csv file.
+        Returns:
+            Pandas DataFrame of the raw data, with Timestamp column parsed as a datetime dtype.
+    """
+    return pd.read_csv(filepath, parse_dates=["Timestamp"])
+
+
+def read_picolog_file(filepath: str) -> pd.DataFrame:
+    """ Open a PicoLog csv file, with standardized datetime column parsing.
+
+        Args:
+            filepath: Filepath to a PicoLog csv file.
+        Returns:
+            Pandas DataFrame of the raw data, with the unlabeled timestamp column parsed
+            as a datetime dtype with the timezone stripped.
+    """
+    return pd.read_csv(
+        filepath,
+        parse_dates=[0],
+        date_parser=lambda col: pd.to_datetime(col, utc=False).tz_localize(None),
+    )
+
+
+def read_calibration_log_file(filepath: str) -> pd.DataFrame:
+    """ Open a calibration log csv file, with standardized datetime column parsing.
+
+        Args:
+            filepath: Filepath to a PicoLog csv file.
+        Returns:
+            Pandas DataFrame of the raw data, with timestamp column parsed
+            as a datetime dtype with fractional seconds truncated.
+    """
+    return pd.read_csv(
+        filepath,
+        parse_dates=["timestamp"],
+        date_parser=lambda col: pd.to_datetime(col, utc=False).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),  # Truncate fractional seconds
+    )
+
+
+# Configure how each type of file we handle should be opened and transformed
+FILE_FORMAT_CONFIG = {
+    DataFileType.YSI_CSV: {
+        "rename": {
+            "Timestamp": TIMESTAMP,
+            "Barometer (mmHg)": BAROMETRIC_PRESSURE_MMHG,
+            "Dissolved Oxygen (%)": DO_PCT,
+            "Temperature (C)": TEMPERATURE_C,
+            "Unit ID": "unit ID",
+        },
+        "drop": ["Comment", "Site", "Folder"],
+        "prefix": "YSI ",
+        "parser": read_ysi_csv_file,
+    },
+    DataFileType.YSI_KORDSS: {
+        "rename": {
+            "DATE_TIME": TIMESTAMP,
+            "Barometer (mmHg)": BAROMETRIC_PRESSURE_MMHG,
+            "ODO (% Sat)": DO_PCT,
+            "ODO (mg/L)": DO_MGL,
+            "Temp (°C)": TEMPERATURE_C,
+        },
+        "drop": ["SITE", "DATA ID", "ODO (% Local)"],
+        "prefix": "YSI ",
+        "parser": read_ysi_kordss_file,
+    },
+    DataFileType.PICOLOG: {
+        "rename": {
+            "Unnamed: 0": TIMESTAMP,
+            "Temperature Ave. (C)": TEMPERATURE_C,
+            "Pressure Ave. (mmHg)": BAROMETRIC_PRESSURE_MMHG,
+        },
+        "drop": ["Pressure (Voltage) Ave. (nV)"],
+        "prefix": "PicoLog ",
+        "parser": read_picolog_file,
+    },
+    DataFileType.CALIBRATION_LOG: {
+        "rename": {},
+        "drop": [],
+        "prefix": "",
+        "parser": read_calibration_log_file,
+    },
+}
+
+
+def _infer_filetype(filename: str) -> str:
+    with open(filename, "r") as file:
+        try:
+            header = file.readline()
+            if "Dissolved Oxygen (%)" in header:
+                return DataFileType.YSI_CSV
+            elif "Pressure (Voltage) Ave." in header:
+                return DataFileType.PICOLOG
+            elif "O2 source gas gas ID" in header:
+                return DataFileType.CALIBRATION_LOG
+        except UnicodeDecodeError:
+            return DataFileType.YSI_KORDSS
+    return DataFileType.UNKNOWN
+
+
+def _apply_parser_configuration(
+    dataset: pd.DataFrame, parse_config: Dict
+) -> pd.DataFrame:
+    return (
+        dataset.drop(parse_config["drop"], axis=1)
+        .rename(columns=parse_config["rename"])
+        .set_index("timestamp")
+        .add_prefix(parse_config["prefix"])
+    )
+
+
+def read_and_format_data_file(
+    filepath: str, filetype: DataFileType = DataFileType.UNKNOWN
+) -> pd.DataFrame:
+    """
+        Open and format any of the following supported data file types with standardized column names:
+        Original YSI csv, KorDSS YSI csv, PicoLog csv, calibration log csv
+
+        Args:
+            filepath: Filepath to the file to be opened and formatted.
+            filetype: Optional. Provide the DataFileType if it is known. Otherwise the filetype will be inferred.
+    """
+    if filetype is DataFileType.UNKNOWN:
+        filetype = _infer_filetype(filepath)
+    parse_config = FILE_FORMAT_CONFIG[filetype]
+    parse_function = parse_config["parser"]
+
+    dataset = parse_function(filepath)
+
+    return _apply_parser_configuration(dataset, parse_config)
 
 
 def open_picolog_file(picolog_filepath: str) -> pd.DataFrame:
@@ -15,16 +183,7 @@ def open_picolog_file(picolog_filepath: str) -> pd.DataFrame:
             upsampled and linearly interpolated to each intermediate second.
     """
     return (
-        pd.read_csv(
-            picolog_filepath,
-            index_col=0,  # first column, is unlabeled
-            parse_dates=[0],  # first column
-            date_parser=lambda col: pd.to_datetime(col, utc=False).tz_localize(
-                None
-            ),  # Remove timezone information
-        )
-        .rename_axis("timestamp")
-        .add_prefix("PicoLog ")
+        read_and_format_data_file(picolog_filepath, DataFileType.PICOLOG)
         .resample("s")
         .interpolate(method="slinear")
     )
@@ -39,13 +198,8 @@ def open_calibration_log_file(calibration_log_filepath: str) -> pd.DataFrame:
         Returns:
             DataFrame of calibration data file contents, with timestamp indexes.
     """
-    return pd.read_csv(
-        calibration_log_filepath,
-        index_col="timestamp",
-        parse_dates=["timestamp"],
-        date_parser=lambda col: pd.to_datetime(col, utc=False).strftime(
-            "%Y-%m-%d %H:%M:%S"
-        ),  # Truncate fractional seconds
+    return read_and_format_data_file(
+        calibration_log_filepath, DataFileType.CALIBRATION_LOG
     )
 
 
