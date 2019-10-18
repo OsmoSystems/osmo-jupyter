@@ -15,7 +15,9 @@ setup(
         "numpy",
         "pandas",
         "petl",
-        "plotly >= 4, < 5",
+        # Pin plotly version until skimage dependency is fixed
+        # https://github.com/plotly/plotly.py/issues/1829
+        "plotly==4.1.1",
         "pymysql",
         "requests",
         "scipy",
