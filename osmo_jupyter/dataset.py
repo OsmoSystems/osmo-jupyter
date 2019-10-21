@@ -33,13 +33,14 @@ def _apply_parser_configuration(
 
 
 def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
-    """ Open a YSI KorDSS formatted csv file, with standardized datetime column parsing.
+    """ Open and format a YSI KorDSS formatted csv file, with standardized datetime parsing
+        and cleaned up columns.
 
         Args:
             filepath: Filepath to a YSI KorDSS csv file.
         Returns:
-            Pandas DataFrame of the raw data, with DATE and TIME columns
-            parsed together into a DATE_TIME column with a datetime dtype.
+            Pandas DataFrame of the data, with DATE and TIME columns parsed together,
+            and standardized column names.
     """
     parse_config = {
         "rename": {
@@ -59,12 +60,14 @@ def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
 
 
 def parse_ysi_classic_file(filepath: str) -> pd.DataFrame:
-    """ Open a YSI "classic" csv file, with standardized datetime column parsing.
+    """ Open and format a YSI "classic" csv file, with standardized datetime parsing
+        and cleaned up columns.
 
         Args:
             filepath: Filepath to a YSI csv file.
         Returns:
-            Pandas DataFrame of the raw data, with Timestamp column parsed as a datetime dtype.
+            Pandas DataFrame of the data, with Timestamp column parsed as a datetime dtype,
+            and standardized column names.
     """
     parse_config = {
         "rename": {
@@ -83,13 +86,14 @@ def parse_ysi_classic_file(filepath: str) -> pd.DataFrame:
 
 
 def parse_picolog_file(filepath: str) -> pd.DataFrame:
-    """ Open a PicoLog csv file, with standardized datetime column parsing.
+    """ Open and format a PicoLog csv file, with standardized datetime parsing
+        and cleaned up columns.
 
         Args:
             filepath: Filepath to a PicoLog csv file.
         Returns:
-            Pandas DataFrame of the raw data, with the unlabeled timestamp column parsed
-            as a datetime dtype with the timezone stripped.
+            Pandas DataFrame of the data, with the unlabeled timestamp column parsed
+            as a datetime dtype with the timezone stripped, and standardized column names.
     """
     parse_config = {
         "rename": {
@@ -110,7 +114,7 @@ def parse_picolog_file(filepath: str) -> pd.DataFrame:
 
 
 def parse_calibration_log_file(filepath: str) -> pd.DataFrame:
-    """ Open a calibration log csv file, with standardized datetime column parsing.
+    """ Open and format a calibration log csv file, with standardized datetime parsing.
 
         Args:
             filepath: Filepath to a PicoLog csv file.
