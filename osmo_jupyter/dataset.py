@@ -14,11 +14,10 @@ DO_MGL = "DO (mg/L)"
 
 
 class DataFileType(Enum):
-    UNKNOWN = 0
-    YSI_CLASSIC = 1
-    YSI_KORDSS = 2
-    PICOLOG = 3
-    CALIBRATION_LOG = 4
+    YSI_CLASSIC = 0
+    YSI_KORDSS = 1
+    PICOLOG = 2
+    CALIBRATION_LOG = 3
 
 
 def _apply_parser_configuration(
