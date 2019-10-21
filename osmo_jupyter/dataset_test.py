@@ -1,5 +1,3 @@
-import io
-
 import pandas as pd
 import pytest
 
@@ -39,17 +37,17 @@ TEST_YSI_KORDSS_DATA = pd.DataFrame(
 TEST_PICOLOG_DATA = pd.DataFrame(
     [
         {
-            "Unnamed: 0": "2019-01-01T00:00:00-07:00",
+            "": "2019-01-01T00:00:00-07:00",
             "Temperature Ave. (C)": 39,
             "Pressure (Voltage) Ave. (nV)": 10,
         },
         {
-            "Unnamed: 0": "2019-01-01T00:00:02-07:00",
+            "": "2019-01-01T00:00:02-07:00",
             "Temperature Ave. (C)": 40,
             "Pressure (Voltage) Ave. (nV)": 10,
         },
         {
-            "Unnamed: 0": "2019-01-01T00:00:04-07:00",
+            "": "2019-01-01T00:00:04-07:00",
             "Temperature Ave. (C)": 40,
             "Pressure (Voltage) Ave. (nV)": 10,
         },
@@ -116,33 +114,32 @@ TEST_PROCESS_EXPERIMENT_DATA = pd.DataFrame(
 )
 
 
-def create_mock_file_obj(data):
-    mock_file_obj = io.StringIO()
+def create_mock_file_obj(tmpdir, data, file_name):
+    mock_file_obj = tmpdir.join(file_name)
     data.to_csv(mock_file_obj, index=False)
-    mock_file_obj.seek(0)
 
     return mock_file_obj
 
 
 @pytest.fixture
-def mock_picolog_file_obj():
-    return create_mock_file_obj(TEST_PICOLOG_DATA)
+def mock_picolog_file_obj(tmpdir):
+    return create_mock_file_obj(tmpdir, TEST_PICOLOG_DATA, "test_pico_data.csv")
 
 
 @pytest.fixture
-def mock_calibration_file_obj():
-    return create_mock_file_obj(TEST_CALIBRATION_DATA)
+def mock_calibration_file_obj(tmpdir):
+    return create_mock_file_obj(
+        tmpdir, TEST_CALIBRATION_DATA, "test_calibration_data.csv"
+    )
 
 
 class TestReadAndFormatDataFile:
-    def test_formats_ysi_csv_correctly(self):
-        mock_YSI_csv_file_obj = create_mock_file_obj(TEST_YSI_CSV_DATA)
-
-        ysi_data = module.read_ysi_csv_file(mock_YSI_csv_file_obj)
-        formatted_ysi_data = module._apply_parser_configuration(
-            ysi_data, module.FILE_FORMAT_CONFIG[module.DataFileType.YSI_CSV]
+    def test_formats_ysi_csv_correctly(self, tmpdir):
+        mock_YSI_csv_file_obj = create_mock_file_obj(
+            tmpdir, TEST_YSI_CSV_DATA, "test_ysi.csv"
         )
 
+        formatted_ysi_data = module.parse_ysi_classic_file(mock_YSI_csv_file_obj)
         expected_ysi_data = pd.DataFrame(
             [
                 {
@@ -158,20 +155,13 @@ class TestReadAndFormatDataFile:
         pd.testing.assert_frame_equal(formatted_ysi_data, expected_ysi_data)
 
     def test_formats_ysi_kordss_correctly(self, tmpdir):
-        # KorDSS file quirks make doing things in memory difficult,
-        # so resort to just creating a temp file
         mock_YSI_KorDSS_file_obj = tmpdir.join("test_kordss.csv")
-
         mock_YSI_KorDSS_file_obj.write("\n\n\n\n\n")
         TEST_YSI_KORDSS_DATA.to_csv(
             mock_YSI_KorDSS_file_obj, index=False, mode="a", encoding="latin-1"
         )
 
-        ysi_kordss_data = module.read_ysi_kordss_file(mock_YSI_KorDSS_file_obj)
-        formatted_ysi_data = module._apply_parser_configuration(
-            ysi_kordss_data, module.FILE_FORMAT_CONFIG[module.DataFileType.YSI_KORDSS]
-        )
-
+        formatted_ysi_data = module.parse_ysi_kordss_file(mock_YSI_KorDSS_file_obj)
         expected_ysi_data = pd.DataFrame(
             [
                 {
@@ -187,11 +177,7 @@ class TestReadAndFormatDataFile:
         pd.testing.assert_frame_equal(formatted_ysi_data, expected_ysi_data)
 
     def test_formats_picolog_csv_correctly(self, mock_picolog_file_obj):
-        picolog_data = module.read_picolog_file(mock_picolog_file_obj)
-        formatted_picolog_data = module._apply_parser_configuration(
-            picolog_data, module.FILE_FORMAT_CONFIG[module.DataFileType.PICOLOG]
-        )
-
+        formatted_picolog_data = module.parse_picolog_file(mock_picolog_file_obj)
         expected_picolog_data = pd.DataFrame(
             [
                 {
@@ -212,14 +198,9 @@ class TestReadAndFormatDataFile:
         pd.testing.assert_frame_equal(formatted_picolog_data, expected_picolog_data)
 
     def test_formats_calibration_log_correctly(self, mock_calibration_file_obj):
-        calibration_log_data = module.read_calibration_log_file(
+        formatted_calibration_log_data = module.parse_calibration_log_file(
             mock_calibration_file_obj
         )
-        formatted_calibration_log_data = module._apply_parser_configuration(
-            calibration_log_data,
-            module.FILE_FORMAT_CONFIG[module.DataFileType.CALIBRATION_LOG],
-        )
-
         # Nothing is supposed to be renamed or dropped, just datetime formatting
         expected_calibration_log_data = pd.DataFrame(
             [
@@ -252,22 +233,6 @@ class TestReadAndFormatDataFile:
 
 
 class TestOpenAndCombineSensorData:
-    def test_parses_picolog_timestamps_correctly(self, mock_picolog_file_obj):
-        picolog_data = module.open_picolog_file(mock_picolog_file_obj)
-
-        assert len(picolog_data)
-        assert picolog_data.index[0] == pd.to_datetime("2019-01-01 00:00:00")
-
-    def test_parses_calibration_log_timestampes_correctly(
-        self, mock_calibration_file_obj
-    ):
-        calibration_log_data = module.open_calibration_log_file(
-            mock_calibration_file_obj
-        )
-
-        assert len(calibration_log_data)
-        assert calibration_log_data.index[0] == pd.to_datetime("2019-01-01 00:00:00")
-
     def test_interpolates_data_correctly(
         self, mock_calibration_file_obj, mock_picolog_file_obj
     ):
