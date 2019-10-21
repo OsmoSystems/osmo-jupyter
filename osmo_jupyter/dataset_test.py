@@ -156,6 +156,7 @@ class TestReadAndFormatDataFile:
 
     def test_formats_ysi_kordss_correctly(self, tmpdir):
         mock_YSI_KorDSS_file_obj = tmpdir.join("test_kordss.csv")
+        # Real KorDSS file has other contents in this header, but it adds up to 5 lines
         mock_YSI_KorDSS_file_obj.write("\n\n\n\n\n")
         TEST_YSI_KORDSS_DATA.to_csv(
             mock_YSI_KorDSS_file_obj, index=False, mode="a", encoding="latin-1"
