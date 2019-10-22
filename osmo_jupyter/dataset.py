@@ -1,6 +1,5 @@
 import os
 from typing import List, Dict
-from enum import Enum
 
 import pandas as pd
 
@@ -13,18 +12,11 @@ DO_PCT = "DO (%)"
 DO_MGL = "DO (mg/L)"
 
 
-class DataFileType(Enum):
-    YSI_CLASSIC = 0
-    YSI_KORDSS = 1
-    PICOLOG = 2
-    CALIBRATION_LOG = 3
-
-
 def _apply_parser_configuration(
     dataset: pd.DataFrame, parse_config: Dict
 ) -> pd.DataFrame:
     return (
-        dataset.drop(parse_config["drop"], axis=1)
+        dataset.drop(columns=parse_config["drop"])
         .rename(columns=parse_config["rename"])
         .set_index("timestamp")
         .add_prefix(parse_config["prefix"])
