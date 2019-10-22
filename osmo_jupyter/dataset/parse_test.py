@@ -1,3 +1,5 @@
+import pkg_resources
+
 import pandas as pd
 import pytest
 
@@ -124,3 +126,69 @@ def test_parses_calibration_log_correctly(mock_calibration_file_path):
     pd.testing.assert_frame_equal(
         formatted_calibration_log_data, expected_calibration_log_data
     )
+
+
+class TestParseDataCollectionLog:
+    def test_parses_data_collection_log_correctly(self):
+        test_log_file_path = pkg_resources.resource_filename(
+            "osmo_jupyter", "test_fixtures/test_data_collection_log.xlsx"
+        )
+
+        actual_data_collection_log = module.parse_data_collection_log(
+            test_log_file_path
+        )
+
+        expected_data_collection_log = pd.DataFrame(
+            [
+                {
+                    "experiment_names": [
+                        "2019-07-26--19-34-38-Pi2E32-3000_images_attempt_1"
+                    ],
+                    "drive_directory": "2019-07-26 Collect 3000 images (attempt 1)",
+                    "pond": "calibration",
+                    "cosmobot_id": "A",
+                    "start_date": pd.to_datetime("2019-07-26 19:12"),
+                    "end_date": pd.to_datetime("2019-07-28 13:55"),
+                },
+                {
+                    "experiment_names": [
+                        "2019-08-26--23-34-10-PiE5FB-scum_tank_shakedown"
+                    ],
+                    "drive_directory": "2019-08-26 Scum Tank Shakedown",
+                    "pond": "scum tank 1",
+                    "cosmobot_id": "B",
+                    "start_date": pd.to_datetime("2019-08-26 23:35"),
+                    "end_date": pd.to_datetime("2019-08-27 08:15"),
+                },
+            ]
+        )
+
+        pd.testing.assert_frame_equal(
+            actual_data_collection_log, expected_data_collection_log
+        )
+
+    def test_get_attempt_summary_gets_multiple_buckets(self):
+        test_attempt_data = pd.Series(
+            {
+                "S3 Bucket(s)": "1\n2\n3",
+                "Drive Directory": "Experiment",
+                "Cosmobot ID": "Z",
+                "Start Date/Time": pd.to_datetime("2019"),
+                "End Date/Time": pd.to_datetime("2020"),
+            }
+        )
+
+        actual_attempt_summary = module._get_attempt_summary(test_attempt_data)
+
+        expected_attempt_summary = pd.Series(
+            {
+                "experiment_names": ["1", "2", "3"],
+                "drive_directory": "Experiment",
+                "pond": "calibration",
+                "cosmobot_id": "Z",
+                "start_date": pd.to_datetime("2019"),
+                "end_date": pd.to_datetime("2020"),
+            }
+        )
+
+        pd.testing.assert_series_equal(actual_attempt_summary, expected_attempt_summary)

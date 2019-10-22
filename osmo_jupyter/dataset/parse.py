@@ -122,3 +122,55 @@ def parse_calibration_log_file(filepath: str) -> pd.DataFrame:
     )
 
     return _apply_parser_configuration(raw_data, parse_config)
+
+
+def _get_attempt_summary(attempt: pd.Series) -> pd.Series:
+    experiment_names = attempt["S3 Bucket(s)"].split("\n")
+    pond = attempt["Scum Tank"] if "Scum Tank" in attempt.index else "calibration"
+    return pd.Series(
+        {
+            "experiment_names": experiment_names,
+            "drive_directory": attempt["Drive Directory"],
+            "pond": pond.lower(),
+            "cosmobot_id": attempt["Cosmobot ID"],
+            "start_date": attempt["Start Date/Time"],
+            "end_date": attempt["End Date/Time"],
+        }
+    )
+
+
+def parse_data_collection_log(filepath: str) -> pd.DataFrame:
+    """ Open and summarize a data collection log .xlsx file containing sheets named
+        "Calibration Environment" and "Scum tank".
+
+        Args:
+            filepath: Filepath to a data collection log .xlsx file
+        Returns:
+            Pandas DataFrame with one row per attempt with select columns from the source data.
+            Columns include:
+                experiment_names: S3 Bucket experiment names
+                drive_directory: Google Drive folder name where collected sensor data lives
+                pond: The environment data was collected in, e.g. calibration, scum tank 1
+                cosmobot_id: Alpha identifier of the Cosmobot used in the experiment
+                start_date: Starting timestamp of data collection
+                end_date: Ending timestamp of data collection
+    """
+    calibration_log = pd.read_excel(
+        filepath,
+        "Calibration Environment",
+        parse_dates=["Start Date/Time", "End Date/Time"],
+    )
+    scum_log = pd.read_excel(
+        filepath, "Scum tank", parse_dates=["Start Date/Time", "End Date/Time"]
+    )
+
+    return (
+        pd.concat(
+            [
+                calibration_log.apply(_get_attempt_summary, axis=1),
+                scum_log.apply(_get_attempt_summary, axis=1),
+            ]
+        )
+        .sort_values("start_date")
+        .reset_index(drop=True)
+    )
