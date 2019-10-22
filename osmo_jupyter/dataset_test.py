@@ -114,28 +114,28 @@ TEST_PROCESS_EXPERIMENT_DATA = pd.DataFrame(
 )
 
 
-def create_mock_file_obj(tmpdir, data, file_name):
-    mock_file_obj = tmpdir.join(file_name)
-    data.to_csv(mock_file_obj, index=False)
+def create_mock_file_path(tmpdir, data, file_name):
+    mock_file_path = tmpdir.join(file_name)
+    data.to_csv(mock_file_path, index=False)
 
-    return mock_file_obj
-
-
-@pytest.fixture
-def mock_picolog_file_obj(tmpdir):
-    return create_mock_file_obj(tmpdir, TEST_PICOLOG_DATA, "test_pico_data.csv")
+    return mock_file_path
 
 
 @pytest.fixture
-def mock_calibration_file_obj(tmpdir):
-    return create_mock_file_obj(
+def mock_picolog_file_path(tmpdir):
+    return create_mock_file_path(tmpdir, TEST_PICOLOG_DATA, "test_pico_data.csv")
+
+
+@pytest.fixture
+def mock_calibration_file_path(tmpdir):
+    return create_mock_file_path(
         tmpdir, TEST_CALIBRATION_DATA, "test_calibration_data.csv"
     )
 
 
-class TestReadAndFormatDataFile:
+class TestDataFileParsers:
     def test_formats_ysi_csv_correctly(self, tmpdir):
-        mock_YSI_csv_file_obj = create_mock_file_obj(
+        mock_YSI_csv_file_obj = create_mock_file_path(
             tmpdir, TEST_YSI_CSV_DATA, "test_ysi.csv"
         )
 
@@ -155,14 +155,14 @@ class TestReadAndFormatDataFile:
         pd.testing.assert_frame_equal(formatted_ysi_data, expected_ysi_data)
 
     def test_formats_ysi_kordss_correctly(self, tmpdir):
-        mock_YSI_KorDSS_file_obj = tmpdir.join("test_kordss.csv")
+        mock_YSI_KorDSS_file_path = tmpdir.join("test_kordss.csv")
         # Real KorDSS file has other contents in this header, but it adds up to 5 lines
-        mock_YSI_KorDSS_file_obj.write("\n\n\n\n\n")
+        mock_YSI_KorDSS_file_path.write("\n\n\n\n\n")
         TEST_YSI_KORDSS_DATA.to_csv(
-            mock_YSI_KorDSS_file_obj, index=False, mode="a", encoding="latin-1"
+            mock_YSI_KorDSS_file_path, index=False, mode="a", encoding="latin-1"
         )
 
-        formatted_ysi_data = module.parse_ysi_kordss_file(mock_YSI_KorDSS_file_obj)
+        formatted_ysi_data = module.parse_ysi_kordss_file(mock_YSI_KorDSS_file_path)
         expected_ysi_data = pd.DataFrame(
             [
                 {
@@ -177,8 +177,8 @@ class TestReadAndFormatDataFile:
 
         pd.testing.assert_frame_equal(formatted_ysi_data, expected_ysi_data)
 
-    def test_formats_picolog_csv_correctly(self, mock_picolog_file_obj):
-        formatted_picolog_data = module.parse_picolog_file(mock_picolog_file_obj)
+    def test_formats_picolog_csv_correctly(self, mock_picolog_file_path):
+        formatted_picolog_data = module.parse_picolog_file(mock_picolog_file_path)
         expected_picolog_data = pd.DataFrame(
             [
                 {
@@ -198,9 +198,9 @@ class TestReadAndFormatDataFile:
 
         pd.testing.assert_frame_equal(formatted_picolog_data, expected_picolog_data)
 
-    def test_formats_calibration_log_correctly(self, mock_calibration_file_obj):
+    def test_formats_calibration_log_correctly(self, mock_calibration_file_path):
         formatted_calibration_log_data = module.parse_calibration_log_file(
-            mock_calibration_file_obj
+            mock_calibration_file_path
         )
         # Nothing is supposed to be renamed or dropped, just datetime formatting
         expected_calibration_log_data = pd.DataFrame(
@@ -235,11 +235,11 @@ class TestReadAndFormatDataFile:
 
 class TestOpenAndCombineSensorData:
     def test_interpolates_data_correctly(
-        self, mock_calibration_file_obj, mock_picolog_file_obj
+        self, mock_calibration_file_path, mock_picolog_file_path
     ):
         combined_data = module.open_and_combine_picolog_and_calibration_data(
-            calibration_log_filepaths=[mock_calibration_file_obj],
-            picolog_log_filepaths=[mock_picolog_file_obj],
+            calibration_log_filepaths=[mock_calibration_file_path],
+            picolog_log_filepaths=[mock_picolog_file_path],
         ).reset_index()  # move timestamp index to a column
 
         expected_interpolation = pd.DataFrame(
@@ -491,7 +491,7 @@ class TestGetAllExperimentImages:
 
 
 class TestFilterEquilibratedImages:
-    def test_returns_only_equilibrated_images(self, mock_calibration_file_obj):
+    def test_returns_only_equilibrated_images(self, mock_calibration_file_path):
         test_roi_data = pd.DataFrame(
             [
                 {"timestamp": pd.to_datetime("2019-01-01"), "image": "image-0.jpeg"},
@@ -519,7 +519,7 @@ class TestFilterEquilibratedImages:
 
 class TestOpenAndCombineSourceData:
     def test_filters_all_data_to_equilibrated_states(
-        self, mocker, mock_calibration_file_obj, mock_picolog_file_obj
+        self, mocker, mock_calibration_file_path, mock_picolog_file_path
     ):
         test_files = ["image-0.jpeg", "image-1.jpeg", "experiment.log"]
         mocker.patch("os.listdir", return_value=test_files)
@@ -539,8 +539,8 @@ class TestOpenAndCombineSourceData:
         equilibrated_experiment_data = module.open_and_combine_and_filter_source_data(
             local_sync_directory="",
             experiment_names=[experiment_name],
-            calibration_log_filepaths=[mock_calibration_file_obj],
-            picolog_log_filepaths=[mock_picolog_file_obj],
+            calibration_log_filepaths=[mock_calibration_file_path],
+            picolog_log_filepaths=[mock_picolog_file_path],
             process_experiment_result_filepaths=[],
         )
 
