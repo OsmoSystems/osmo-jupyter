@@ -148,7 +148,7 @@ def parse_data_collection_log(filepath: str) -> pd.DataFrame:
         Returns:
             Pandas DataFrame with one row per attempt with select columns from the source data.
             Columns include:
-                experiment_names: S3 Bucket experiment names
+                experiment_names: A list of S3 Bucket experiment names
                 drive_directory: Google Drive folder name where collected sensor data lives
                 pond: The environment data was collected in, e.g. calibration, scum tank 1
                 cosmobot_id: Alpha identifier of the Cosmobot used in the experiment
