@@ -1,281 +1,78 @@
+import pkg_resources
+
 import pandas as pd
 import pytest
 
-import osmo_jupyter.dataset as module
-
-TEST_YSI_CSV_DATA = pd.DataFrame(
-    [
-        {
-            "Timestamp": "2019-01-01 00:00:00",
-            "Barometer (mmHg)": 750,
-            "Dissolved Oxygen (%)": 19,
-            "Temperature (C)": 24.7,
-            "Unit ID": "unit ID",
-            "Comment": None,
-            "Site": None,
-            "Folder": None,
-        }
-    ]
-)
-
-TEST_YSI_KORDSS_DATA = pd.DataFrame(
-    [
-        {
-            "DATE": "2019-01-01",
-            "TIME": "00:00:00",
-            "Barometer (mmHg)": 750,
-            "ODO (% Sat)": 60,
-            "ODO (mg/L)": 6,
-            "Temp (°C)": 24.7,
-            "SITE": None,
-            "DATA ID": None,
-            "ODO (% Local)": 60,
-        }
-    ]
-)
-
-TEST_PICOLOG_DATA = pd.DataFrame(
-    [
-        {
-            "": "2019-01-01T00:00:00-07:00",
-            "Temperature Ave. (C)": 39,
-            "Pressure (Voltage) Ave. (nV)": 10,
-        },
-        {
-            "": "2019-01-01T00:00:02-07:00",
-            "Temperature Ave. (C)": 40,
-            "Pressure (Voltage) Ave. (nV)": 10,
-        },
-        {
-            "": "2019-01-01T00:00:04-07:00",
-            "Temperature Ave. (C)": 40,
-            "Pressure (Voltage) Ave. (nV)": 10,
-        },
-    ]
-)
-
-TEST_CALIBRATION_DATA = pd.DataFrame(
-    [
-        {
-            "timestamp": "2019-01-01 00:00:00.1",
-            "equilibration status": "waiting",
-            "setpoint temperature": 40,
-        },
-        {
-            "timestamp": "2019-01-01 00:00:01.1",
-            "equilibration status": "equilibrated",
-            "setpoint temperature": 40,
-        },
-        {
-            "timestamp": "2019-01-01 00:00:03.1",
-            "equilibration status": "equilibrated",
-            "setpoint temperature": 40,
-        },
-        {
-            "timestamp": "2019-01-01 00:00:04.1",
-            "equilibration status": "waiting",
-            "setpoint temperature": 40,
-        },
-    ]
-)
-
-
-TEST_PROCESS_EXPERIMENT_DATA = pd.DataFrame(
-    [
-        {
-            "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
-            "image": "image-0.jpeg",
-            "ROI": "ROI 0",
-            "r_msorm": 0.5,
-            "g_msorm": 0.4,
-        },
-        {
-            "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
-            "image": "image-0.jpeg",
-            "ROI": "ROI 1",
-            "r_msorm": 0.4,
-            "g_msorm": 0.5,
-        },
-        {
-            "timestamp": pd.to_datetime("2019-01-01 00:00:02"),
-            "image": "image-1.jpeg",
-            "ROI": "ROI 0",
-            "r_msorm": 0.3,
-            "g_msorm": 0.6,
-        },
-        {
-            "timestamp": pd.to_datetime("2019-01-01 00:00:02"),
-            "image": "image-1.jpeg",
-            "ROI": "ROI 1",
-            "r_msorm": 0.6,
-            "g_msorm": 0.3,
-        },
-    ]
-)
-
-
-def create_mock_file_path(tmpdir, data, file_name):
-    mock_file_path = tmpdir.join(file_name)
-    data.to_csv(mock_file_path, index=False)
-
-    return mock_file_path
+import osmo_jupyter.dataset.combine as module
 
 
 @pytest.fixture
-def mock_picolog_file_path(tmpdir):
-    return create_mock_file_path(tmpdir, TEST_PICOLOG_DATA, "test_pico_data.csv")
+def test_picolog_file_path():
+    return pkg_resources.resource_filename(
+        "osmo_jupyter", "test_fixtures/test_picolog.csv"
+    )
 
 
 @pytest.fixture
-def mock_calibration_file_path(tmpdir):
-    return create_mock_file_path(
-        tmpdir, TEST_CALIBRATION_DATA, "test_calibration_data.csv"
-    )
-
-
-def test_parses_ysi_csv_correctly(tmpdir):
-    mock_YSI_csv_file_obj = create_mock_file_path(
-        tmpdir, TEST_YSI_CSV_DATA, "test_ysi.csv"
-    )
-
-    formatted_ysi_data = module.parse_ysi_classic_file(mock_YSI_csv_file_obj)
-    expected_ysi_data = pd.DataFrame(
-        [
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
-                "YSI barometric pressure (mmHg)": 750,
-                "YSI DO (%)": 19,
-                "YSI temperature (C)": 24.7,
-                "YSI unit ID": "unit ID",
-            }
-        ]
-    ).set_index("timestamp")
-
-    pd.testing.assert_frame_equal(formatted_ysi_data, expected_ysi_data)
-
-
-def test_parses_ysi_kordss_correctly(tmpdir):
-    mock_YSI_KorDSS_file_path = tmpdir.join("test_kordss.csv")
-    # Real KorDSS file has other contents in this header, but it adds up to 5 lines
-    mock_YSI_KorDSS_file_path.write("\n\n\n\n\n")
-    TEST_YSI_KORDSS_DATA.to_csv(
-        mock_YSI_KorDSS_file_path, index=False, mode="a", encoding="latin-1"
-    )
-
-    formatted_ysi_data = module.parse_ysi_kordss_file(mock_YSI_KorDSS_file_path)
-    expected_ysi_data = pd.DataFrame(
-        [
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
-                "YSI barometric pressure (mmHg)": 750,
-                "YSI DO (%)": 60,
-                "YSI DO (mg/L)": 6,
-                "YSI temperature (C)": 24.7,
-            }
-        ]
-    ).set_index("timestamp")
-
-    pd.testing.assert_frame_equal(formatted_ysi_data, expected_ysi_data)
-
-
-def test_parses_picolog_csv_correctly(mock_picolog_file_path):
-    formatted_picolog_data = module.parse_picolog_file(mock_picolog_file_path)
-    expected_picolog_data = pd.DataFrame(
-        [
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
-                "PicoLog temperature (C)": 39,
-            },
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:02"),
-                "PicoLog temperature (C)": 40,
-            },
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:04"),
-                "PicoLog temperature (C)": 40,
-            },
-        ]
-    ).set_index("timestamp")
-
-    pd.testing.assert_frame_equal(formatted_picolog_data, expected_picolog_data)
-
-
-def test_parses_calibration_log_correctly(mock_calibration_file_path):
-    formatted_calibration_log_data = module.parse_calibration_log_file(
-        mock_calibration_file_path
-    )
-    # Nothing is supposed to be renamed or dropped, just datetime formatting
-    expected_calibration_log_data = pd.DataFrame(
-        [
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
-                "equilibration status": "waiting",
-                "setpoint temperature": 40,
-            },
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:01"),
-                "equilibration status": "equilibrated",
-                "setpoint temperature": 40,
-            },
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:03"),
-                "equilibration status": "equilibrated",
-                "setpoint temperature": 40,
-            },
-            {
-                "timestamp": pd.to_datetime("2019-01-01 00:00:04"),
-                "equilibration status": "waiting",
-                "setpoint temperature": 40,
-            },
-        ]
-    ).set_index("timestamp")
-
-    pd.testing.assert_frame_equal(
-        formatted_calibration_log_data, expected_calibration_log_data
+def test_calibration_file_path():
+    return pkg_resources.resource_filename(
+        "osmo_jupyter", "test_fixtures/test_calibration_log.csv"
     )
 
 
 class TestOpenAndCombineSensorData:
     def test_interpolates_data_correctly(
-        self, mock_calibration_file_path, mock_picolog_file_path
+        self, test_calibration_file_path, test_picolog_file_path
     ):
         combined_data = module.open_and_combine_picolog_and_calibration_data(
-            calibration_log_filepaths=[mock_calibration_file_path],
-            picolog_log_filepaths=[mock_picolog_file_path],
+            calibration_log_filepaths=[test_calibration_file_path],
+            picolog_log_filepaths=[test_picolog_file_path],
         ).reset_index()  # move timestamp index to a column
+
+        # calibration log has 23 columns, but we only need to check that picolog data is interpolated correctly
+        subset_combined_data_to_compare = combined_data[
+            [
+                "timestamp",
+                "equilibration status",
+                "setpoint temperature (C)",
+                "PicoLog temperature (C)",
+            ]
+        ]
 
         expected_interpolation = pd.DataFrame(
             [
                 {
                     "timestamp": "2019-01-01 00:00:00",
                     "equilibration status": "waiting",
-                    "setpoint temperature": 40,
+                    "setpoint temperature (C)": 40,
                     "PicoLog temperature (C)": 39,
                 },
                 {
                     "timestamp": "2019-01-01 00:00:01",
                     "equilibration status": "equilibrated",
-                    "setpoint temperature": 40,
+                    "setpoint temperature (C)": 40,
                     "PicoLog temperature (C)": 39.5,
                 },
                 {
                     "timestamp": "2019-01-01 00:00:03",
                     "equilibration status": "equilibrated",
-                    "setpoint temperature": 40,
+                    "setpoint temperature (C)": 40,
                     "PicoLog temperature (C)": 40,
                 },
                 {
                     "timestamp": "2019-01-01 00:00:04",
                     "equilibration status": "waiting",
-                    "setpoint temperature": 40,
+                    "setpoint temperature (C)": 40,
                     "PicoLog temperature (C)": 40,
                 },
             ]
         ).astype(
-            combined_data.dtypes
+            subset_combined_data_to_compare.dtypes
         )  # coerce datatypes to match
 
-        pd.testing.assert_frame_equal(combined_data, expected_interpolation)
+        pd.testing.assert_frame_equal(
+            subset_combined_data_to_compare, expected_interpolation
+        )
 
 
 class TestGetEquilibrationBoundaries:
@@ -428,9 +225,15 @@ class TestGetEquilibrationBoundaries:
 
 class TestPivotProcessExperimentResults:
     def test_combines_image_rows_by_ROI(self):
+        test_process_experiment_file_path = pkg_resources.resource_filename(
+            "osmo_jupyter", "test_fixtures/test_process_experiment_result.csv"
+        )
+        test_process_experiment_data = pd.read_csv(
+            test_process_experiment_file_path, parse_dates=["timestamp"]
+        )
         pivot_results = module.pivot_process_experiment_results_on_ROI(
-            experiment_df=TEST_PROCESS_EXPERIMENT_DATA,
-            ROI_names=list(TEST_PROCESS_EXPERIMENT_DATA["ROI"].unique()),
+            experiment_df=test_process_experiment_data,
+            ROI_names=list(test_process_experiment_data["ROI"].unique()),
             msorm_types=["r_msorm", "g_msorm"],
         )
 
@@ -493,7 +296,7 @@ class TestGetAllExperimentImages:
 
 
 class TestFilterEquilibratedImages:
-    def test_returns_only_equilibrated_images(self, mock_calibration_file_path):
+    def test_returns_only_equilibrated_images(self, test_calibration_file_path):
         test_roi_data = pd.DataFrame(
             [
                 {"timestamp": pd.to_datetime("2019-01-01"), "image": "image-0.jpeg"},
@@ -521,51 +324,48 @@ class TestFilterEquilibratedImages:
 
 class TestOpenAndCombineSourceData:
     def test_filters_all_data_to_equilibrated_states(
-        self, mocker, mock_calibration_file_path, mock_picolog_file_path
+        self, mocker, test_calibration_file_path, test_picolog_file_path
     ):
+        test_process_experiment_file_path = pkg_resources.resource_filename(
+            "osmo_jupyter", "test_fixtures/test_process_experiment_result.csv"
+        )
         test_files = ["image-0.jpeg", "image-1.jpeg", "experiment.log"]
         mocker.patch("os.listdir", return_value=test_files)
-
-        mocker.patch.object(
-            module,
-            "open_and_combine_process_experiment_results",
-            return_value=module.pivot_process_experiment_results_on_ROI(
-                experiment_df=TEST_PROCESS_EXPERIMENT_DATA,
-                ROI_names=list(TEST_PROCESS_EXPERIMENT_DATA["ROI"].unique()),
-                msorm_types=["r_msorm", "g_msorm"],
-            ),
-        )
 
         experiment_name = "test"
 
         equilibrated_experiment_data = module.open_and_combine_and_filter_source_data(
             local_sync_directory="",
             experiment_names=[experiment_name],
-            calibration_log_filepaths=[mock_calibration_file_path],
-            picolog_log_filepaths=[mock_picolog_file_path],
-            process_experiment_result_filepaths=[],
+            calibration_log_filepaths=[test_calibration_file_path],
+            picolog_log_filepaths=[test_picolog_file_path],
+            process_experiment_result_filepaths=[test_process_experiment_file_path],
+            msorm_types=["r_msorm", "g_msorm"],
         )
 
-        expected_experiment_data = (
-            pd.DataFrame(
-                [
-                    {
-                        "timestamp": pd.to_datetime("2019-01-01 00:00:02"),
-                        "ROI 0 r_msorm": 0.3,
-                        "ROI 1 r_msorm": 0.6,
-                        "ROI 0 g_msorm": 0.6,
-                        "ROI 1 g_msorm": 0.3,
-                        "image": "image-1.jpeg",
-                        "PicoLog temperature (C)": 40,
-                        "setpoint temperature": 40,
-                        "experiment": experiment_name,
-                    }
-                ]
-            )
-            .set_index("image")
-            .astype(equilibrated_experiment_data.dtypes)
-        )
+        expected_experiment_data = pd.DataFrame(
+            [
+                {
+                    "timestamp": pd.to_datetime("2019-01-01 00:00:02"),
+                    "ROI 0 r_msorm": 0.3,
+                    "ROI 1 r_msorm": 0.6,
+                    "ROI 0 g_msorm": 0.6,
+                    "ROI 1 g_msorm": 0.3,
+                    "image": "image-1.jpeg",
+                    "PicoLog temperature (C)": 40,
+                    "setpoint temperature (C)": 40,
+                    "experiment": experiment_name,
+                }
+            ]
+        ).set_index("image")
+
+        # Trim extra calibration log columns
+        subset_experiment_data_to_compare = equilibrated_experiment_data[
+            expected_experiment_data.columns
+        ]
 
         pd.testing.assert_frame_equal(
-            equilibrated_experiment_data, expected_experiment_data
+            subset_experiment_data_to_compare,
+            expected_experiment_data,
+            check_dtype=False,
         )

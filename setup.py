@@ -20,6 +20,8 @@ setup(
         "requests",
         "scipy",
         "sqlalchemy",
+        # xlrd is required for pandas to parse excel files
+        "xlrd",
     ],
     include_package_data=True,
 )
