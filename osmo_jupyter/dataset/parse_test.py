@@ -119,6 +119,7 @@ class TestParseDataCollectionLog:
                     "drive_directory": "2019-07-26 Collect 3000 images (attempt 1)",
                     "pond": "calibration",
                     "cosmobot_id": "A",
+                    "cartridge_id": "C00003",
                     "start_date": pd.to_datetime("2019-07-26 19:12"),
                     "end_date": pd.to_datetime("2019-07-28 13:55"),
                 },
@@ -129,6 +130,7 @@ class TestParseDataCollectionLog:
                     "drive_directory": "2019-08-26 Scum Tank Shakedown",
                     "pond": "scum tank 1",
                     "cosmobot_id": "B",
+                    "cartridge_id": "C00005",
                     "start_date": pd.to_datetime("2019-08-26 23:35"),
                     "end_date": pd.to_datetime("2019-08-27 08:15"),
                 },
@@ -145,6 +147,7 @@ class TestParseDataCollectionLog:
                 "S3 Bucket(s)": "1\n2\n3",
                 "Drive Directory": "Experiment",
                 "Cosmobot ID": "Z",
+                "Cartridge": "C1",
                 "Start Date/Time": pd.to_datetime("2019"),
                 "End Date/Time": pd.to_datetime("2020"),
             }
@@ -158,6 +161,7 @@ class TestParseDataCollectionLog:
                 "drive_directory": "Experiment",
                 "pond": "calibration",
                 "cosmobot_id": "Z",
+                "cartridge_id": "C1",
                 "start_date": pd.to_datetime("2019"),
                 "end_date": pd.to_datetime("2020"),
             }

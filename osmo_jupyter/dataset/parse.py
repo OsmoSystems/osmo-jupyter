@@ -133,6 +133,7 @@ def _get_attempt_summary(attempt: pd.Series) -> pd.Series:
             "drive_directory": attempt["Drive Directory"],
             "pond": pond.lower(),
             "cosmobot_id": attempt["Cosmobot ID"],
+            "cartridge_id": attempt["Cartridge"],
             "start_date": attempt["Start Date/Time"],
             "end_date": attempt["End Date/Time"],
         }
