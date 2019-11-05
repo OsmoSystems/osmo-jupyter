@@ -24,11 +24,11 @@ def _get_experiment_data_file_paths_for_type(project_directory, file_type):
         os.path.join(subdirectory_path, filename)
         for filename in os.listdir(subdirectory_path)
     ]
-    files_in_subdirectory = [
+    files_in_subdirectory = sorted(
         filepath
         for filepath in files_and_folders_in_subdirectory
         if os.path.isfile(filepath)
-    ]
+    )
 
     return files_in_subdirectory
 
