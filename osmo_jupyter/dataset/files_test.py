@@ -34,22 +34,22 @@ class TestGetExperimentDataFilePathsForType:
     def test_gets_file_from_subdirectory_and_ignores_sub_subdirectories(self, tmp_path):
         _init_data_dir(
             tmp_path,
-            directories_to_include=["ysi_prodo/subdirectory"],
-            files_to_include=["ysi_prodo/somethin"],
+            directories_to_include=["ysi_proodo/subdirectory"],
+            files_to_include=["ysi_proodo/somethin"],
         )
-        actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_prodo")
-        expected = [os.path.join(tmp_path, "data/ysi_prodo/somethin")]
+        actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
+        expected = [os.path.join(tmp_path, "data/ysi_proodo/somethin")]
         assert actual == expected
 
     def test_gets_multiple_files(self, tmp_path):
         relative_filepaths = [
-            os.path.join("ysi_prodo", "somethin"),
-            os.path.join("ysi_prodo", "somethin2"),
+            os.path.join("ysi_proodo", "somethin"),
+            os.path.join("ysi_proodo", "somethin2"),
         ]
 
         _init_data_dir(
             tmp_path,
-            directories_to_include=["ysi_prodo"],
+            directories_to_include=["ysi_proodo"],
             files_to_include=relative_filepaths,
         )
 
@@ -58,14 +58,14 @@ class TestGetExperimentDataFilePathsForType:
             for relative_filepath in relative_filepaths
         ]
 
-        actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_prodo")
+        actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
         assert actual == expected
 
 
 class TestGetExperimentDataFilesByType:
     def test_returns_series_with_full_file_paths_and_empty_keys(self, tmp_path):
         _init_data_dir(
-            tmp_path, ["ysi_prosolo", "ysi_prodo"], ["ysi_prosolo/KorDSS file.csv"]
+            tmp_path, ["ysi_prosolo", "ysi_proodo"], ["ysi_prosolo/KorDSS file.csv"]
         )
 
         expected = pd.Series(
@@ -74,7 +74,7 @@ class TestGetExperimentDataFilesByType:
                 "calibration_log": [],
                 "pico": [],
                 "process_experiment": [],
-                "ysi_prodo": [],
+                "ysi_proodo": [],
                 "ysi_prosolo": [
                     os.path.join(tmp_path, "data", "ysi_prosolo", "KorDSS file.csv")
                 ],
