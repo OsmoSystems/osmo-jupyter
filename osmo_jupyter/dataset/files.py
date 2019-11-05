@@ -6,7 +6,7 @@ FILE_TYPES = [
     "calibration_log",
     "pico",
     "process_experiment",
-    "ysi_prodo",
+    "ysi_proodo",
     "ysi_prosolo",
     "summary_movies",
 ]
