@@ -1,26 +1,27 @@
 import os
+from pathlib import Path
+
 import pandas as pd
 
-import osmo_jupyter.dataset.files as module
+import osmo_jupyter.dataset.source_files as module
 
 
-def _init_data_dir(parent_dir, directories_to_include, files_to_include):
+def _init_data_dir(parent_dir: Path, directories_to_include, files_to_include):
     """set up a data directory with folders and files in it
     Args:
+        parent_dir: Path object that everything's expected to be under
         directories_to_include: iterable of directory names to initialize
         files_to_include: iterable of file names to initialize. If they are in subdirectories,
             the subdirectories should be listed in directories_to_include to be created first
     """
-    data_dir = os.path.join(parent_dir, "data")
-    os.mkdir(data_dir)
+    data_dir = parent_dir / "data"
+    data_dir.mkdir()
 
     for relative_directory_path in directories_to_include:
-        os.makedirs(os.path.join(data_dir, relative_directory_path))
+        (data_dir / relative_directory_path).mkdir(parents=True)
 
     for relative_file_path in files_to_include:
-        with open(os.path.join(data_dir, relative_file_path), "w"):
-            # Just opening the file is enough to create it.
-            pass
+        (data_dir / relative_file_path).touch()
 
 
 class TestGetExperimentDataFilePathsForType:
@@ -35,16 +36,16 @@ class TestGetExperimentDataFilePathsForType:
         _init_data_dir(
             tmp_path,
             directories_to_include=["ysi_proodo/subdirectory"],
-            files_to_include=["ysi_proodo/somethin"],
+            files_to_include=["ysi_proodo/somethin.csv"],
         )
         actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
-        expected = [os.path.join(tmp_path, "data/ysi_proodo/somethin")]
+        expected = [tmp_path / "data/ysi_proodo/somethin.csv"]
         assert actual == expected
 
     def test_gets_multiple_files(self, tmp_path):
         relative_filepaths = [
-            os.path.join("ysi_proodo", "somethin"),
-            os.path.join("ysi_proodo", "somethin2"),
+            os.path.join("ysi_proodo", "somethin.csv"),
+            os.path.join("ysi_proodo", "somethin2.csv"),
         ]
 
         _init_data_dir(
@@ -54,7 +55,7 @@ class TestGetExperimentDataFilePathsForType:
         )
 
         expected = [
-            os.path.join(tmp_path, "data", relative_filepath)
+            tmp_path / "data" / relative_filepath
             for relative_filepath in relative_filepaths
         ]
 
@@ -75,9 +76,7 @@ class TestGetExperimentDataFilesByType:
                 "pico": [],
                 "process_experiment": [],
                 "ysi_proodo": [],
-                "ysi_prosolo": [
-                    os.path.join(tmp_path, "data", "ysi_prosolo", "KorDSS file.csv")
-                ],
+                "ysi_prosolo": [tmp_path / "data/ysi_prosolo/KorDSS file.csv"],
                 "summary_movies": [],
             }
         )

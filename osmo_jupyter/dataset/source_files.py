@@ -1,7 +1,17 @@
-import os
+from pathlib import Path
+
 import pandas as pd
 
-FILE_TYPES = [
+"""
+In our Google Drive folder structure, each data collection event has a top-level folder. The structured data files
+are all in a /data folder underneath that, organized in subfolders by data type.
+The /data/setpoints folder will have all of the setpoints files, PicoLog files are under /data/pico, etc.
+Official docs:
+https://docs.google.com/document/d/1ri0LNyxWqtZ5g05T7o2pd_VQp3-ndKRVRT1TjiwnnZY/edit#heading=h.hx6dx98ojbtg
+"""
+DATA_DIRECTORY_NAME = "data"
+
+FILE_TYPE_SUBFOLDERS = [
     "setpoints",
     "calibration_log",
     "pico",
@@ -11,23 +21,15 @@ FILE_TYPES = [
     "summary_movies",
 ]
 
-DATA_DIRECTORY_NAME = "data"
-
 
 def _get_experiment_data_file_paths_for_type(project_directory, file_type):
-    subdirectory_path = os.path.join(project_directory, DATA_DIRECTORY_NAME, file_type)
+    subdirectory_path = Path(project_directory) / DATA_DIRECTORY_NAME / file_type
 
-    if not os.path.exists(subdirectory_path):
+    if not subdirectory_path.exists():
         return []
 
-    files_and_folders_in_subdirectory = [
-        os.path.join(subdirectory_path, filename)
-        for filename in os.listdir(subdirectory_path)
-    ]
     files_in_subdirectory = sorted(
-        filepath
-        for filepath in files_and_folders_in_subdirectory
-        if os.path.isfile(filepath)
+        filepath for filepath in subdirectory_path.iterdir() if filepath.is_file()
     )
 
     return files_in_subdirectory
@@ -41,7 +43,7 @@ def get_experiment_data_files_by_type(project_directory):
         project_directory: Google Drive experiment directory containing all of
             the data files for this data collection attempt
     Returns:
-        pandas Series, indexed by file type and containing lists of filenames.
+        pandas Series, indexed by file type and containing lists of filenames as Path objects.
     """
 
     return pd.Series(
@@ -49,6 +51,6 @@ def get_experiment_data_files_by_type(project_directory):
             file_type: _get_experiment_data_file_paths_for_type(
                 project_directory, file_type
             )
-            for file_type in FILE_TYPES
+            for file_type in FILE_TYPE_SUBFOLDERS
         }
     )
