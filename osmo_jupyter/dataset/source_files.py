@@ -7,7 +7,7 @@ In our Google Drive folder structure, each data collection event has a top-level
 are all in a /data folder underneath that, organized in subfolders by data type.
 The /data/setpoints folder will have all of the setpoints files, PicoLog files are under /data/pico, etc.
 
-Note that based on the nature of the data collection, some data types may not be present in a particular folder. 
+Note that based on the nature of the data collection, some data types may not be present in a particular folder.
 
 Example Google Drive folder:
 /data/Google Drive/Technical/Experiments/2019-08-23 Sweeps Attempt 11/
