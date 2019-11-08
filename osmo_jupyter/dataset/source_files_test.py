@@ -103,3 +103,33 @@ class TestGetExperimentDataFilesByType:
         pd.testing.assert_series_equal(
             module.get_experiment_data_files_by_type(tmp_path), expected
         )
+
+
+class TestGetAllExperimentImages:
+    def test_returns_only_image_files(self, mocker):
+        image_file_name = "image-0.jpeg"
+        experiment_name = "test"
+
+        mocker.patch("os.listdir", return_value=[image_file_name, "experiment.log"])
+
+        experiment_images = module.get_all_experiment_images(
+            local_sync_directory="", experiment_names=[experiment_name]
+        )
+
+        expected_images = pd.DataFrame(
+            [{"experiment": experiment_name, "image": image_file_name}]
+        )
+
+        pd.testing.assert_frame_equal(experiment_images, expected_images)
+
+    def test_has_correct_dtype_when_no_images_found(self, mocker):
+        mocker.patch("os.listdir", return_value=[])
+
+        experiment_images = module.get_all_experiment_images(
+            local_sync_directory="", experiment_names=["test"]
+        )
+
+        pd.testing.assert_frame_equal(
+            experiment_images,
+            pd.DataFrame(columns=["experiment", "image"], dtype="object"),
+        )

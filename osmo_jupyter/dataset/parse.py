@@ -22,8 +22,8 @@ def _apply_parser_configuration(
     )
 
 
-def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
-    """ Open and format a YSI KorDSS formatted csv file, with standardized datetime parsing
+def parse_ysi_prosolo_file(filepath: str) -> pd.DataFrame:
+    """ Open and format a YSI KorDSS/ProSolo formatted csv file, with standardized datetime parsing
         and cleaned up columns.
 
         Args:
@@ -49,8 +49,8 @@ def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
     return _apply_parser_configuration(raw_data, parse_config)
 
 
-def parse_ysi_classic_file(filepath: str) -> pd.DataFrame:
-    """ Open and format a YSI "classic" csv file, with standardized datetime parsing
+def parse_ysi_proodo_file(filepath: str) -> pd.DataFrame:
+    """ Open and format a YSI "classic"/ProODO csv file, with standardized datetime parsing
         and cleaned up columns.
 
         Args:

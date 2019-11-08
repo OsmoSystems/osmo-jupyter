@@ -10,7 +10,7 @@ def test_parses_ysi_csv_correctly(tmpdir):
         "osmo_jupyter", "test_fixtures/test_ysi_classic.csv"
     )
 
-    formatted_ysi_data = module.parse_ysi_classic_file(test_ysi_classic_file_path)
+    formatted_ysi_data = module.parse_ysi_proodo_file(test_ysi_classic_file_path)
     expected_ysi_data = pd.DataFrame(
         [
             {
@@ -31,7 +31,7 @@ def test_parses_ysi_kordss_correctly(tmpdir):
         "osmo_jupyter", "test_fixtures/test_ysi_kordss.csv"
     )
 
-    formatted_ysi_data = module.parse_ysi_kordss_file(test_ysi_kordss_file_path)
+    formatted_ysi_data = module.parse_ysi_prosolo_file(test_ysi_kordss_file_path)
     expected_ysi_data = pd.DataFrame(
         [
             {
