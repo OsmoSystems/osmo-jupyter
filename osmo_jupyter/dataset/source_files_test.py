@@ -62,6 +62,23 @@ class TestGetExperimentDataFilePathsForType:
         actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
         assert actual == expected
 
+    def test_ignores_unwanted_filetypes(self, tmp_path):
+        relative_filepaths = [
+            os.path.join("ysi_proodo", "somethin.csv"),
+            os.path.join("ysi_proodo", "somethin2.xlsx"),
+        ]
+
+        _init_data_dir(
+            tmp_path,
+            directories_to_include=["ysi_proodo"],
+            files_to_include=relative_filepaths,
+        )
+
+        expected = [tmp_path / "data" / relative_filepaths[0]]
+
+        actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
+        assert actual == expected
+
 
 class TestGetExperimentDataFilesByType:
     def test_returns_series_with_full_file_paths_and_empty_keys(self, tmp_path):

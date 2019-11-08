@@ -39,6 +39,12 @@ FILE_TYPE_SUBFOLDERS = [
     "summary_movies",
 ]
 
+VALID_FILETYPES = [".csv", ".mp4", ".gif"]
+
+
+def _check_filepath_is_valid(filepath):
+    return filepath.is_file() and filepath.suffix in VALID_FILETYPES
+
 
 def _get_experiment_data_file_paths_for_type(project_directory, file_type):
     subdirectory_path = Path(project_directory) / DATA_DIRECTORY_NAME / file_type
@@ -47,7 +53,9 @@ def _get_experiment_data_file_paths_for_type(project_directory, file_type):
         return []
 
     files_in_subdirectory = sorted(
-        filepath for filepath in subdirectory_path.iterdir() if filepath.is_file()
+        filepath
+        for filepath in subdirectory_path.iterdir()
+        if _check_filepath_is_valid(filepath)
     )
 
     return files_in_subdirectory
