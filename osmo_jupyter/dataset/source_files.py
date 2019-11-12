@@ -1,8 +1,11 @@
-import os
 from pathlib import Path
 from typing import List
 
+import boto
 import pandas as pd
+
+CAMERA_SENSOR_EXPERIMENTS_BUCKET_NAME = "camera-sensor-experiments"
+
 
 """
 In our Google Drive folder structure, each data collection event has a top-level folder. The structured data files
@@ -84,9 +87,7 @@ def get_experiment_data_files_by_type(project_directory):
     )
 
 
-def get_all_experiment_image_filenames(
-    local_sync_directory: str, experiment_names: List[str]
-) -> pd.DataFrame:
+def get_all_experiment_image_filenames(experiment_names: List[str]) -> pd.DataFrame:
     """
         Get a DataFrame of all image files across multiple experiment data directories.
 
@@ -100,9 +101,7 @@ def get_all_experiment_image_filenames(
         [
             {"experiment_name": experiment_name, "image_filename": image_filename}
             for experiment_name in experiment_names
-            for image_filename in os.listdir(
-                os.path.join(local_sync_directory, experiment_name)
-            )
+            for image_filename in _get_filenames_from_s3(experiment_name)
             if image_filename.endswith(".jpeg")  # Filter out experiment log files
         ],
         # Ensure correct dtype and column names when no images are found
@@ -110,4 +109,40 @@ def get_all_experiment_image_filenames(
         dtype="object",
     )
 
+    # Filter out experiment log files
     return all_images
+
+
+# COPY PASTA - from cosmobot-process-experiment
+def _get_filenames_from_s3(experiment_directory: str) -> List[str]:
+    s3_prefix = f"{experiment_directory}/"
+    all_keys = list_camera_sensor_experiments_s3_bucket_contents(s3_prefix)
+    prefix_length = len(s3_prefix)
+    filenames = [key[prefix_length:] for key in all_keys]
+    return filenames
+
+
+# COPY PASTA - modified from cosmobot-process-experiment
+# removed S3 credentials - must be present in the local env to work
+def list_camera_sensor_experiments_s3_bucket_contents(
+    directory_name: str = ""
+) -> List[str]:
+    """ Get a list of all of the files in a logical directory off s3, within the camera sensor experiments bucket.
+    Arguments:
+        directory_name: prefix within our experiments bucket on s3, inclusive of trailing slash if you'd like the list
+            of files within a "directory". Default is '' to get the top-level index of the bucket.
+    Returns:
+        list of key names under the prefix provided.
+    """
+    try:
+        s3 = boto.connect_s3()
+    except boto.exception.NoAuthHandlerFound:  # type: ignore
+        print(
+            "You must have aws credentials already saved, e.g. via `aws configure`. \n"
+        )
+        return []
+
+    bucket = s3.get_bucket(CAMERA_SENSOR_EXPERIMENTS_BUCKET_NAME)
+    keys = bucket.list(directory_name, "/")
+
+    return list([key.name for key in keys])

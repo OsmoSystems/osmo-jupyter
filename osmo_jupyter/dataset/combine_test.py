@@ -329,7 +329,7 @@ class TestGetImagesByExperiment:
         )
 
         actual_images_with_metadata = module.get_all_attempt_image_filenames(
-            test_experiment_metadata, "unused_local_dir"
+            test_experiment_metadata
         )
 
         expected_images_with_metadata = pd.DataFrame(
