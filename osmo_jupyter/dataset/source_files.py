@@ -36,7 +36,6 @@ FILE_TYPE_SUBFOLDERS = [
     "process_experiment",
     "ysi_proodo",
     "ysi_prosolo",
-    "summary_movies",
 ]
 
 
@@ -47,14 +46,16 @@ def _get_experiment_data_file_paths_for_type(project_directory, file_type):
         return []
 
     files_in_subdirectory = sorted(
-        filepath for filepath in subdirectory_path.iterdir() if filepath.is_file()
+        filepath
+        for filepath in subdirectory_path.iterdir()
+        if filepath.is_file() and filepath.suffix == ".csv"
     )
 
     return files_in_subdirectory
 
 
 def get_experiment_data_files_by_type(project_directory):
-    """ Spider the provided directory for files related to an experiment.
+    """ Spider the provided directory for CSV files related to an experiment.
     Expects the project directory to match our standard Google Drive experiment directory format.
 
     Args:
@@ -62,6 +63,7 @@ def get_experiment_data_files_by_type(project_directory):
             the data files for this data collection attempt
     Returns:
         pandas Series, indexed by file type and containing lists of filenames as Path objects.
+            Only CSVs will be included.
     """
 
     return pd.Series(

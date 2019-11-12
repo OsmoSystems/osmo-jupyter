@@ -32,11 +32,16 @@ class TestGetExperimentDataFilePathsForType:
         expected = []
         assert actual == expected
 
-    def test_gets_file_from_subdirectory_and_ignores_sub_subdirectories(self, tmp_path):
+    def test_gets_file_from_subdirectory_and_ignores_sub_subdirectories_and_csvs(
+        self, tmp_path
+    ):
         _init_data_dir(
             tmp_path,
             directories_to_include=[Path("ysi_proodo") / "subdirectory"],
-            files_to_include=[Path("ysi_proodo") / "somethin.csv"],
+            files_to_include=[
+                Path("ysi_proodo") / "somethin.not_a_csv",
+                Path("ysi_proodo") / "somethin.csv",
+            ],
         )
         actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
         expected = [tmp_path / "data" / "ysi_proodo" / "somethin.csv"]
@@ -79,7 +84,6 @@ class TestGetExperimentDataFilesByType:
                 "process_experiment": [],
                 "ysi_proodo": [],
                 "ysi_prosolo": [tmp_path / "data" / "ysi_prosolo" / "KorDSS file.csv"],
-                "summary_movies": [],
             }
         )
 
