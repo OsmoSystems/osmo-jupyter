@@ -112,12 +112,12 @@ class TestGetAllExperimentImages:
 
         mocker.patch("os.listdir", return_value=[image_file_name, "experiment.log"])
 
-        experiment_images = module.get_all_experiment_images(
+        experiment_images = module.get_all_experiment_image_filenames(
             local_sync_directory="", experiment_names=[experiment_name]
         )
 
         expected_images = pd.DataFrame(
-            [{"experiment": experiment_name, "image": image_file_name}]
+            [{"experiment_name": experiment_name, "image_filename": image_file_name}]
         )
 
         pd.testing.assert_frame_equal(experiment_images, expected_images)
@@ -125,11 +125,11 @@ class TestGetAllExperimentImages:
     def test_has_correct_dtype_when_no_images_found(self, mocker):
         mocker.patch("os.listdir", return_value=[])
 
-        experiment_images = module.get_all_experiment_images(
+        experiment_images = module.get_all_experiment_image_filenames(
             local_sync_directory="", experiment_names=["test"]
         )
 
         pd.testing.assert_frame_equal(
             experiment_images,
-            pd.DataFrame(columns=["experiment", "image"], dtype="object"),
+            pd.DataFrame(columns=["experiment_name", "image_filename"], dtype="object"),
         )

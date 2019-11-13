@@ -2,9 +2,12 @@ from typing import List
 
 import pandas as pd
 
-from .source_files import get_all_experiment_images
-from .parse import parse_picolog_file, parse_calibration_log_file
-from .transform import datetime_from_filename
+from .source_files import get_all_experiment_image_filenames
+from .parse import (
+    parse_picolog_file,
+    parse_calibration_log_file,
+    datetime_from_filename,
+)
 
 
 def open_and_combine_picolog_and_calibration_data(
@@ -178,14 +181,28 @@ def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame)
     return df[leading_edge_mask & trailing_edge_mask]
 
 
-def get_images_by_experiment(
-    experiment_metadata: pd.Series, local_sync_directory
+def get_all_attempt_image_filenames(
+    attempt_metadata: pd.Series, local_sync_directory
 ) -> pd.DataFrame:
-    """ Get all image file names with associated experiment metadata.
-    """
-    experiment_names = experiment_metadata["experiment_names"]
+    """ Get a DataFrame of all images for an attempt with associated attempt metadata.
 
-    images_by_experiment = get_all_experiment_images(
+        Args:
+            attempt_metadata: A series of attempt metadata. Should include
+                * experiment_names
+                * cartridge_id
+                * cosmobot_id
+                * pond
+            local_sync_directory: The local sync directory in which to look for image files.
+        Returns:
+            A DataFrame of images filenames along with timestamp, experiment name, and
+            a subset of attempt configuration data:
+                * cartridge ID
+                * cosmobot ID
+                * pond / environment
+    """
+    experiment_names = attempt_metadata["experiment_names"]
+
+    images_by_experiment = get_all_experiment_image_filenames(
         local_sync_directory, experiment_names
     )
 
@@ -193,8 +210,8 @@ def get_images_by_experiment(
         datetime_from_filename
     )
 
-    images_by_experiment["cartridge_id"] = experiment_metadata["cartridge_id"]
-    images_by_experiment["cosmobot_id"] = experiment_metadata["cosmobot_id"]
-    images_by_experiment["pond"] = experiment_metadata["pond"]
+    images_by_experiment["cartridge_id"] = attempt_metadata["cartridge_id"]
+    images_by_experiment["cosmobot_id"] = attempt_metadata["cosmobot_id"]
+    images_by_experiment["pond"] = attempt_metadata["pond"]
 
     return images_by_experiment.set_index("timestamp")

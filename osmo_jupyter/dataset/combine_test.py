@@ -307,7 +307,7 @@ class TestGetImagesByExperiment:
         )
 
         mocker.patch.object(
-            module, "get_all_experiment_images", return_value=mock_image_data
+            module, "get_all_experiment_image_filenames", return_value=mock_image_data
         )
         mocker.patch.object(
             module,
@@ -328,7 +328,7 @@ class TestGetImagesByExperiment:
             }
         )
 
-        actual_images_with_metadata = module.get_images_by_experiment(
+        actual_images_with_metadata = module.get_all_attempt_image_filenames(
             test_experiment_metadata, "unused_local_dir"
         )
 

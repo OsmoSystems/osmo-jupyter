@@ -41,11 +41,11 @@ FILE_TYPE_SUBFOLDERS = [
     "summary_movies",
 ]
 
-VALID_FILETYPES = [".csv", ".mp4", ".gif"]
+SOURCE_DATA_FILETYPES = [".csv", ".mp4", ".gif"]
 
 
-def _check_filepath_is_valid(filepath):
-    return filepath.is_file() and filepath.suffix in VALID_FILETYPES
+def _is_data_filepath(filepath):
+    return filepath.is_file() and filepath.suffix in SOURCE_DATA_FILETYPES
 
 
 def _get_experiment_data_file_paths_for_type(project_directory, file_type):
@@ -57,7 +57,7 @@ def _get_experiment_data_file_paths_for_type(project_directory, file_type):
     files_in_subdirectory = sorted(
         filepath
         for filepath in subdirectory_path.iterdir()
-        if _check_filepath_is_valid(filepath)
+        if _is_data_filepath(filepath)
     )
 
     return files_in_subdirectory
@@ -84,7 +84,7 @@ def get_experiment_data_files_by_type(project_directory):
     )
 
 
-def get_all_experiment_images(
+def get_all_experiment_image_filenames(
     local_sync_directory: str, experiment_names: List[str]
 ) -> pd.DataFrame:
     """
@@ -98,14 +98,16 @@ def get_all_experiment_images(
     """
     all_images = pd.DataFrame(
         [
-            {"experiment": experiment_name, "image": image}
+            {"experiment_name": experiment_name, "image_filename": image_filename}
             for experiment_name in experiment_names
-            for image in os.listdir(os.path.join(local_sync_directory, experiment_name))
+            for image_filename in os.listdir(
+                os.path.join(local_sync_directory, experiment_name)
+            )
+            if image_filename.endswith(".jpeg")  # Filter out experiment log files
         ],
         # Ensure correct dtype and column names when no images are found
-        columns=["experiment", "image"],
+        columns=["experiment_name", "image_filename"],
         dtype="object",
     )
 
-    # Filter out experiment log files
-    return all_images.drop(all_images[~all_images["image"].str.contains("jpeg")].index)
+    return all_images
