@@ -9,9 +9,9 @@ import osmo_jupyter.dataset.source_files as module
 
 # COPY PASTA from cosmobot-process-experiment
 @pytest.fixture
-def mock_get_filenames_from_s3(mocker):
+def mock_get_experiment_filenames_from_s3(mocker):
     # list_camera_sensor_experiments_s3_bucket_contents uses boto to interact with s3; use this fixture to mock it.
-    return mocker.patch.object(module, "_get_filenames_from_s3")
+    return mocker.patch.object(module, "_get_experiment_filenames_from_s3")
 
 
 def _init_data_dir(parent_dir: Path, directories_to_include, files_to_include):
@@ -114,11 +114,14 @@ class TestGetExperimentDataFilesByType:
 
 
 class TestGetAllExperimentImages:
-    def test_returns_only_image_files(self, mock_get_filenames_from_s3):
+    def test_returns_only_image_files(self, mock_get_experiment_filenames_from_s3):
         image_file_name = "image-0.jpeg"
         experiment_name = "test"
 
-        mock_get_filenames_from_s3.return_value = [image_file_name, "experiment.log"]
+        mock_get_experiment_filenames_from_s3.return_value = [
+            image_file_name,
+            "experiment.log",
+        ]
 
         experiment_images = module.get_all_experiment_image_filenames(
             experiment_names=[experiment_name]
@@ -130,8 +133,10 @@ class TestGetAllExperimentImages:
 
         pd.testing.assert_frame_equal(experiment_images, expected_images)
 
-    def test_has_correct_dtype_when_no_images_found(self, mock_get_filenames_from_s3):
-        mock_get_filenames_from_s3.return_value = []
+    def test_has_correct_dtype_when_no_images_found(
+        self, mock_get_experiment_filenames_from_s3
+    ):
+        mock_get_experiment_filenames_from_s3.return_value = []
 
         experiment_images = module.get_all_experiment_image_filenames(
             experiment_names=["test"]

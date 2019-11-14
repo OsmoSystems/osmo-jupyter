@@ -4,7 +4,7 @@ from typing import List
 import boto
 import pandas as pd
 
-CAMERA_SENSOR_EXPERIMENTS_BUCKET_NAME = "camera-sensor-experiments"
+EXPERIMENTS_BUCKET_NAME = "camera-sensor-experiments"
 
 
 """
@@ -101,7 +101,7 @@ def get_all_experiment_image_filenames(experiment_names: List[str]) -> pd.DataFr
         [
             {"experiment_name": experiment_name, "image_filename": image_filename}
             for experiment_name in experiment_names
-            for image_filename in _get_filenames_from_s3(experiment_name)
+            for image_filename in _get_experiment_filenames_from_s3(experiment_name)
             if image_filename.endswith(".jpeg")  # Filter out experiment log files
         ],
         # Ensure correct dtype and column names when no images are found
@@ -113,10 +113,10 @@ def get_all_experiment_image_filenames(experiment_names: List[str]) -> pd.DataFr
     return all_images
 
 
-# COPY PASTA - from cosmobot-process-experiment
-def _get_filenames_from_s3(experiment_directory: str) -> List[str]:
+# COPY PASTA - from cosmobot-process-experiment@4701dc6 - osmo_camera.s3
+def _get_experiment_filenames_from_s3(experiment_directory: str) -> List[str]:
     s3_prefix = f"{experiment_directory}/"
-    all_keys = list_camera_sensor_experiments_s3_bucket_contents(s3_prefix)
+    all_keys = _list_experiment_s3_bucket_contents(s3_prefix)
     prefix_length = len(s3_prefix)
     filenames = [key[prefix_length:] for key in all_keys]
     return filenames
@@ -124,9 +124,7 @@ def _get_filenames_from_s3(experiment_directory: str) -> List[str]:
 
 # COPY PASTA - modified from cosmobot-process-experiment
 # removed S3 credentials - must be present in the local env to work
-def list_camera_sensor_experiments_s3_bucket_contents(
-    directory_name: str = "",
-) -> List[str]:
+def _list_experiment_s3_bucket_contents(directory_name: str = "",) -> List[str]:
     """ Get a list of all of the files in a logical directory off s3, within the camera sensor experiments bucket.
     Arguments:
         directory_name: prefix within our experiments bucket on s3, inclusive of trailing slash if you'd like the list
@@ -134,15 +132,9 @@ def list_camera_sensor_experiments_s3_bucket_contents(
     Returns:
         list of key names under the prefix provided.
     """
-    try:
-        s3 = boto.connect_s3()
-    except boto.exception.NoAuthHandlerFound:  # type: ignore
-        print(
-            "You must have aws credentials already saved, e.g. via `aws configure`. \n"
-        )
-        return []
+    s3 = boto.connect_s3()
 
-    bucket = s3.get_bucket(CAMERA_SENSOR_EXPERIMENTS_BUCKET_NAME)
+    bucket = s3.get_bucket(EXPERIMENTS_BUCKET_NAME)
     keys = bucket.list(directory_name, "/")
 
     return list([key.name for key in keys])
