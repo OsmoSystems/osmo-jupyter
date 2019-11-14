@@ -208,7 +208,9 @@ def test_processes_log_data_correctly(mocker):
         }
     ).set_index("timestamp")
 
-    pd.testing.assert_frame_equal(transformed_log_data, expected_log_data)
+    pd.testing.assert_frame_equal(
+        transformed_log_data, expected_log_data, check_less_precise=6
+    )
 
 
 def test_prepare_ysi_data():
@@ -249,4 +251,6 @@ def test_prepare_ysi_data():
         }
     ).set_index("timestamp")
 
-    pd.testing.assert_frame_equal(tranformed_ysi_data, expected_ysi_data)
+    pd.testing.assert_frame_equal(
+        tranformed_ysi_data, expected_ysi_data, check_less_precise=6
+    )
