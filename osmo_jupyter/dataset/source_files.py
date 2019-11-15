@@ -120,7 +120,7 @@ def _get_experiment_filenames_from_s3(experiment_directory: str) -> List[str]:
     return filenames
 
 
-# COPY PASTA - modified from cosmobot-process-experiment
+# COPY PASTA - modified from cosmobot-process-experiment@4701dc6 - osmo_camera.s3
 # removed S3 credentials - must be present in the local env to work
 def _list_experiment_s3_bucket_contents(directory_name: str = "",) -> List[str]:
     """ Get a list of all of the files in a logical directory off s3, within the camera sensor experiments bucket.
