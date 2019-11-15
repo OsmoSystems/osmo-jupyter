@@ -7,10 +7,8 @@ import pandas as pd
 import osmo_jupyter.dataset.source_files as module
 
 
-# COPY PASTA from cosmobot-process-experiment
 @pytest.fixture
 def mock_get_experiment_filenames_from_s3(mocker):
-    # list_camera_sensor_experiments_s3_bucket_contents uses boto to interact with s3; use this fixture to mock it.
     return mocker.patch.object(module, "_get_experiment_filenames_from_s3")
 
 
