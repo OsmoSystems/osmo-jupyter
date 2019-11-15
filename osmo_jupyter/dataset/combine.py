@@ -201,7 +201,7 @@ def get_all_attempt_image_filenames(attempt_metadata: pd.Series) -> pd.DataFrame
 
     images_by_experiment = get_all_experiment_image_filenames(experiment_names)
 
-    images_by_experiment["timestamp"] = images_by_experiment["image"].apply(
+    images_by_experiment["timestamp"] = images_by_experiment["image_filename"].apply(
         datetime_from_filename
     )
 

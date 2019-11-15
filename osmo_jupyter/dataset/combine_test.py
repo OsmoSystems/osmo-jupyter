@@ -297,12 +297,16 @@ class TestGetImagesByExperiment:
     def test_combines_experiment_metadata_correctly(self, mocker):
         mock_image_data = pd.DataFrame(
             {
-                "experiment": [
+                "experiment_name": [
                     sentinel.experiment_1,
                     sentinel.experiment_1,
                     sentinel.experiment_2,
                 ],
-                "image": [sentinel.image_1, sentinel.image_2, sentinel.image_3],
+                "image_filename": [
+                    sentinel.image_1,
+                    sentinel.image_2,
+                    sentinel.image_3,
+                ],
             }
         )
 
@@ -339,12 +343,16 @@ class TestGetImagesByExperiment:
                     pd.to_datetime("2019-01-01 00:00:02"),
                     pd.to_datetime("2019-01-01 00:00:03"),
                 ],
-                "experiment": [
+                "experiment_name": [
                     sentinel.experiment_1,
                     sentinel.experiment_1,
                     sentinel.experiment_2,
                 ],
-                "image": [sentinel.image_1, sentinel.image_2, sentinel.image_3],
+                "image_filename": [
+                    sentinel.image_1,
+                    sentinel.image_2,
+                    sentinel.image_3,
+                ],
                 "cartridge_id": [sentinel.cartridge_id] * 3,
                 "cosmobot_id": [sentinel.cosmobot_id] * 3,
                 "pond": [sentinel.pond] * 3,
