@@ -109,7 +109,6 @@ def get_all_experiment_image_filenames(experiment_names: List[str]) -> pd.DataFr
         dtype="object",
     )
 
-    # Filter out experiment log files
     return all_images
 
 
