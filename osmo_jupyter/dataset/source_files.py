@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from typing import List
 
 import pandas as pd
 
@@ -39,6 +41,12 @@ FILE_TYPE_SUBFOLDERS = [
     "summary_movies",
 ]
 
+SOURCE_DATA_FILETYPES = [".csv", ".mp4", ".gif"]
+
+
+def _is_data_filepath(filepath):
+    return filepath.is_file() and filepath.suffix in SOURCE_DATA_FILETYPES
+
 
 def _get_experiment_data_file_paths_for_type(project_directory, file_type):
     subdirectory_path = Path(project_directory) / DATA_DIRECTORY_NAME / file_type
@@ -47,7 +55,9 @@ def _get_experiment_data_file_paths_for_type(project_directory, file_type):
         return []
 
     files_in_subdirectory = sorted(
-        filepath for filepath in subdirectory_path.iterdir() if filepath.is_file()
+        filepath
+        for filepath in subdirectory_path.iterdir()
+        if _is_data_filepath(filepath)
     )
 
     return files_in_subdirectory
@@ -72,3 +82,32 @@ def get_experiment_data_files_by_type(project_directory):
             for file_type in FILE_TYPE_SUBFOLDERS
         }
     )
+
+
+def get_all_experiment_image_filenames(
+    local_sync_directory: str, experiment_names: List[str]
+) -> pd.DataFrame:
+    """
+        Get a DataFrame of all image files across multiple experiment data directories.
+
+        Args:
+            local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
+            experiment_names: A list of experiment directory names in the local sync directory.
+        Returns:
+            DataFrame of all image file names and the corresponding experiment name.
+    """
+    all_images = pd.DataFrame(
+        [
+            {"experiment_name": experiment_name, "image_filename": image_filename}
+            for experiment_name in experiment_names
+            for image_filename in os.listdir(
+                os.path.join(local_sync_directory, experiment_name)
+            )
+            if image_filename.endswith(".jpeg")  # Filter out experiment log files
+        ],
+        # Ensure correct dtype and column names when no images are found
+        columns=["experiment_name", "image_filename"],
+        dtype="object",
+    )
+
+    return all_images

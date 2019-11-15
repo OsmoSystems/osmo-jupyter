@@ -1,14 +1,81 @@
+""" Functions to parse and clean source data files in a consistent way.
+"""
+import datetime
 from typing import Dict
 
 import pandas as pd
 
 
 # Standard column names to align various data formats on
-TIMESTAMP = "timestamp"
-TEMPERATURE_C = "temperature (C)"
-BAROMETRIC_PRESSURE_MMHG = "barometric pressure (mmHg)"
-DO_PCT = "DO (%)"
-DO_MGL = "DO (mg/L)"
+TIMESTAMP_LABEL = "timestamp"
+TEMPERATURE_C_LABEL = "temperature (C)"
+BAROMETRIC_PRESSURE_MMHG_LABEL = "barometric pressure (mmHg)"
+DO_PCT_LABEL = "DO (%)"
+DO_MGL_LABEL = "DO (mg/L)"
+DO_MMHG_LABEL = "DO (mmHg)"
+
+_FILENAME_DATETIME_FORMAT = "%Y-%m-%d--%H-%M-%S"
+FILENAME_TIMESTAMP_LENGTH = len("2018-01-01--12-01-01")
+
+ATMOSPHERIC_OXYGEN_FRACTION = 0.2095  # From calibration-environment YSI driver
+
+DATASET_COLUMNS = [
+    TIMESTAMP_LABEL,
+    f"YSI {DO_MMHG_LABEL}",
+    f"YSI {DO_PCT_LABEL}",
+    f"YSI {DO_MGL_LABEL}",
+    f"YSI {BAROMETRIC_PRESSURE_MMHG_LABEL}",
+    f"YSI {TEMPERATURE_C_LABEL}",
+    "setpoint O2 fraction",
+    f"setpoint {TEMPERATURE_C_LABEL}",
+    "setpoint ID",
+]
+
+
+# COPYPASTA from cosmobot_process_experiment.file_structure
+def datetime_from_filename(filename: str) -> datetime.datetime:
+    """ Recover a datetime that has been encoded into a filename, also returning the remainder of the filename
+    Arguments:
+        filename: filename to process. Should start with an ISO-ish datetime
+            as produced by iso_datetime_for_filename()
+    Returns:
+        a datetime.datetime object matching the one that was encoded in the filename
+    """
+
+    return datetime.datetime.strptime(
+        filename[:FILENAME_TIMESTAMP_LENGTH], _FILENAME_DATETIME_FORMAT
+    )
+
+
+def _calculate_partial_pressure(do_percent_saturation, barometric_pressure_mmhg):
+    do_fraction_saturation = do_percent_saturation * 0.01
+    return (
+        do_fraction_saturation * ATMOSPHERIC_OXYGEN_FRACTION * barometric_pressure_mmhg
+    )
+
+
+def _remove_unused_columns(df):
+    columns_to_drop = [
+        column_name for column_name in df.columns if column_name not in DATASET_COLUMNS
+    ]
+
+    return df.drop(columns=columns_to_drop)
+
+
+def _generate_time_based_setpoint_ids(calibration_log_data):
+    """ Create setpoint IDs that increment whenever there is a >5 minute gap between image captures.
+
+        This is dependent upon equilibration between setpoints taking >5 mins and the time between
+        consecutive image captures at a setpoint being <5 mins.
+    """
+
+    calibration_log_sorted = calibration_log_data.sort_index()
+
+    setpoint_transitions = calibration_log_sorted.index.to_series().diff() > datetime.timedelta(
+        minutes=5
+    )
+    setpoint_ids = setpoint_transitions.astype(int).cumsum()
+    return setpoint_ids
 
 
 def _apply_parser_configuration(
@@ -22,8 +89,8 @@ def _apply_parser_configuration(
     )
 
 
-def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
-    """ Open and format a YSI KorDSS formatted csv file, with standardized datetime parsing
+def parse_ysi_prosolo_file(filepath: str) -> pd.DataFrame:
+    """ Open and format a YSI KorDSS/ProSolo formatted csv file, with standardized datetime parsing
         and cleaned up columns.
 
         Args:
@@ -34,11 +101,11 @@ def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
     """
     parse_config = {
         "rename": {
-            "DATE_TIME": TIMESTAMP,
-            "Barometer (mmHg)": BAROMETRIC_PRESSURE_MMHG,
-            "ODO (% Sat)": DO_PCT,
-            "ODO (mg/L)": DO_MGL,
-            "Temp (°C)": TEMPERATURE_C,
+            "DATE_TIME": TIMESTAMP_LABEL,
+            "Barometer (mmHg)": BAROMETRIC_PRESSURE_MMHG_LABEL,
+            "ODO (% Sat)": DO_PCT_LABEL,
+            "ODO (mg/L)": DO_MGL_LABEL,
+            "Temp (°C)": TEMPERATURE_C_LABEL,
         },
         "drop": ["SITE", "DATA ID", "ODO (% Local)"],
         "prefix": "YSI ",
@@ -49,8 +116,8 @@ def parse_ysi_kordss_file(filepath: str) -> pd.DataFrame:
     return _apply_parser_configuration(raw_data, parse_config)
 
 
-def parse_ysi_classic_file(filepath: str) -> pd.DataFrame:
-    """ Open and format a YSI "classic" csv file, with standardized datetime parsing
+def parse_ysi_proodo_file(filepath: str) -> pd.DataFrame:
+    """ Open and format a YSI "classic"/ProODO csv file, with standardized datetime parsing
         and cleaned up columns.
 
         Args:
@@ -61,10 +128,10 @@ def parse_ysi_classic_file(filepath: str) -> pd.DataFrame:
     """
     parse_config = {
         "rename": {
-            "Timestamp": TIMESTAMP,
-            "Barometer (mmHg)": BAROMETRIC_PRESSURE_MMHG,
-            "Dissolved Oxygen (%)": DO_PCT,
-            "Temperature (C)": TEMPERATURE_C,
+            "Timestamp": TIMESTAMP_LABEL,
+            "Barometer (mmHg)": BAROMETRIC_PRESSURE_MMHG_LABEL,
+            "Dissolved Oxygen (%)": DO_PCT_LABEL,
+            "Temperature (C)": TEMPERATURE_C_LABEL,
             "Unit ID": "unit ID",
         },
         "drop": ["Comment", "Site", "Folder"],
@@ -87,9 +154,9 @@ def parse_picolog_file(filepath: str) -> pd.DataFrame:
     """
     parse_config = {
         "rename": {
-            "Unnamed: 0": TIMESTAMP,
-            "Temperature Ave. (C)": TEMPERATURE_C,
-            "Pressure Ave. (mmHg)": BAROMETRIC_PRESSURE_MMHG,
+            "Unnamed: 0": TIMESTAMP_LABEL,
+            "Temperature Ave. (C)": TEMPERATURE_C_LABEL,
+            "Pressure Ave. (mmHg)": BAROMETRIC_PRESSURE_MMHG_LABEL,
         },
         "drop": ["Pressure (Voltage) Ave. (nV)"],
         "prefix": "PicoLog ",
@@ -175,3 +242,65 @@ def parse_data_collection_log(filepath: str) -> pd.DataFrame:
         .sort_values("start_date")
         .reset_index(drop=True)
     )
+
+
+def _prepare_ysi_data(ysi_data: pd.DataFrame) -> pd.DataFrame:
+    ysi_data[f"YSI {DO_MMHG_LABEL}"] = _calculate_partial_pressure(
+        do_percent_saturation=ysi_data[f"YSI {DO_PCT_LABEL}"],
+        barometric_pressure_mmhg=ysi_data[f"YSI {BAROMETRIC_PRESSURE_MMHG_LABEL}"],
+    )
+
+    ysi_data_resampled = ysi_data.resample("s").interpolate(method="slinear")
+    ysi_data_rounded = ysi_data_resampled.round(6)
+
+    return _remove_unused_columns(ysi_data_rounded)
+
+
+def process_ysi_proodo_file(filepath: str) -> pd.DataFrame:
+    """ Parse a YSI ProODO data csv as a DataFrame with only the columns necessary for deep learning.
+        Numerical values are rounded.
+
+        Args:
+            filepath: Path to the source file.
+        Returns:
+            DataFrame with timestamp and rounded temperature, DO, and barometric pressure vaules.
+    """
+    ysi_proodo_data = parse_ysi_proodo_file(filepath)
+    return _prepare_ysi_data(ysi_proodo_data)
+
+
+def process_ysi_prosolo_file(filepath: str) -> pd.DataFrame:
+    """ Parse a YSI ProSolo data csv as a DataFrame with only the columns necessary for deep learning.
+        Numerical values are rounded.
+
+        Args:
+            filepath: Path to the source file.
+        Returns:
+            DataFrame with timestamp and rounded temperature, DO, and barometric pressure vaules.
+    """
+    ysi_prosolo_data = parse_ysi_prosolo_file(filepath)
+    return _prepare_ysi_data(ysi_prosolo_data)
+
+
+def process_calibration_log_file(filepath: str) -> pd.DataFrame:
+    """ Parse a calibration log file as a DataFrame with only the columns necessary for deep learning.
+        Numerical values are rounded and setpoint IDs are generated based on time.
+
+        Args:
+            filepath: Path to the source file.
+        Returns:
+            DataFrame with timestamp, YSI data, rounded setpoint values, and setpoint IDs.
+    """
+    calibration_data = parse_calibration_log_file(filepath)
+
+    trimmed_calibration_data = _remove_unused_columns(calibration_data)
+
+    rounded_calibration_data = trimmed_calibration_data.round(
+        {"setpoint temperature (C)": 3, "setpoint O2 fraction": 6}
+    )
+
+    rounded_calibration_data["setpoint ID"] = _generate_time_based_setpoint_ids(
+        rounded_calibration_data
+    )
+
+    return rounded_calibration_data

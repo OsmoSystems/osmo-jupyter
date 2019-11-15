@@ -62,6 +62,23 @@ class TestGetExperimentDataFilePathsForType:
         actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
         assert actual == expected
 
+    def test_ignores_unwanted_filetypes(self, tmp_path):
+        relative_filepaths = [
+            os.path.join("ysi_proodo", "somethin.csv"),
+            os.path.join("ysi_proodo", "somethin2.xlsx"),
+        ]
+
+        _init_data_dir(
+            tmp_path,
+            directories_to_include=["ysi_proodo"],
+            files_to_include=relative_filepaths,
+        )
+
+        expected = [tmp_path / "data" / relative_filepaths[0]]
+
+        actual = module._get_experiment_data_file_paths_for_type(tmp_path, "ysi_proodo")
+        assert actual == expected
+
 
 class TestGetExperimentDataFilesByType:
     def test_returns_series_with_full_file_paths_and_empty_keys(self, tmp_path):
@@ -85,4 +102,34 @@ class TestGetExperimentDataFilesByType:
 
         pd.testing.assert_series_equal(
             module.get_experiment_data_files_by_type(tmp_path), expected
+        )
+
+
+class TestGetAllExperimentImages:
+    def test_returns_only_image_files(self, mocker):
+        image_file_name = "image-0.jpeg"
+        experiment_name = "test"
+
+        mocker.patch("os.listdir", return_value=[image_file_name, "experiment.log"])
+
+        experiment_images = module.get_all_experiment_image_filenames(
+            local_sync_directory="", experiment_names=[experiment_name]
+        )
+
+        expected_images = pd.DataFrame(
+            [{"experiment_name": experiment_name, "image_filename": image_file_name}]
+        )
+
+        pd.testing.assert_frame_equal(experiment_images, expected_images)
+
+    def test_has_correct_dtype_when_no_images_found(self, mocker):
+        mocker.patch("os.listdir", return_value=[])
+
+        experiment_images = module.get_all_experiment_image_filenames(
+            local_sync_directory="", experiment_names=["test"]
+        )
+
+        pd.testing.assert_frame_equal(
+            experiment_images,
+            pd.DataFrame(columns=["experiment_name", "image_filename"], dtype="object"),
         )

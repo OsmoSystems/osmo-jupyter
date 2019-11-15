@@ -1,9 +1,13 @@
-import os
 from typing import List
 
 import pandas as pd
 
-from .parse import parse_picolog_file, parse_calibration_log_file
+from .source_files import get_all_experiment_image_filenames
+from .parse import (
+    parse_picolog_file,
+    parse_calibration_log_file,
+    datetime_from_filename,
+)
 
 
 def open_and_combine_picolog_and_calibration_data(
@@ -162,33 +166,6 @@ def open_and_combine_process_experiment_results(
     return pivot_process_experiment_results_on_ROI(all_roi_data, ROI_names, msorm_types)
 
 
-def get_all_experiment_images(
-    local_sync_directory: str, experiment_names: List[str]
-) -> pd.DataFrame:
-    """
-        Get a DataFrame of all image files across multiple experiment data directories.
-
-        Args:
-            local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
-            experiment_names: A list of experiment directory names in the local sync directory.
-        Returns:
-            DataFrame of all image file names and the corresponding experiment name.
-    """
-    all_images = pd.DataFrame(
-        [
-            {"experiment": experiment_name, "image": image}
-            for experiment_name in experiment_names
-            for image in os.listdir(os.path.join(local_sync_directory, experiment_name))
-        ],
-        # Ensure correct dtype and column names when no images are found
-        columns=["experiment", "image"],
-        dtype="object",
-    )
-
-    # Filter out experiment log files
-    return all_images.drop(all_images[~all_images["image"].str.contains("jpeg")].index)
-
-
 def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame):
     """
         Filter a datetime indexed DataFrame to a given equilibration range
@@ -204,78 +181,37 @@ def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame)
     return df[leading_edge_mask & trailing_edge_mask]
 
 
-def open_and_combine_and_filter_source_data(
-    local_sync_directory: str,
-    experiment_names: List[str],
-    calibration_log_filepaths: List[str],
-    picolog_log_filepaths: List[str],
-    process_experiment_result_filepaths: List[str],
-    ROI_names: List[str] = None,
-    msorm_types: List[str] = None,
+def get_all_attempt_image_filenames(
+    attempt_metadata: pd.Series, local_sync_directory
 ) -> pd.DataFrame:
-    """
-        Combine and filter a collection of calibration environment, PicoLog, process experiment and image data
-        into a neat DataFrame of all images taken during periods of equilibrated temperature and dissolved oxygen.
-        PicoLog and calibration sensor data are linearly interpolated to the second to line up with image timestamps.
+    """ Get a DataFrame of all images for an attempt with associated attempt metadata.
 
         Args:
-            local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
-            experiment_names: A list of experiment directory names in the local sync directory.
-            calibration_log_filepaths: A list of filepaths to calibration environment csv data log files.
-            picolog_log_filepaths: A list of filepaths to PicoLog csv data files.
-            process_experiment_result_filepaths: A list of filepaths to process experiment summary statistics files.
-            ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
-            msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
-
+            attempt_metadata: A series of attempt metadata. Should include
+                * experiment_names
+                * cartridge_id
+                * cosmobot_id
+                * pond
+            local_sync_directory: The local sync directory in which to look for image files.
         Returns:
-            DataFrame of image and sensor data collected during equilibrated states.
+            A DataFrame of images filenames along with timestamp, experiment name, and
+            a subset of attempt configuration data:
+                * cartridge ID
+                * cosmobot ID
+                * pond / environment
     """
-    if msorm_types is None:
-        msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
+    experiment_names = attempt_metadata["experiment_names"]
 
-    picolog_data = pd.concat(
-        [
-            parse_picolog_file(picolog_filepath)
-            .resample("s")
-            .interpolate(method="slinear")
-            for picolog_filepath in picolog_log_filepaths
-        ],
-        sort=True,
+    images_by_experiment = get_all_experiment_image_filenames(
+        local_sync_directory, experiment_names
     )
 
-    calibration_data = pd.concat(
-        [
-            parse_calibration_log_file(calibration_log_filepath)
-            for calibration_log_filepath in calibration_log_filepaths
-        ],
-        sort=True,
+    images_by_experiment["timestamp"] = images_by_experiment["image"].apply(
+        datetime_from_filename
     )
 
-    equilibration_boundaries = get_equilibration_boundaries(
-        calibration_data["equilibration status"]
-    )
+    images_by_experiment["cartridge_id"] = attempt_metadata["cartridge_id"]
+    images_by_experiment["cosmobot_id"] = attempt_metadata["cosmobot_id"]
+    images_by_experiment["pond"] = attempt_metadata["pond"]
 
-    all_roi_data = open_and_combine_process_experiment_results(
-        process_experiment_result_filepaths, ROI_names, msorm_types
-    )
-
-    all_roi_and_picolog_data = all_roi_data.join(picolog_data, how="inner")
-
-    equilibrated_sensor_data = pd.concat(
-        equilibration_boundaries.apply(
-            filter_equilibrated_images, axis=1, df=all_roi_and_picolog_data
-        ).values
-    )
-
-    equilibrated_data = equilibrated_sensor_data.join(
-        calibration_data.resample("s").interpolate(method="slinear").dropna(axis=1),
-        how="inner",
-    ).sort_index()
-
-    all_images = get_all_experiment_images(local_sync_directory, experiment_names)
-
-    return (
-        equilibrated_data.reset_index()
-        .set_index("image")
-        .join(all_images.set_index("image"), how="inner")
-    )
+    return images_by_experiment.set_index("timestamp")

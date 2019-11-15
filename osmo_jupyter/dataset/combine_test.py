@@ -1,4 +1,5 @@
 import pkg_resources
+from unittest.mock import sentinel
 
 import pandas as pd
 import pytest
@@ -265,38 +266,8 @@ class TestPivotProcessExperimentResults:
         pd.testing.assert_frame_equal(pivot_results, expected_results_data)
 
 
-class TestGetAllExperimentImages:
-    def test_returns_only_image_files(self, mocker):
-        image_file_name = "image-0.jpeg"
-        experiment_name = "test"
-
-        mocker.patch("os.listdir", return_value=[image_file_name, "experiment.log"])
-
-        experiment_images = module.get_all_experiment_images(
-            local_sync_directory="", experiment_names=[experiment_name]
-        )
-
-        expected_images = pd.DataFrame(
-            [{"experiment": experiment_name, "image": image_file_name}]
-        )
-
-        pd.testing.assert_frame_equal(experiment_images, expected_images)
-
-    def test_has_correct_dtype_when_no_images_found(self, mocker):
-        mocker.patch("os.listdir", return_value=[])
-
-        experiment_images = module.get_all_experiment_images(
-            local_sync_directory="", experiment_names=["test"]
-        )
-
-        pd.testing.assert_frame_equal(
-            experiment_images,
-            pd.DataFrame(columns=["experiment", "image"], dtype="object"),
-        )
-
-
 class TestFilterEquilibratedImages:
-    def test_returns_only_equilibrated_images(self, test_calibration_file_path):
+    def test_returns_only_equilibrated_images(self):
         test_roi_data = pd.DataFrame(
             [
                 {"timestamp": pd.to_datetime("2019-01-01"), "image": "image-0.jpeg"},
@@ -322,50 +293,64 @@ class TestFilterEquilibratedImages:
         )
 
 
-class TestOpenAndCombineSourceData:
-    def test_filters_all_data_to_equilibrated_states(
-        self, mocker, test_calibration_file_path, test_picolog_file_path
-    ):
-        test_process_experiment_file_path = pkg_resources.resource_filename(
-            "osmo_jupyter", "test_fixtures/test_process_experiment_result.csv"
-        )
-        test_files = ["image-0.jpeg", "image-1.jpeg", "experiment.log"]
-        mocker.patch("os.listdir", return_value=test_files)
-
-        experiment_name = "test"
-
-        equilibrated_experiment_data = module.open_and_combine_and_filter_source_data(
-            local_sync_directory="",
-            experiment_names=[experiment_name],
-            calibration_log_filepaths=[test_calibration_file_path],
-            picolog_log_filepaths=[test_picolog_file_path],
-            process_experiment_result_filepaths=[test_process_experiment_file_path],
-            msorm_types=["r_msorm", "g_msorm"],
+class TestGetImagesByExperiment:
+    def test_combines_experiment_metadata_correctly(self, mocker):
+        mock_image_data = pd.DataFrame(
+            {
+                "experiment": [
+                    sentinel.experiment_1,
+                    sentinel.experiment_1,
+                    sentinel.experiment_2,
+                ],
+                "image": [sentinel.image_1, sentinel.image_2, sentinel.image_3],
+            }
         )
 
-        expected_experiment_data = pd.DataFrame(
-            [
-                {
-                    "timestamp": pd.to_datetime("2019-01-01 00:00:02"),
-                    "ROI 0 r_msorm": 0.3,
-                    "ROI 1 r_msorm": 0.6,
-                    "ROI 0 g_msorm": 0.6,
-                    "ROI 1 g_msorm": 0.3,
-                    "image": "image-1.jpeg",
-                    "PicoLog temperature (C)": 40,
-                    "setpoint temperature (C)": 40,
-                    "experiment": experiment_name,
-                }
-            ]
-        ).set_index("image")
+        mocker.patch.object(
+            module, "get_all_experiment_image_filenames", return_value=mock_image_data
+        )
+        mocker.patch.object(
+            module,
+            "datetime_from_filename",
+            side_effect=[
+                pd.to_datetime("2019-01-01 00:00:01"),
+                pd.to_datetime("2019-01-01 00:00:02"),
+                pd.to_datetime("2019-01-01 00:00:03"),
+            ],
+        )
 
-        # Trim extra calibration log columns
-        subset_experiment_data_to_compare = equilibrated_experiment_data[
-            expected_experiment_data.columns
-        ]
+        test_experiment_metadata = pd.Series(
+            {
+                "experiment_names": [sentinel.experiment_1, sentinel.experiment_2],
+                "cartridge_id": sentinel.cartridge_id,
+                "cosmobot_id": sentinel.cosmobot_id,
+                "pond": sentinel.pond,
+            }
+        )
+
+        actual_images_with_metadata = module.get_all_attempt_image_filenames(
+            test_experiment_metadata, "unused_local_dir"
+        )
+
+        expected_images_with_metadata = pd.DataFrame(
+            {
+                "timestamp": [
+                    pd.to_datetime("2019-01-01 00:00:01"),
+                    pd.to_datetime("2019-01-01 00:00:02"),
+                    pd.to_datetime("2019-01-01 00:00:03"),
+                ],
+                "experiment": [
+                    sentinel.experiment_1,
+                    sentinel.experiment_1,
+                    sentinel.experiment_2,
+                ],
+                "image": [sentinel.image_1, sentinel.image_2, sentinel.image_3],
+                "cartridge_id": [sentinel.cartridge_id] * 3,
+                "cosmobot_id": [sentinel.cosmobot_id] * 3,
+                "pond": [sentinel.pond] * 3,
+            }
+        ).set_index("timestamp")
 
         pd.testing.assert_frame_equal(
-            subset_experiment_data_to_compare,
-            expected_experiment_data,
-            check_dtype=False,
+            actual_images_with_metadata, expected_images_with_metadata
         )
