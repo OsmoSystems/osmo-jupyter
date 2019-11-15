@@ -92,7 +92,6 @@ def get_all_experiment_image_filenames(experiment_names: List[str]) -> pd.DataFr
         Get a DataFrame of all image files across multiple experiment data directories.
 
         Args:
-            local_sync_directory: The local data directory, usually ~/osmo/cosmobot-data-sets
             experiment_names: A list of experiment directory names in the local sync directory.
         Returns:
             DataFrame of all image file names and the corresponding experiment name.
