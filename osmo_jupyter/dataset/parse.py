@@ -4,6 +4,7 @@ import datetime
 from typing import Dict
 
 import pandas as pd
+import numpy as np
 
 
 # Standard column names to align various data formats on
@@ -295,12 +296,22 @@ def process_calibration_log_file(filepath: str) -> pd.DataFrame:
 
     trimmed_calibration_data = _remove_unused_columns(calibration_data)
 
-    rounded_calibration_data = trimmed_calibration_data.round(
+    # Add setpoint IDs before timestamps interpolate out time gaps
+    trimmed_calibration_data["setpoint ID"] = _generate_time_based_setpoint_ids(
+        trimmed_calibration_data
+    )
+
+    calibration_data_resampled = trimmed_calibration_data.resample("s").interpolate(
+        method="slinear"
+    )
+
+    rounded_calibration_data = calibration_data_resampled.round(
         {"setpoint temperature (C)": 3, "setpoint O2 fraction": 6}
     )
 
-    rounded_calibration_data["setpoint ID"] = _generate_time_based_setpoint_ids(
-        rounded_calibration_data
+    # Un-interpolate setpoint IDs
+    rounded_calibration_data["setpoint ID"] = np.floor(
+        rounded_calibration_data["setpoint ID"]
     )
 
     return rounded_calibration_data
