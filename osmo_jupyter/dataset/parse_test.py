@@ -1,16 +1,9 @@
 import pkg_resources
 
-import pytest
 import pandas as pd
-import numpy as np
 from unittest.mock import sentinel
 
 import osmo_jupyter.dataset.parse as module
-
-
-@pytest.fixture
-def mock_parse_calibration_log_file(mocker):
-    return mocker.patch.object(module, "parse_calibration_log_file")
 
 
 def test_parses_ysi_csv_correctly(tmpdir):
@@ -178,78 +171,71 @@ class TestParseDataCollectionLog:
         pd.testing.assert_series_equal(actual_attempt_summary, expected_attempt_summary)
 
 
-class TestProcessDataCollectionLog:
-    def test_intertoplates_log_data_correctly(self, mock_parse_calibration_log_file):
-        mock_calibration_log_data = pd.DataFrame(
-            {
-                "timestamp": [
-                    pd.to_datetime("2019-01-01 00:00:00"),
-                    # Under 5 minute jump - shouldn't increase setpoint ID
-                    pd.to_datetime("2019-01-01 00:00:02"),
-                ],
-                "YSI DO (mmHg)": [50, 30],
-                "setpoint temperature (C)": [29.00000001, 30.0000003],
-                "setpoint O2 fraction": [0.100000001, 0.3],
-                "extraneous column": ["is", "dropped"],
-            }
-        ).set_index("timestamp")
+def test_intertoplates_calibration_log_data_correctly(mocker):
+    mock_calibration_log_data = pd.DataFrame(
+        {
+            "timestamp": [
+                pd.to_datetime("2019-01-01 00:00:00"),
+                pd.to_datetime("2019-01-01 00:00:02"),
+            ],
+            "YSI DO (mmHg)": [50, 30],
+            "setpoint temperature (C)": [29.00000001, 30.0000003],
+            "setpoint O2 fraction": [0.100000001, 0.3],
+            "extraneous column": ["is", "dropped"],
+        }
+    ).set_index("timestamp")
 
-        mock_parse_calibration_log_file.return_value = mock_calibration_log_data
+    mocker.patch.object(
+        module, "parse_calibration_log_file", return_value=mock_calibration_log_data
+    )
 
-        transformed_log_data = module.process_calibration_log_file(
-            sentinel.log_file_name
-        )
+    transformed_log_data = module.process_calibration_log_file(sentinel.log_file_name)
 
-        expected_log_data = pd.DataFrame(
-            {
-                "timestamp": [
-                    pd.to_datetime("2019-01-01 00:00:00"),
-                    pd.to_datetime("2019-01-01 00:00:01"),
-                    pd.to_datetime("2019-01-01 00:00:02"),
-                ],
-                "YSI DO (mmHg)": [50, 40, 30],
-                "setpoint temperature (C)": [29, 29.5, 30],
-                "setpoint O2 fraction": [0.1, 0.2, 0.3],
-                "setpoint ID": [0, 0, 0],
-            }
-        ).set_index("timestamp")
+    expected_log_data = pd.DataFrame(
+        {
+            "timestamp": [
+                pd.to_datetime("2019-01-01 00:00:00"),
+                pd.to_datetime("2019-01-01 00:00:01"),
+                pd.to_datetime("2019-01-01 00:00:02"),
+            ],
+            "YSI DO (mmHg)": [50, 40, 30],
+            "setpoint temperature (C)": [29, 29.5, 30],
+            "setpoint O2 fraction": [0.1, 0.2, 0.3],
+        },
+        dtype="float64",
+    ).set_index("timestamp")
 
-        pd.testing.assert_frame_equal(
-            transformed_log_data,
-            expected_log_data,
-            check_less_precise=6,
-            check_dtype=False,
-        )
+    pd.testing.assert_frame_equal(
+        transformed_log_data, expected_log_data, check_less_precise=6
+    )
 
-    def test_setpoint_ids_assigned_correctly(self, mock_parse_calibration_log_file):
-        mock_calibration_log_data = pd.DataFrame(
-            {
-                "timestamp": [
-                    # Each > than 5 minute jump should increment setpoint ID
-                    pd.to_datetime("2019-01-01 00:00:00"),
-                    pd.to_datetime("2019-01-01 00:05:00"),  # Don't increment
-                    pd.to_datetime("2019-01-01 00:10:01"),  # Increment
-                    pd.to_datetime("2019-01-01 00:16:00"),  # Increment
-                ],
-                "YSI DO (mmHg)": [50, 40, 50, 40],
-                "setpoint temperature (C)": [29, 29, 29, 29],
-                "setpoint O2 fraction": [0.1, 0.2, 0.1, 0.2],
-            }
-        ).set_index("timestamp")
 
-        mock_parse_calibration_log_file.return_value = mock_calibration_log_data
+def test_setpoint_ids_assigned_correctly():
+    mock_iamge_data = pd.DataFrame(
+        {
+            "timestamp": [
+                # Each > than 5 minute jump should increment setpoint ID
+                pd.to_datetime("2019-01-01 00:00:00"),
+                pd.to_datetime("2019-01-01 00:05:00"),  # Don't increment
+                pd.to_datetime("2019-01-01 00:10:01"),  # Increment
+                pd.to_datetime("2019-01-01 00:16:00"),  # Increment
+            ],
+            "image": [
+                sentinel.image1,
+                sentinel.image2,
+                sentinel.image3,
+                sentinel.image4,
+            ],
+        }
+    ).set_index("timestamp")
 
-        transformed_log_data = module.process_calibration_log_file(
-            sentinel.log_file_name
-        )
+    setpoint_ids = module.generate_time_based_setpoint_ids(mock_iamge_data)
 
-        # Interpolating to the second across 5 minute gaps creates large data frames
-        # so just check that the expected IDs are generated
-        expected_setpoint_ids = np.array([0, 1, 2])
+    expected_setpoint_ids = pd.Series([0, 0, 1, 2], index=mock_iamge_data.index).rename(
+        "timestamp"
+    )
 
-        np.testing.assert_array_equal(
-            transformed_log_data["setpoint ID"].unique(), expected_setpoint_ids
-        )
+    pd.testing.assert_series_equal(setpoint_ids, expected_setpoint_ids)
 
 
 def test_prepare_ysi_data():
