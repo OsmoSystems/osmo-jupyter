@@ -86,7 +86,7 @@ def get_equilibration_boundaries(equilibration_status: pd.Series) -> pd.DataFram
 def pivot_process_experiment_results_on_ROI(
     experiment_df: pd.DataFrame,
     ROI_names: List[str] = None,
-    msorm_types: List[str] = None,
+    pivot_values: List[str] = None,
 ) -> pd.DataFrame:
     """
         Flatten a DataFrame of process experiment results down to one row per image.
@@ -94,13 +94,14 @@ def pivot_process_experiment_results_on_ROI(
         Args:
             experiment_df: A DataFrame of process experiment summary statistics.
             ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
-            msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
+            pivot_values: Optional. A list of column names to select for each ROI in the pivot.
+                Defaults to all RGB channel MSORMs.
         Returns:
             DataFrame with one row per image, and msorm values for a subset of ROIs. Creates one column
             for every unique ROI in the dataset. NaN values are used when an image is missing an ROI.
     """
-    if msorm_types is None:
-        msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
+    if pivot_values is None:
+        pivot_values = ["r_msorm", "g_msorm", "b_msorm"]
 
     if ROI_names:
         experiment_df = experiment_df[experiment_df["ROI"].isin(ROI_names)]
@@ -112,7 +113,7 @@ def pivot_process_experiment_results_on_ROI(
 
     # Pivot creates a heirachical multiindex data frame with an index for each 'values' column
     pivot = experiment_df.pivot(
-        index="timestamp", columns="ROI", values=msorm_types + ["image"]
+        index="timestamp", columns="ROI", values=pivot_values + ["image"]
     )
 
     # After pivot -> Multi-level index
@@ -141,7 +142,7 @@ def pivot_process_experiment_results_on_ROI(
 def open_and_combine_process_experiment_results(
     process_experiment_result_filepaths: List[str],
     ROI_names: List[str] = None,
-    msorm_types: List[str] = None,
+    pivot_values: List[str] = None,
 ) -> pd.DataFrame:
     """
         Open multiple process experiment result files and combine into a single DataFrame with one row per image.
@@ -149,21 +150,26 @@ def open_and_combine_process_experiment_results(
         Args:
             process_experiment_result_filepaths: A list of filepaths to process experiment summary statistics files.
             ROI_names: Optional. A list of ROI names to select. Defaults to all ROIs present.
-            msorm_types: Optional. A list of MSORM column names to select. Defaults to all RGB channel MSORMs.
+            pivot_values: Optional. A list of column names to select for each ROI in the pivot.
+                Defaults to all RGB channel MSORMs.
         Returns:
             DataFrame of all summary statistics flattened to one row per image with all selected ROIs.
     """
-    if msorm_types is None:
-        msorm_types = ["r_msorm", "g_msorm", "b_msorm"]
+    if pivot_values is None:
+        pivot_values = ["r_msorm", "g_msorm", "b_msorm"]
 
     all_roi_data = pd.concat(
         [
-            pd.read_csv(results_filepath, parse_dates=["timestamp"])
+            pivot_process_experiment_results_on_ROI(
+                pd.read_csv(results_filepath, parse_dates=["timestamp"]),
+                ROI_names,
+                pivot_values,
+            )
             for results_filepath in process_experiment_result_filepaths
         ]
     )
 
-    return pivot_process_experiment_results_on_ROI(all_roi_data, ROI_names, msorm_types)
+    return all_roi_data
 
 
 def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame):
