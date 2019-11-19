@@ -181,9 +181,7 @@ def filter_equilibrated_images(equilibration_range: pd.Series, df: pd.DataFrame)
     return df[leading_edge_mask & trailing_edge_mask]
 
 
-def get_all_attempt_image_filenames(
-    attempt_metadata: pd.Series, local_sync_directory
-) -> pd.DataFrame:
+def get_all_attempt_image_filenames(attempt_metadata: pd.Series) -> pd.DataFrame:
     """ Get a DataFrame of all images for an attempt with associated attempt metadata.
 
         Args:
@@ -192,21 +190,20 @@ def get_all_attempt_image_filenames(
                 * cartridge_id
                 * cosmobot_id
                 * pond
-            local_sync_directory: The local sync directory in which to look for image files.
         Returns:
-            A DataFrame of images filenames along with timestamp, experiment name, and
-            a subset of attempt configuration data:
-                * cartridge ID
-                * cosmobot ID
-                * pond / environment
+            A DataFrame of images combined with a subset of attempt metadata:
+                * timestamp
+                * image_filename
+                * experiment_name
+                * cartridge_id
+                * cosmobot_id
+                * pond
     """
     experiment_names = attempt_metadata["experiment_names"]
 
-    images_by_experiment = get_all_experiment_image_filenames(
-        local_sync_directory, experiment_names
-    )
+    images_by_experiment = get_all_experiment_image_filenames(experiment_names)
 
-    images_by_experiment["timestamp"] = images_by_experiment["image"].apply(
+    images_by_experiment["timestamp"] = images_by_experiment["image_filename"].apply(
         datetime_from_filename
     )
 

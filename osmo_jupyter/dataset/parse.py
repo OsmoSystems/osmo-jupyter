@@ -62,16 +62,22 @@ def _remove_unused_columns(df):
     return df.drop(columns=columns_to_drop)
 
 
-def _generate_time_based_setpoint_ids(calibration_log_data):
-    """ Create setpoint IDs that increment whenever there is a >5 minute gap between image captures.
+def generate_time_based_setpoint_ids(timestamped_series: pd.Series) -> pd.Series:
+    """ Generate a series of setpoint IDs based on gaps between timestamps in provided Series.
+        Used to identify setpoint change by measuring time gap between image captures.
 
         This is dependent upon equilibration between setpoints taking >5 mins and the time between
         consecutive image captures at a setpoint being <5 mins.
+
+        Args:
+            timestamped_series: A datetime-indexed series
+        Returns:
+            A series mapping a setpoint ID to each index in the input series.
     """
 
-    calibration_log_sorted = calibration_log_data.sort_index()
+    timestamps_sorted = timestamped_series.sort_index()
 
-    setpoint_transitions = calibration_log_sorted.index.to_series().diff() > datetime.timedelta(
+    setpoint_transitions = timestamps_sorted.index.to_series().diff() > datetime.timedelta(
         minutes=5
     )
     setpoint_ids = setpoint_transitions.astype(int).cumsum()
@@ -295,12 +301,12 @@ def process_calibration_log_file(filepath: str) -> pd.DataFrame:
 
     trimmed_calibration_data = _remove_unused_columns(calibration_data)
 
-    rounded_calibration_data = trimmed_calibration_data.round(
-        {"setpoint temperature (C)": 3, "setpoint O2 fraction": 6}
+    calibration_data_resampled = trimmed_calibration_data.resample("s").interpolate(
+        method="slinear"
     )
 
-    rounded_calibration_data["setpoint ID"] = _generate_time_based_setpoint_ids(
-        rounded_calibration_data
+    rounded_calibration_data = calibration_data_resampled.round(
+        {"setpoint temperature (C)": 3, "setpoint O2 fraction": 6}
     )
 
     return rounded_calibration_data

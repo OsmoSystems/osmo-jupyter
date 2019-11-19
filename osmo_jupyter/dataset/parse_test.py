@@ -171,20 +171,17 @@ class TestParseDataCollectionLog:
         pd.testing.assert_series_equal(actual_attempt_summary, expected_attempt_summary)
 
 
-def test_processes_log_data_correctly(mocker):
+def test_interpolates_calibration_log_data_correctly(mocker):
     mock_calibration_log_data = pd.DataFrame(
         {
             "timestamp": [
                 pd.to_datetime("2019-01-01 00:00:00"),
-                # One minute jump - shouldn't increase setpoint ID
-                pd.to_datetime("2019-01-01 00:01:00"),
-                # More than 5 minute jump - should increase setpoint ID
-                pd.to_datetime("2019-01-01 00:07:00"),
+                pd.to_datetime("2019-01-01 00:00:02"),
             ],
-            "YSI DO (mmHg)": [50, 40, 30],
-            "setpoint temperature (C)": [29.111111111, 29.1, 30.0000003],
-            "setpoint O2 fraction": [0.11111111111, 0.2222222222, 0.3],
-            "extraneous column": ["should", "be", "dropped"],
+            "YSI DO (mmHg)": [50, 30],
+            "setpoint temperature (C)": [29.00000001, 30.0000003],
+            "setpoint O2 fraction": [0.100000001, 0.3],
+            "extraneous column": ["is", "dropped"],
         }
     ).set_index("timestamp")
 
@@ -198,19 +195,47 @@ def test_processes_log_data_correctly(mocker):
         {
             "timestamp": [
                 pd.to_datetime("2019-01-01 00:00:00"),
-                pd.to_datetime("2019-01-01 00:01:00"),
-                pd.to_datetime("2019-01-01 00:07:00"),
+                pd.to_datetime("2019-01-01 00:00:01"),
+                pd.to_datetime("2019-01-01 00:00:02"),
             ],
             "YSI DO (mmHg)": [50, 40, 30],
-            "setpoint temperature (C)": [29.111, 29.1, 30],
-            "setpoint O2 fraction": [0.111111, 0.222222, 0.3],
-            "setpoint ID": [0, 0, 1],
-        }
+            "setpoint temperature (C)": [29, 29.5, 30],
+            "setpoint O2 fraction": [0.1, 0.2, 0.3],
+        },
+        dtype="float64",
     ).set_index("timestamp")
 
     pd.testing.assert_frame_equal(
         transformed_log_data, expected_log_data, check_less_precise=6
     )
+
+
+def test_setpoint_ids_assigned_correctly():
+    mock_iamge_data = pd.DataFrame(
+        {
+            "timestamp": [
+                # Each > than 5 minute jump should increment setpoint ID
+                pd.to_datetime("2019-01-01 00:00:00"),
+                pd.to_datetime("2019-01-01 00:05:00"),  # Don't increment
+                pd.to_datetime("2019-01-01 00:10:01"),  # Increment
+                pd.to_datetime("2019-01-01 00:16:00"),  # Increment
+            ],
+            "image": [
+                sentinel.image1,
+                sentinel.image2,
+                sentinel.image3,
+                sentinel.image4,
+            ],
+        }
+    ).set_index("timestamp")
+
+    setpoint_ids = module.generate_time_based_setpoint_ids(mock_iamge_data)
+
+    expected_setpoint_ids = pd.Series([0, 0, 1, 2], index=mock_iamge_data.index).rename(
+        "timestamp"
+    )
+
+    pd.testing.assert_series_equal(setpoint_ids, expected_setpoint_ids)
 
 
 def test_prepare_ysi_data():

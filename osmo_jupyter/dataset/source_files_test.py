@@ -1,9 +1,15 @@
 import os
 from pathlib import Path
 
+import pytest
 import pandas as pd
 
 import osmo_jupyter.dataset.source_files as module
+
+
+@pytest.fixture
+def mock_get_experiment_filenames_from_s3(mocker):
+    return mocker.patch.object(module, "_get_experiment_filenames_from_s3")
 
 
 def _init_data_dir(parent_dir: Path, directories_to_include, files_to_include):
@@ -106,14 +112,17 @@ class TestGetExperimentDataFilesByType:
 
 
 class TestGetAllExperimentImages:
-    def test_returns_only_image_files(self, mocker):
+    def test_returns_only_image_files(self, mock_get_experiment_filenames_from_s3):
         image_file_name = "image-0.jpeg"
         experiment_name = "test"
 
-        mocker.patch("os.listdir", return_value=[image_file_name, "experiment.log"])
+        mock_get_experiment_filenames_from_s3.return_value = [
+            image_file_name,
+            "experiment.log",
+        ]
 
         experiment_images = module.get_all_experiment_image_filenames(
-            local_sync_directory="", experiment_names=[experiment_name]
+            experiment_names=[experiment_name]
         )
 
         expected_images = pd.DataFrame(
@@ -122,11 +131,13 @@ class TestGetAllExperimentImages:
 
         pd.testing.assert_frame_equal(experiment_images, expected_images)
 
-    def test_has_correct_dtype_when_no_images_found(self, mocker):
-        mocker.patch("os.listdir", return_value=[])
+    def test_has_correct_dtype_when_no_images_found(
+        self, mock_get_experiment_filenames_from_s3
+    ):
+        mock_get_experiment_filenames_from_s3.return_value = []
 
         experiment_images = module.get_all_experiment_image_filenames(
-            local_sync_directory="", experiment_names=["test"]
+            experiment_names=["test"]
         )
 
         pd.testing.assert_frame_equal(
