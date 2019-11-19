@@ -171,7 +171,7 @@ class TestParseDataCollectionLog:
         pd.testing.assert_series_equal(actual_attempt_summary, expected_attempt_summary)
 
 
-def test_intertoplates_calibration_log_data_correctly(mocker):
+def test_interpolates_calibration_log_data_correctly(mocker):
     mock_calibration_log_data = pd.DataFrame(
         {
             "timestamp": [

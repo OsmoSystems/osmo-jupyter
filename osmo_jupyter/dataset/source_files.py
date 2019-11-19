@@ -94,7 +94,9 @@ def get_all_experiment_image_filenames(experiment_names: List[str]) -> pd.DataFr
         Args:
             experiment_names: A list of experiment directory names in the local sync directory.
         Returns:
-            DataFrame of all image file names and the corresponding experiment name.
+            DataFrame of all requested experiment images with the following columns:
+                * experiment_name
+                * image_filename
     """
     all_images = pd.DataFrame(
         [

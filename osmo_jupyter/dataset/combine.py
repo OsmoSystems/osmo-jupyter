@@ -191,11 +191,13 @@ def get_all_attempt_image_filenames(attempt_metadata: pd.Series) -> pd.DataFrame
                 * cosmobot_id
                 * pond
         Returns:
-            A DataFrame of images filenames along with timestamp, experiment name, and
-            a subset of attempt configuration data:
-                * cartridge ID
-                * cosmobot ID
-                * pond / environment
+            A DataFrame of images combined with a subset of attempt metadata:
+                * timestamp
+                * image_filename
+                * experiment_name
+                * cartridge_id
+                * cosmobot_id
+                * pond
     """
     experiment_names = attempt_metadata["experiment_names"]
 
