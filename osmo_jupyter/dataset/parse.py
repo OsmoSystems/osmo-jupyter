@@ -10,7 +10,7 @@ import pandas as pd
 TIMESTAMP_LABEL = "timestamp"
 TEMPERATURE_C_LABEL = "temperature (C)"
 BAROMETRIC_PRESSURE_MMHG_LABEL = "barometric pressure (mmHg)"
-DO_PCT_LABEL = "DO (%)"
+DO_PCT_LABEL = "DO (% sat)"
 DO_MGL_LABEL = "DO (mg/L)"
 DO_MMHG_LABEL = "DO (mmHg)"
 
