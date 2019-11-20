@@ -17,7 +17,7 @@ def test_parses_ysi_csv_correctly(tmpdir):
             {
                 "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
                 "YSI barometric pressure (mmHg)": 750,
-                "YSI DO (%)": 19,
+                "YSI DO (% sat)": 19,
                 "YSI temperature (C)": 24.7,
                 "YSI unit ID": "unit ID",
             }
@@ -38,7 +38,7 @@ def test_parses_ysi_kordss_correctly(tmpdir):
             {
                 "timestamp": pd.to_datetime("2019-01-01 00:00:00"),
                 "YSI barometric pressure (mmHg)": 750,
-                "YSI DO (%)": 60,
+                "YSI DO (% sat)": 60,
                 "YSI DO (mg/L)": 6,
                 "YSI temperature (C)": 24.7,
             }
@@ -248,7 +248,7 @@ def test_prepare_ysi_data():
                 pd.to_datetime("2019-01-01 00:00:00"),
                 pd.to_datetime("2019-01-01 00:00:02"),
             ],
-            "YSI DO (%)": [50, 51.000000001],
+            "YSI DO (% sat)": [50, 51.000000001],
             "YSI DO (mg/L)": [3, 3.00003],
             "YSI temperature (C)": [29.00000001, 30],
             "YSI barometric pressure (mmHg)": [750, 755],
@@ -266,7 +266,7 @@ def test_prepare_ysi_data():
                 pd.to_datetime("2019-01-01 00:00:01"),
                 pd.to_datetime("2019-01-01 00:00:02"),
             ],
-            "YSI DO (%)": [50, 50.5, 51],
+            "YSI DO (% sat)": [50, 50.5, 51],
             "YSI DO (mg/L)": [3, 3.000015, 3.00003],
             "YSI temperature (C)": [29, 29.5, 30],
             "YSI barometric pressure (mmHg)": [750, 752.5, 755],
