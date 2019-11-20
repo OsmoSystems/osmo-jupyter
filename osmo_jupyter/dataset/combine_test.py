@@ -235,7 +235,7 @@ class TestPivotProcessExperimentResults:
         pivot_results = module.pivot_process_experiment_results_on_ROI(
             experiment_df=test_process_experiment_data,
             ROI_names=list(test_process_experiment_data["ROI"].unique()),
-            msorm_types=["r_msorm", "g_msorm"],
+            pivot_column_names=["r_msorm", "g_msorm"],
         )
 
         expected_results_data = (
@@ -264,6 +264,24 @@ class TestPivotProcessExperimentResults:
         )
 
         pd.testing.assert_frame_equal(pivot_results, expected_results_data)
+
+
+class TestOpenAndCombineProcessExperimentResults:
+    def test_keeps_distinct_rows_for_images_with_same_timestamp(self):
+        test_process_experiment_file_path = pkg_resources.resource_filename(
+            "osmo_jupyter", "test_fixtures/test_process_experiment_result.csv"
+        )
+
+        # Open the same file twice to ensure there are duplicate timestamps
+        pivot_results = module.open_and_combine_process_experiment_results(
+            process_experiment_result_filepaths=[
+                test_process_experiment_file_path,
+                test_process_experiment_file_path,
+            ]
+        )
+
+        unique_timestamps = pivot_results.index.unique()
+        assert len(unique_timestamps) == len(pivot_results) / 2
 
 
 class TestFilterEquilibratedImages:
