@@ -235,7 +235,7 @@ class TestPivotProcessExperimentResults:
         pivot_results = module.pivot_process_experiment_results_on_ROI(
             experiment_df=test_process_experiment_data,
             ROI_names=list(test_process_experiment_data["ROI"].unique()),
-            pivot_values=["r_msorm", "g_msorm"],
+            pivot_column_names=["r_msorm", "g_msorm"],
         )
 
         expected_results_data = (
@@ -267,7 +267,7 @@ class TestPivotProcessExperimentResults:
 
 
 class TestOpenAndCombineProcessExperimentResults:
-    def test_does_not_throw_on_simultaneous_timestamps(self):
+    def test_keeps_distinct_rows_for_images_with_same_timestamp(self):
         test_process_experiment_file_path = pkg_resources.resource_filename(
             "osmo_jupyter", "test_fixtures/test_process_experiment_result.csv"
         )
@@ -280,7 +280,6 @@ class TestOpenAndCombineProcessExperimentResults:
             ]
         )
 
-        # Bonus assertion - make sure we preserve duplicate rows for each timestamp
         unique_timestamps = pivot_results.index.unique()
         assert len(unique_timestamps) == len(pivot_results) / 2
 
