@@ -170,6 +170,34 @@ class TestParseDataCollectionLog:
 
         pd.testing.assert_series_equal(actual_attempt_summary, expected_attempt_summary)
 
+    def test_get_attempt_summary_handles_missing_bucket(self):
+        test_attempt_data = pd.Series(
+            {
+                "S3 Bucket(s)": None,
+                "Drive Directory": "Experiment",
+                "Cosmobot ID": "Z",
+                "Cartridge": "C1",
+                "Start Date/Time": pd.to_datetime("2019"),
+                "End Date/Time": pd.to_datetime("2020"),
+            }
+        )
+
+        actual_attempt_summary = module._get_attempt_summary(test_attempt_data)
+
+        expected_attempt_summary = pd.Series(
+            {
+                "experiment_names": [],
+                "drive_directory": "Experiment",
+                "pond": "calibration",
+                "cosmobot_id": "Z",
+                "cartridge_id": "C1",
+                "start_date": pd.to_datetime("2019"),
+                "end_date": pd.to_datetime("2020"),
+            }
+        )
+
+        pd.testing.assert_series_equal(actual_attempt_summary, expected_attempt_summary)
+
 
 def test_interpolates_calibration_log_data_correctly(mocker):
     mock_calibration_log_data = pd.DataFrame(

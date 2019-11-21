@@ -198,8 +198,13 @@ def parse_calibration_log_file(filepath: str) -> pd.DataFrame:
 
 
 def _get_attempt_summary(attempt: pd.Series) -> pd.Series:
-    experiment_names = attempt["S3 Bucket(s)"].split("\n")
+    if attempt.notna()["S3 Bucket(s)"]:
+        experiment_names = attempt["S3 Bucket(s)"].split("\n")
+    else:
+        experiment_names = []
+
     pond = attempt["Scum Tank"] if "Scum Tank" in attempt.index else "calibration"
+
     return pd.Series(
         {
             "experiment_names": experiment_names,
